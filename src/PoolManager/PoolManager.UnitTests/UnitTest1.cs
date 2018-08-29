@@ -2,9 +2,13 @@
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.ApplicationInsights;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PoolManager.Pools;
+using PoolManager.SDK.Pools;
+using PoolManager.SDK.Pools.Requests;
 using ServiceFabric.Mocks;
 
 namespace PoolManager.UnitTests
@@ -40,21 +44,14 @@ namespace PoolManager.UnitTests
         public async Task TestMethod1()
         {
             var actorGuid = Guid.NewGuid();
-            var id = new ActorId(actorGuid);
+            var id = new ActorId("fabric:/ServicePoolManagerLoadTestHarness/NoOpType");
             var actor = CreateActor(id);
             var stateManager = (MockActorStateManager)actor.StateManager;
-
-            const string stateName = "test";
-            var payload = new Payload(StatePayload);
-            await actor.InsertAsync(stateName, payload);
-
-            var actual = await stateManager.GetStateAsync<Payload>(stateName);
-            actual.Content.Should().Be(StatePayload);
         }
-        private MyStatefulActor CreateActor(ActorId id)
+        private Pool CreateActor(ActorId id)
         {
-            ActorBase ActorFactory(ActorService service, ActorId actorId) => new MyStatefulActor(service, id);
-            var svc = MockActorServiceFactory.CreateActorServiceForActor<MyStatefulActor>(ActorFactory);
+            ActorBase ActorFactory(ActorService service, ActorId actorId) => new Pool(service, id, null);
+            var svc = MockActorServiceFactory.CreateActorServiceForActor<Pool>(ActorFactory);
             var actor = svc.Activate(id);
             return actor;
         }

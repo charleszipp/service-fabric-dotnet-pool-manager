@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace PoolManager.Pools
 {
     [StatePersistence(StatePersistence.Persisted)]
-    internal class Pool : Actor, IPool, IRemindable
+    public class Pool : Actor, IPool, IRemindable
     {
         private readonly PoolContext _context;
 
