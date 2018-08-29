@@ -28,7 +28,6 @@ namespace PoolManager.Pools
             //todo: make sure the service type provided exists
 
             await context.SetPoolConfigurationAsync(config);
-            await context.SetPoolInstancesAsync(new PoolInstances());
             await context.EnsurePoolSizeAsync(config);
             return context.PoolStates.Get(PoolStates.Active);
         }

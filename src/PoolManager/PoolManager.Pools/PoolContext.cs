@@ -49,7 +49,7 @@ namespace PoolManager.Pools
 
         public Task GetAsync(GetInstanceRequest request) => _currentState.GetAsync(this, request);
 
-        internal Task<PoolInstances> GetPoolInstancesAsync() => StateManager.GetStateAsync<PoolInstances>("pool-instances");
+        internal Task<PoolInstances> GetPoolInstancesAsync() => StateManager.GetOrAddStateAsync("pool-instances", new PoolInstances());
 
         internal Task<PoolConfiguration> GetPoolConfigurationAsync() => StateManager.GetStateAsync<PoolConfiguration>("pool-configuration");
 
