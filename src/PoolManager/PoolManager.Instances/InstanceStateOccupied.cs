@@ -19,11 +19,15 @@ namespace PoolManager.Instances
             return rvalue;
         }
 
-        public override async Task ReportActivityAsync(InstanceContext context, ReportActivityRequest request)
+        public override async Task<TimeSpan> ReportActivityAsync(InstanceContext context, ReportActivityRequest request)
         {
-            var state = await context.StateManager.GetStateAsync<ServiceState>("service-state");
+            var state = await context.GetServiceStateAsync();
             state.LastActiveUtc = request.LastActiveUtc;
-            await context.StateManager.SetStateAsync("service-state", state);
+            await context.SetServiceStateAsync(state);
+
+            var config = await context.GetInstanceConfigurationAsync();
+
+            return TimeSpan.FromMilliseconds(config.ExpirationQuanta.TotalMilliseconds / 10);
         }
 
         public override Task<InstanceState> StartAsAsync(InstanceContext context, StartInstanceAsRequest request) =>
@@ -36,7 +40,7 @@ namespace PoolManager.Instances
         {
             var svc = await context.GetServiceInstanceProxy();
             await svc.VacateAsync();
-            await context.StateManager.SetStateAsync("service-state", new ServiceState());
+            await context.SetServiceStateAsync(new ServiceState());
             return context.InstanceStates.Get(InstanceStates.Vacant);
         }
     }

@@ -33,5 +33,7 @@ namespace PoolManager.Pools
         }
 
         public abstract Task<Guid> GetAsync(PoolContext context, GetInstanceRequest request);
+
+        public abstract Task VacateInstanceAsync(PoolContext poolContext, VacateInstanceRequest request);
     }
 }

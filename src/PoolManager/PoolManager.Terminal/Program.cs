@@ -33,10 +33,10 @@ namespace PoolManager.Terminal
                     1,
                     3,
                     SDK.PartitionSchemeDescription.Singleton,
-                    100,
                     10,
-                    2,
-                    TimeSpan.FromMinutes(2)
+                    1,
+                    1,
+                    TimeSpan.FromMinutes(1)
                     ));
 
                 await pool.GetAsync(new SDK.Pools.Requests.GetInstanceRequest(Guid.NewGuid().ToString()));

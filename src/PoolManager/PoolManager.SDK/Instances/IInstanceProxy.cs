@@ -8,7 +8,9 @@ namespace PoolManager.SDK.Instances
     {
         Task OccupyAsync(Guid instanceId, OccupyRequest request);
         Task RemoveAsync(Guid instanceId);
+        Task VacateAsync(Guid instanceId);
         Task<Guid> StartAsAsync(StartInstanceAsRequest request);
         Task<Guid> StartAsync(StartInstanceRequest request);
+        Task<TimeSpan> ReportActivityAsync(Guid instanceId, ReportActivityRequest request);
     }
 }

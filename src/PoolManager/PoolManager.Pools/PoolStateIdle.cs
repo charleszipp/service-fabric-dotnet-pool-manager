@@ -8,5 +8,8 @@ namespace PoolManager.Pools
     {
         public override Task<Guid> GetAsync(PoolContext context, GetInstanceRequest request) => 
             throw new Exception("GetAsync called for idle pool. The pool must be started before instances can be resolved");
+
+        public override Task VacateInstanceAsync(PoolContext poolContext, VacateInstanceRequest request) => 
+            throw new Exception("VacateInstanceAsync called for idle pool. The pool must be started before instances can be vacated");
     }
 }

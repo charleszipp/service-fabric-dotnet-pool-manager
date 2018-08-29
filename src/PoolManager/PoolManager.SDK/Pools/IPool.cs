@@ -8,5 +8,6 @@ namespace PoolManager.SDK.Pools
     {
         Task StartAsync(StartPoolRequest request);
         Task GetAsync(GetInstanceRequest request);
+        Task VacateInstanceAsync(VacateInstanceRequest request);
     }
 }

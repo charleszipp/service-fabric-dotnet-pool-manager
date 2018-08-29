@@ -49,6 +49,8 @@ namespace PoolManager.Pools
 
         public Task GetAsync(GetInstanceRequest request) => _currentState.GetAsync(this, request);
 
+        public Task VacateInstanceAsync(VacateInstanceRequest request) => _currentState.VacateInstanceAsync(this, request);
+
         internal Task<PoolInstances> GetPoolInstancesAsync() => StateManager.GetOrAddStateAsync("pool-instances", new PoolInstances());
 
         internal Task<PoolConfiguration> GetPoolConfigurationAsync() => StateManager.GetStateAsync<PoolConfiguration>("pool-configuration");
@@ -82,7 +84,8 @@ namespace PoolManager.Pools
                 configuration.HasPersistedState,
                 configuration.MinReplicaSetSize,
                 configuration.TargetReplicasetSize,
-                configuration.PartitionScheme
+                configuration.PartitionScheme,
+                configuration.ExpirationQuanta
                 )
             );
 
