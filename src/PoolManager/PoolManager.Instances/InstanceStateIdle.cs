@@ -16,10 +16,10 @@ namespace PoolManager.Instances
         public override Task<InstanceState> RemoveAsync(InstanceContext context) => 
             Task.FromResult<InstanceState>(this);
 
-        public override Task ReportActivityAsync(InstanceContext context, ReportActivityRequest request)
+        public override Task<TimeSpan> ReportActivityAsync(InstanceContext context, ReportActivityRequest request)
         {
             context.TelemetryClient.TrackTrace("Activity was reported to an idle instance");
-            return Task.CompletedTask;
+            return Task.FromResult(TimeSpan.MaxValue);
         }
 
         public override async Task<InstanceState> StartAsAsync(InstanceContext context, StartInstanceAsRequest request)
@@ -37,7 +37,7 @@ namespace PoolManager.Instances
             ServiceDescription serviceDescription = null;
             var instanceId = context.InstanceId;
             var instanceUri = context.CreateServiceInstanceUri(request.ServiceTypeUri, instanceId);
-            var config = new ServiceConfiguration(instanceUri, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme);
+            var config = new ServiceConfiguration(instanceUri, request.ServiceTypeUri, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme, request.ExpirationQuanta);
 
             if (config.IsServiceStateful)
             {

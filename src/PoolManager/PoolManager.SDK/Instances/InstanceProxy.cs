@@ -2,9 +2,6 @@
 using Microsoft.ServiceFabric.Actors.Client;
 using PoolManager.SDK.Instances.Requests;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,14 +30,20 @@ namespace PoolManager.SDK.Instances
             return rvalue;
         }
 
-        public async Task OccupyAsync(Guid instanceId, OccupyRequest request) => 
-            await GetProxy(instanceId).OccupyAsync(request);
+        public Task OccupyAsync(Guid instanceId, OccupyRequest request) => 
+            GetProxy(instanceId).OccupyAsync(request);
+
+        public Task<TimeSpan> ReportActivityAsync(Guid instanceId, ReportActivityRequest request) =>
+            GetProxy(instanceId).ReportActivityAsync(request);
 
         public async Task RemoveAsync(Guid instanceId)
         {
             await GetProxy(instanceId).RemoveAsync();
             await GetServiceProxy(instanceId).DeleteActorAsync(new ActorId(instanceId), CancellationToken.None);
         }
+
+        public Task VacateAsync(Guid instanceId) => 
+            GetProxy(instanceId).VacateAsync();
 
         private IInstance GetProxy(Guid instanceId) =>
             _actorProxyFactory.CreateActorProxy<IInstance>(new ActorId(instanceId), "PoolManager", "InstanceActorService");

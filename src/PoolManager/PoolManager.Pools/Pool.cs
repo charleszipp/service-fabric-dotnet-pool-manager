@@ -48,6 +48,8 @@ namespace PoolManager.Pools
 
         public Task GetAsync(GetInstanceRequest request) => _context.GetAsync(request);
 
+        public Task VacateInstanceAsync(VacateInstanceRequest request) => _context.VacateInstanceAsync(request);
+
         protected override Task OnActivateAsync() => _context.ActivateAsync();
 
         protected override Task OnDeactivateAsync() => _context.DeactivateAsync();

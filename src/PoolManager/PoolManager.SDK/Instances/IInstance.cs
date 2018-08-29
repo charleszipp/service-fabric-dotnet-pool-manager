@@ -1,5 +1,6 @@
 ﻿using Microsoft.ServiceFabric.Actors;
 using PoolManager.SDK.Instances.Requests;
+using System;
 using System.Threading.Tasks;
 
 namespace PoolManager.SDK.Instances
@@ -14,6 +15,8 @@ namespace PoolManager.SDK.Instances
 
         Task OccupyAsync(OccupyRequest request);
 
-        Task ReportActivityAsync(ReportActivityRequest request);
+        Task<TimeSpan> ReportActivityAsync(ReportActivityRequest request);
+
+        Task VacateAsync();
     }
 }

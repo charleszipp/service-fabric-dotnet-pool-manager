@@ -6,13 +6,16 @@ using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Services.Remoting.V1.FabricTransport.Client;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Instances.Requests;
+using PoolManager.SDK.Pools;
+using PoolManager.SDK.Pools.Requests;
+using System;
 using System.Fabric;
 using System.Threading.Tasks;
 
 namespace PoolManager.Instances
 {
     [StatePersistence(StatePersistence.Persisted)]
-    internal class Instance : Actor, IInstance
+    internal class Instance : Actor, IInstance, IRemindable
     {
         private readonly InstanceContext _context;
 
@@ -22,6 +25,7 @@ namespace PoolManager.Instances
             _context = new InstanceContext(
                 GetInstanceId(),
                 new InstanceStateProvider(new InstanceStateIdle(), new InstanceStateVacant(), new InstanceStateOccupied()),
+                new PoolProxy(new CorrelatingActorProxyFactory(ActorService.Context, callbackClient => new FabricTransportServiceRemotingClientFactory(callbackClient: callbackClient))),
                 new CorrelatingServiceProxyFactory(ActorService.Context, callbackClient => new FabricTransportServiceRemotingClientFactory(callbackClient: callbackClient)),
                 new FabricClient(),
                 StateManager,
@@ -35,9 +39,23 @@ namespace PoolManager.Instances
 
         public Task RemoveAsync() => _context.RemoveAsync();
 
-        public Task OccupyAsync(OccupyRequest request) => _context.OccupyAsync(request);
+        public async Task OccupyAsync(OccupyRequest request)
+        {
+            await _context.OccupyAsync(request);
+            await RegisterReminderAsync("expiration-quanta", null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+        }
 
-        public Task ReportActivityAsync(ReportActivityRequest request) => _context.ReportActivityAsync(request);
+        public Task<TimeSpan> ReportActivityAsync(ReportActivityRequest request) => _context.ReportActivityAsync(request);
+
+        public async Task VacateAsync()
+        {
+            await _context.VacateAsync();
+            try
+            {
+                await UnregisterReminderAsync(GetReminder("expiration-quanta"));
+            }
+            catch (ReminderNotFoundException) { }
+        }
 
         protected override Task OnActivateAsync() => _context.ActivateAsync();
 
@@ -64,6 +82,21 @@ namespace PoolManager.Instances
             }
 
             return rvalue;
+        }
+
+        public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
+        {
+            if(reminderName.Equals("expiration-quanta"))
+            {
+                var serviceState = await _context.GetServiceStateAsync();
+                var config = await _context.GetInstanceConfigurationAsync();
+                TimeSpan inactivityPeriod = DateTime.UtcNow.Subtract(serviceState.LastActiveUtc.Value);
+                if (inactivityPeriod > config.ExpirationQuanta)
+                {
+                    var vacateInstanceRequest = new VacateInstanceRequest(this.GetActorId().GetGuidId(), serviceState.ServiceInstanceName);
+                    await _context.PoolProxy.VacateInstanceAsync(config.ServiceTypeUri, vacateInstanceRequest);
+                }   
+            }
         }
     }
 }

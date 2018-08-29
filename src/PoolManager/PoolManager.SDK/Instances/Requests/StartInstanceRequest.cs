@@ -13,7 +13,8 @@ namespace PoolManager.SDK.Instances.Requests
             bool hasPersistedState = true,
             int minReplicas = 1,
             int targetReplicas = 3,
-            PartitionSchemeDescription partitionScheme = PartitionSchemeDescription.UniformInt64Name
+            PartitionSchemeDescription partitionScheme = PartitionSchemeDescription.UniformInt64Name,
+            TimeSpan? expirationQuanta = null
             )
         {
             ServiceTypeUri = serviceTypeUri;
@@ -22,6 +23,7 @@ namespace PoolManager.SDK.Instances.Requests
             MinReplicas = minReplicas;
             TargetReplicas = targetReplicas;
             PartitionScheme = partitionScheme;
+            ExpirationQuanta = expirationQuanta ?? new TimeSpan(24, 0, 0);
         }
 
         [DataMember]
@@ -36,5 +38,7 @@ namespace PoolManager.SDK.Instances.Requests
         public int TargetReplicas { get; private set; }
         [DataMember]
         public SDK.PartitionSchemeDescription PartitionScheme { get; private set; }
+        [DataMember]
+        public TimeSpan ExpirationQuanta { get; private set; }
     }
 }

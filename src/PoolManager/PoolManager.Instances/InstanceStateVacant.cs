@@ -15,14 +15,14 @@ namespace PoolManager.Instances
         {
             var svc = await context.GetServiceInstanceProxy();
             await svc.OccupyAsync(context.InstanceId, request.ServiceInstanceName);
-            await context.StateManager.SetStateAsync("service-state", new ServiceState(request.ServiceInstanceName));
+            await context.SetServiceStateAsync(new ServiceState(request.ServiceInstanceName));
             return context.InstanceStates.Get(InstanceStates.Occupied);
         }
 
-        public override Task ReportActivityAsync(InstanceContext context, ReportActivityRequest request)
+        public override Task<TimeSpan> ReportActivityAsync(InstanceContext context, ReportActivityRequest request)
         {
             context.TelemetryClient.TrackTrace("Activity was reported to a vacant instance");
-            return Task.CompletedTask;
+            return Task.FromResult(TimeSpan.MaxValue);
         }
 
         public override async Task<InstanceState> RemoveAsync(InstanceContext context)

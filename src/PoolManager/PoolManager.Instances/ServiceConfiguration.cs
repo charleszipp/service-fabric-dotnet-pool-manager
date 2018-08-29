@@ -7,18 +7,23 @@ namespace PoolManager.Instances
     [DataContract]
     public class ServiceConfiguration
     {
-        public ServiceConfiguration(Uri serviceInstanceUri, bool isServiceStateful, bool hasPersistedState, int minReplicas, int targetReplicas, SDK.PartitionSchemeDescription partitionScheme)
+        public ServiceConfiguration(Uri serviceInstanceUri, string serviceTypeUri, bool isServiceStateful, bool hasPersistedState, int minReplicas, int targetReplicas, SDK.PartitionSchemeDescription partitionScheme, TimeSpan expirationQuanta)
         {
             ServiceInstanceUri = serviceInstanceUri;
+            ServiceTypeUri = serviceTypeUri;
             IsServiceStateful = isServiceStateful;
             HasPersistedState = hasPersistedState;
             MinReplicas = minReplicas;
             TargetReplicas = targetReplicas;
             PartitionScheme = partitionScheme;
+            ExpirationQuanta = expirationQuanta;
         }
 
         [DataMember]
         public Uri ServiceInstanceUri { get; private set; }
+
+        [DataMember]
+        public string ServiceTypeUri { get; private set; }
 
         [DataMember]
         public bool IsServiceStateful { get; private set; }
@@ -34,5 +39,8 @@ namespace PoolManager.Instances
 
         [DataMember]
         public SDK.PartitionSchemeDescription PartitionScheme { get; private set; }
+
+        [DataMember]
+        public TimeSpan ExpirationQuanta { get; private set; }
     }
 }

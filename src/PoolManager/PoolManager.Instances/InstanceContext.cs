@@ -5,6 +5,7 @@ using Microsoft.ServiceFabric.Services.Remoting.Client;
 using PoolManager.SDK;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Instances.Requests;
+using PoolManager.SDK.Pools;
 using System;
 using System.Fabric;
 using System.Threading.Tasks;
@@ -16,9 +17,10 @@ namespace PoolManager.Instances
         private const string _instanceStateKey = "instance-state";
         private InstanceState _currentState;
 
-        public InstanceContext(string instanceId, IInstanceStateProvider instanceStates, IServiceProxyFactory proxyFactory, FabricClient fabricClient, IActorStateManager stateManager, TelemetryClient telemetryClient)
+        public InstanceContext(string instanceId, IInstanceStateProvider instanceStates, IPoolProxy poolProxy, IServiceProxyFactory proxyFactory, FabricClient fabricClient, IActorStateManager stateManager, TelemetryClient telemetryClient)
         {
             InstanceStates = instanceStates;
+            PoolProxy = poolProxy;
             InstanceId = instanceId;
             ProxyFactory = proxyFactory;
             FabricClient = fabricClient;
@@ -38,6 +40,8 @@ namespace PoolManager.Instances
         public TelemetryClient TelemetryClient { get; }
 
         public IInstanceStateProvider InstanceStates { get; }
+
+        public IPoolProxy PoolProxy { get; }
 
         public async Task ActivateAsync()
         {
@@ -61,7 +65,7 @@ namespace PoolManager.Instances
 
         public async Task OccupyAsync(OccupyRequest request) => _currentState = await _currentState.OccupyAsync(this, request);
 
-        public Task ReportActivityAsync(ReportActivityRequest request) => _currentState.ReportActivityAsync(this, request);
+        public Task<TimeSpan> ReportActivityAsync(ReportActivityRequest request) => _currentState.ReportActivityAsync(this, request);
 
         internal void ParseServiceTypeUri(string serviceTypeUri, out string applicationName, out string serviceTypeName)
         {
@@ -86,6 +90,10 @@ namespace PoolManager.Instances
         internal Task SetInstanceConfigurationAsync(ServiceConfiguration instanceConfiguration) => StateManager.GetOrAddStateAsync("instance-configuration", instanceConfiguration);
 
         internal Task<ServiceConfiguration> GetInstanceConfigurationAsync() => StateManager.GetStateAsync<ServiceConfiguration>("instance-configuration");
+
+        internal Task<ServiceState> GetServiceStateAsync() => StateManager.GetStateAsync<ServiceState>("service-state");
+
+        internal Task SetServiceStateAsync(ServiceState serviceState) => StateManager.SetStateAsync("service-state", serviceState);
 
         internal async Task<IServiceInstance> GetServiceInstanceProxy()
         {
