@@ -36,7 +36,7 @@ namespace PoolManager.Terminal
                     10,
                     1,
                     1,
-                    TimeSpan.FromMinutes(1)
+                    TimeSpan.FromMinutes(2)
                     ));
 
                 await pool.GetAsync(new SDK.Pools.Requests.GetInstanceRequest(Guid.NewGuid().ToString()));

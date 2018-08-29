@@ -1,4 +1,6 @@
-﻿using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
 using Microsoft.ServiceFabric.Data;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Remoting.Runtime;
@@ -24,6 +26,7 @@ namespace PoolManager.Tests.NoOp
         private Guid? _instanceId;
         private string _serviceInstanceName;
         private CancellationToken _runCancellation = default(CancellationToken);
+        private readonly TelemetryClient _telemetryClient = new TelemetryClient();
 
         public NoOp(StatefulServiceContext context) : base(context)
         {
@@ -54,12 +57,23 @@ namespace PoolManager.Tests.NoOp
 
             while(DateTime.Now < reportUntil && !_runCancellation.IsCancellationRequested)
             {
-                var utcNow = DateTime.UtcNow;
-                if(utcNow >= nextReportDateUtc)
+                using (var op = _telemetryClient.StartOperation<RequestTelemetry>("NoOp.ReportActivityAsync"))
                 {
-                    var reportActivityRequest = new ReportActivityRequest(_serviceInstanceName, utcNow);
-                    var nextReportInterval = await _instanceProxy.ReportActivityAsync(_instanceId.Value, reportActivityRequest);
-                    nextReportDateUtc = utcNow.Add(nextReportInterval);
+                    var utcNow = DateTime.UtcNow;
+                    if (utcNow >= nextReportDateUtc)
+                    {
+                        try
+                        {
+                            var reportActivityRequest = new ReportActivityRequest(_serviceInstanceName, utcNow);
+                            var nextReportInterval = await _instanceProxy.ReportActivityAsync(_instanceId.Value, reportActivityRequest);
+                            nextReportDateUtc = utcNow.Add(nextReportInterval);
+                        }
+                        catch (Exception ex)
+                        {
+                            op.Telemetry.Success = false;
+                            _telemetryClient.TrackException(ex);
+                        }
+                    }
                 }
 
                 await Task.Delay(30000, _runCancellation);

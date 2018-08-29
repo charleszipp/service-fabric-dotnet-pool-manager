@@ -1,4 +1,5 @@
 ﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.ServiceFabric;
 using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
 using Microsoft.ServiceFabric.Actors;
@@ -18,6 +19,7 @@ namespace PoolManager.Instances
     internal class Instance : Actor, IInstance, IRemindable
     {
         private readonly InstanceContext _context;
+        private readonly TelemetryClient _telemetryClient;
 
         public Instance(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient)
             : base(actorService, actorId)
@@ -31,6 +33,7 @@ namespace PoolManager.Instances
                 StateManager,
                 telemetryClient
                 );
+            _telemetryClient = telemetryClient;
         }
 
         public Task StartAsync(StartInstanceRequest request) => _context.StartAsync(request);
@@ -86,16 +89,27 @@ namespace PoolManager.Instances
 
         public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
         {
-            if(reminderName.Equals("expiration-quanta"))
+            using (var request = _telemetryClient.StartOperation<RequestTelemetry>(reminderName))
             {
-                var serviceState = await _context.GetServiceStateAsync();
-                var config = await _context.GetInstanceConfigurationAsync();
-                TimeSpan inactivityPeriod = DateTime.UtcNow.Subtract(serviceState.LastActiveUtc.Value);
-                if (inactivityPeriod > config.ExpirationQuanta)
+                try
                 {
-                    var vacateInstanceRequest = new VacateInstanceRequest(this.GetActorId().GetGuidId(), serviceState.ServiceInstanceName);
-                    await _context.PoolProxy.VacateInstanceAsync(config.ServiceTypeUri, vacateInstanceRequest);
-                }   
+                    if (reminderName.Equals("expiration-quanta"))
+                    {
+                        var serviceState = await _context.GetServiceStateAsync();
+                        var config = await _context.GetInstanceConfigurationAsync();
+                        TimeSpan inactivityPeriod = DateTime.UtcNow.Subtract(serviceState.LastActiveUtc.Value);
+                        if (inactivityPeriod > config.ExpirationQuanta)
+                        {
+                            var vacateInstanceRequest = new VacateInstanceRequest(this.GetActorId().GetGuidId(), serviceState.ServiceInstanceName);
+                            await _context.PoolProxy.VacateInstanceAsync(config.ServiceTypeUri, vacateInstanceRequest);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    request.Telemetry.Success = false;
+                    _telemetryClient.TrackException(ex);
+                }
             }
         }
     }

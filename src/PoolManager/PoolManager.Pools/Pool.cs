@@ -1,4 +1,5 @@
 ﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Metrics;
 using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
 using Microsoft.ServiceFabric.Actors;
@@ -17,6 +18,7 @@ namespace PoolManager.Pools
     internal class Pool : Actor, IPool, IRemindable
     {
         private readonly PoolContext _context;
+        private readonly TelemetryClient _telemetryClient;
 
         public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient)
             : base(actorService, actorId)
@@ -30,6 +32,7 @@ namespace PoolManager.Pools
                 StateManager,
                 telemetryClient
                 );
+            _telemetryClient = telemetryClient;
         }
 
         public async Task StartAsync(StartPoolRequest request)
@@ -56,12 +59,25 @@ namespace PoolManager.Pools
 
         public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
         {
-            switch(reminderName)
+            using (var request = _telemetryClient.StartOperation<RequestTelemetry>(reminderName))
             {
-                case "ensure-pool-size":
-                    await _context.EnsurePoolSizeAsync();
-                    break;
-            }                
+                request.Telemetry.Properties.Add("DueTime", dueTime.ToString());
+                request.Telemetry.Properties.Add("Interval", period.ToString());
+                try
+                {
+                    switch (reminderName)
+                    {
+                        case "ensure-pool-size":
+                            await _context.EnsurePoolSizeAsync();
+                            break;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    request.Telemetry.Success = false;
+                    _telemetryClient.TrackException(ex);
+                }
+            }            
         }
     }
 }
