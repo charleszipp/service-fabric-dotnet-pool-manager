@@ -29,9 +29,9 @@ namespace PoolManager.Instances
                 );
         }
 
-        public Task StartAsync(StartRequest request) => _context.StartAsync(request);
+        public Task StartAsync(StartInstanceRequest request) => _context.StartAsync(request);
 
-        public Task StartAsAsync(StartAsRequest request) => _context.StartAsAsync(request);
+        public Task StartAsAsync(StartInstanceAsRequest request) => _context.StartAsAsync(request);
 
         public Task RemoveAsync() => _context.RemoveAsync();
 

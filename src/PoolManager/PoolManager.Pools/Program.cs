@@ -15,7 +15,7 @@ namespace PoolManager.Pools
                         context,
                         actorType,
                         "PoolActorServiceEndpoint",
-                        (svc, id) => new Pool(svc, id)
+                        (svc, id) => new Pool(svc, id, telemetryClient)
                     )
             ).GetAwaiter().GetResult();
 

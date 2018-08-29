@@ -6,9 +6,9 @@ namespace PoolManager.SDK.Instances
 {
     public interface IInstance : IActor
     {
-        Task StartAsync(StartRequest request);
+        Task StartAsync(StartInstanceRequest request);
 
-        Task StartAsAsync(StartAsRequest request);
+        Task StartAsAsync(StartInstanceAsRequest request);
 
         Task RemoveAsync();
 

@@ -113,7 +113,15 @@
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InstanceStateProvider.cs" />
+    <Compile Include="IPoolStateProvider.cs" />
     <Compile Include="Pool.cs" />
+    <Compile Include="PoolConfiguration.cs" />
+    <Compile Include="PoolContext.cs" />
+    <Compile Include="PoolInstances.cs" />
+    <Compile Include="PoolState.cs" />
+    <Compile Include="PoolStateActive.cs" />
+    <Compile Include="PoolStateIdle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>

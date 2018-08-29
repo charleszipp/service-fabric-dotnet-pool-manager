@@ -5,22 +5,25 @@ namespace PoolManager.SDK.Instances.Requests
 {
     [Serializable]
     [DataContract]
-    public class StartAsRequest
+    public class StartInstanceRequest
     {
-        public StartAsRequest(string serviceInstanceName, string serviceTypeUri, bool isServiceStateful, bool hasPersistedState, int minReplicas, int targetReplicas, PartitionSchemeDescription partitionScheme, TimeSpan expirationQuanta)
+        public StartInstanceRequest(
+            string serviceTypeUri,
+            bool isServiceStateful = true,
+            bool hasPersistedState = true,
+            int minReplicas = 1,
+            int targetReplicas = 3,
+            PartitionSchemeDescription partitionScheme = PartitionSchemeDescription.UniformInt64Name
+            )
         {
-            ServiceInstanceName = serviceInstanceName;
             ServiceTypeUri = serviceTypeUri;
             IsServiceStateful = isServiceStateful;
             HasPersistedState = hasPersistedState;
             MinReplicas = minReplicas;
             TargetReplicas = targetReplicas;
             PartitionScheme = partitionScheme;
-            ExpirationQuanta = expirationQuanta;
         }
 
-        [DataMember]
-        public string ServiceInstanceName { get; private set; }
         [DataMember]
         public string ServiceTypeUri { get; private set; }
         [DataMember]
@@ -32,8 +35,6 @@ namespace PoolManager.SDK.Instances.Requests
         [DataMember]
         public int TargetReplicas { get; private set; }
         [DataMember]
-        public PartitionSchemeDescription PartitionScheme { get; private set; }
-        [DataMember]
-        public TimeSpan ExpirationQuanta { get; }
+        public SDK.PartitionSchemeDescription PartitionScheme { get; private set; }
     }
 }

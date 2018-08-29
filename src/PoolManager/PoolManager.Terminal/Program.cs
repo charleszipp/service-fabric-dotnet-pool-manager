@@ -3,6 +3,7 @@ using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Instances.Requests;
+using PoolManager.SDK.Pools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +26,20 @@ namespace PoolManager.Terminal
         {
             try
             {
-                var instanceId = Guid.NewGuid();
-                var instance = ActorProxy.Create<IInstance>(new ActorId(instanceId), "PoolManager", "InstanceActorService");
-                await instance.StartAsync(new StartRequest(
-                    "fabric:/ServicePoolManagerLoadTestHarness/NoOpType", true, true, 3, 3, SDK.PartitionSchemeDescription.Singleton
+                var pool = ActorProxy.Create<IPool>(new ActorId("fabric:/ServicePoolManagerLoadTestHarness/NoOpType"), "PoolManager", "PoolActorService");
+                await pool.StartAsync(new SDK.Pools.Requests.StartPoolRequest(
+                    true,
+                    true,
+                    1,
+                    3,
+                    SDK.PartitionSchemeDescription.Singleton,
+                    100,
+                    10,
+                    2,
+                    TimeSpan.FromMinutes(2)
                     ));
+
+                await pool.GetAsync(new SDK.Pools.Requests.GetInstanceRequest(Guid.NewGuid().ToString()));
             }
             catch(Exception ex)
             {

@@ -22,14 +22,14 @@ namespace PoolManager.Instances
             return Task.CompletedTask;
         }
 
-        public override async Task<InstanceState> StartAsAsync(InstanceContext context, StartAsRequest request)
+        public override async Task<InstanceState> StartAsAsync(InstanceContext context, StartInstanceAsRequest request)
         {
-            var rvalue = await StartAsync(context, new StartRequest(request.ServiceTypeUri, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme));
+            var rvalue = await StartAsync(context, new StartInstanceRequest(request.ServiceTypeUri, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme));
             rvalue = await rvalue.OccupyAsync(context, new OccupyRequest(request.ServiceInstanceName, request.ExpirationQuanta));
             return rvalue;
         }
 
-        public override async Task<InstanceState> StartAsync(InstanceContext context, StartRequest request)
+        public override async Task<InstanceState> StartAsync(InstanceContext context, StartInstanceRequest request)
         {
             string applicationName = null;
             string serviceTypeName = null;

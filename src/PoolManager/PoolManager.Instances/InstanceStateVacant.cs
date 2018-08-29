@@ -49,10 +49,10 @@ namespace PoolManager.Instances
             return context.InstanceStates.Get(InstanceStates.Idle);
         }
 
-        public override Task<InstanceState> StartAsAsync(InstanceContext context, StartAsRequest request) => 
+        public override Task<InstanceState> StartAsAsync(InstanceContext context, StartInstanceAsRequest request) => 
             throw new Exception($"Invalid state transition. Instance is already started");
 
-        public override Task<InstanceState> StartAsync(InstanceContext context, StartRequest request) => 
+        public override Task<InstanceState> StartAsync(InstanceContext context, StartInstanceRequest request) => 
             throw new Exception($"Invalid state transition. Instance is already started");
 
         public override Task<InstanceState> VacateAsync(InstanceContext context) => 

@@ -51,9 +51,9 @@ namespace PoolManager.Instances
             await StateManager.SetStateAsync(_instanceStateKey, _currentState.State);
         }
 
-        public async Task StartAsync(StartRequest request) => _currentState = await _currentState.StartAsync(this, request);
+        public async Task StartAsync(StartInstanceRequest request) => _currentState = await _currentState.StartAsync(this, request);
 
-        public async Task StartAsAsync(StartAsRequest request) => _currentState = await _currentState.StartAsAsync(this, request);
+        public async Task StartAsAsync(StartInstanceAsRequest request) => _currentState = await _currentState.StartAsAsync(this, request);
 
         public async Task RemoveAsync() => _currentState = await _currentState.RemoveAsync(this);
 
