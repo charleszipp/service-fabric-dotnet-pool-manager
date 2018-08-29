@@ -26,7 +26,7 @@ namespace PoolManager.Terminal
         {
             try
             {
-                var pool = ActorProxy.Create<IPool>(new ActorId("fabric:/ServicePoolManagerLoadTestHarness/NoOpType"), "PoolManager", "PoolActorService");
+                var pool = ActorProxy.Create<IPool>(new ActorId("fabric:/PoolManager.Tests/NoOp"), "PoolManager", "PoolActorService");
                 await pool.StartAsync(new SDK.Pools.Requests.StartPoolRequest(
                     true,
                     true,

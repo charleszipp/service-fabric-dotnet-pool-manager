@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolManager.Terminal", "Poo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolManager.Core", "PoolManager.Core\PoolManager.Core.csproj", "{82ACED8A-4579-49C9-9E64-D7E380AD18F4}"
 EndProject
+Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "PoolManager.Tests", "PoolManager.Tests\PoolManager.Tests.sfproj", "{8291CA69-453A-4ABB-8291-B5625401F40B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolManager.Tests.NoOp", "PoolManager.Tests.NoOp\PoolManager.Tests.NoOp.csproj", "{92C98F59-F0AE-47EC-9A5D-9FA74151107C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -47,6 +51,16 @@ Global
 		{82ACED8A-4579-49C9-9E64-D7E380AD18F4}.Debug|x64.Build.0 = Debug|x64
 		{82ACED8A-4579-49C9-9E64-D7E380AD18F4}.Release|x64.ActiveCfg = Release|x64
 		{82ACED8A-4579-49C9-9E64-D7E380AD18F4}.Release|x64.Build.0 = Release|x64
+		{8291CA69-453A-4ABB-8291-B5625401F40B}.Debug|x64.ActiveCfg = Debug|x64
+		{8291CA69-453A-4ABB-8291-B5625401F40B}.Debug|x64.Build.0 = Debug|x64
+		{8291CA69-453A-4ABB-8291-B5625401F40B}.Debug|x64.Deploy.0 = Debug|x64
+		{8291CA69-453A-4ABB-8291-B5625401F40B}.Release|x64.ActiveCfg = Release|x64
+		{8291CA69-453A-4ABB-8291-B5625401F40B}.Release|x64.Build.0 = Release|x64
+		{8291CA69-453A-4ABB-8291-B5625401F40B}.Release|x64.Deploy.0 = Release|x64
+		{92C98F59-F0AE-47EC-9A5D-9FA74151107C}.Debug|x64.ActiveCfg = Debug|x64
+		{92C98F59-F0AE-47EC-9A5D-9FA74151107C}.Debug|x64.Build.0 = Debug|x64
+		{92C98F59-F0AE-47EC-9A5D-9FA74151107C}.Release|x64.ActiveCfg = Release|x64
+		{92C98F59-F0AE-47EC-9A5D-9FA74151107C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
