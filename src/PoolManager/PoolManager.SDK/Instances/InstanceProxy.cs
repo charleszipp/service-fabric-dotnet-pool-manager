@@ -36,11 +36,11 @@ namespace PoolManager.SDK.Instances
         public Task<TimeSpan> ReportActivityAsync(Guid instanceId, ReportActivityRequest request) =>
             GetProxy(instanceId).ReportActivityAsync(request);
 
-        public async Task RemoveAsync(Guid instanceId)
-        {
-            await GetProxy(instanceId).RemoveAsync();
-            //await GetServiceProxy(instanceId).DeleteActorAsync(new ActorId(instanceId), CancellationToken.None);
-        }
+        public Task RemoveAsync(Guid instanceId) => 
+            GetProxy(instanceId).RemoveAsync();
+
+        public Task DisposeAsync(Guid instanceId) =>
+            GetServiceProxy(instanceId).DeleteActorAsync(new ActorId(instanceId), CancellationToken.None);
 
         public Task VacateAsync(Guid instanceId) => 
             GetProxy(instanceId).VacateAsync();

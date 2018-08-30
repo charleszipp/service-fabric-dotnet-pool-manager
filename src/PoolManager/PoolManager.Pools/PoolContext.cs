@@ -152,5 +152,20 @@ namespace PoolManager.Pools
 
             await SetPoolInstancesAsync(poolInstances);
         }
+
+        public async Task CleanupRemovedInstancesAsync()
+        {
+            var poolInstances = await GetPoolInstancesAsync();
+
+            List<Task> deletes = new List<Task>();
+            while(!poolInstances.RemovedInstances.IsEmpty)
+            {
+                Guid instanceId = Guid.Empty;
+                if (poolInstances.RemovedInstances.TryDequeue(out instanceId))
+                    deletes.Add(InstanceProxy.DisposeAsync(instanceId));
+            }
+
+            await Task.WhenAll(deletes);
+        }
     }
 }

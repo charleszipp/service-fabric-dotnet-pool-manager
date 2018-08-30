@@ -10,9 +10,12 @@ namespace PoolManager.Pools
     public class PoolInstances
     {
         [DataMember]
-        public ConcurrentQueue<Guid> VacantInstances { get; set; } = new ConcurrentQueue<Guid>();
+        public ConcurrentQueue<Guid> VacantInstances { get; private set; } = new ConcurrentQueue<Guid>();
 
         [DataMember]
-        public ConcurrentDictionary<string, Guid> OccupiedInstances { get; set; } = new ConcurrentDictionary<string, Guid>();
+        public ConcurrentDictionary<string, Guid> OccupiedInstances { get; private set; } = new ConcurrentDictionary<string, Guid>();
+
+        [DataMember]
+        public ConcurrentQueue<Guid> RemovedInstances { get; private set; } = new ConcurrentQueue<Guid>();
     }
 }

@@ -34,6 +34,7 @@ namespace PoolManager.Pools
                 {
                     //else we dont have a vacant one available so start it from scratch
                     //this would likely happen if we are at or above the max pool size
+                    //todo: instrument this situation so we can track how often we are hitting the cap
                     await context.AddInstanceAsAsync(request.ServiceInstanceName, configuration, poolInstances);
                     return poolInstances.OccupiedInstances[request.ServiceInstanceName];
                 }
@@ -49,14 +50,18 @@ namespace PoolManager.Pools
             {
                 if (poolInstances.VacantInstances.Count >= poolConfig.IdleServicesPoolSize)
                 {
+                    //todo: instrument this to track how many services are being removed during vacate
                     await context.InstanceProxy.RemoveAsync(instanceId);
+                    poolInstances.RemovedInstances.Enqueue(instanceId);
                 }                    
                 else
                 {
+                    //todo: instrument this to track how many instances we are vacating and sending back to the pool
                     await context.InstanceProxy.VacateAsync(instanceId);
                     poolInstances.VacantInstances.Enqueue(instanceId);
-                    await context.SetPoolInstancesAsync(poolInstances);
-                }                
+                }
+
+                await context.SetPoolInstancesAsync(poolInstances);
             }
             else
             {
