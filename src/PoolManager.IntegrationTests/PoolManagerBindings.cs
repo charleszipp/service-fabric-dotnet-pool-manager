@@ -11,6 +11,7 @@ using FluentAssertions;
 using PoolManager.SDK.Pools.Responses;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
+using Service = System.Fabric.Query.Service;
 
 namespace PoolManager.IntegrationTests
 {
@@ -101,13 +102,12 @@ namespace PoolManager.IntegrationTests
             response.ServiceTypeUri.Should().Be(expected.ServiceTypeUri);
             response.TargetReplicasetSize.Should().Be(expected.TargetReplicasetSize);
         }
-
         [Then(@"there should be ""(.*)"" service instances for service fabric application ""(.*)"" and service type ""(.*)""")]
-        public async Task ThenThereShouldBeServiceInstancesForServiceFabricApplicationAndServiceType(int instances, string applicationName, string serviceTypeName)
+        public async Task ThenThereShouldBeServiceInstancesForServiceFabricApplicationAndServiceType(int instanceCount, string applicationName, string serviceTypeName)
         {
-            ScenarioContext.Current.Pending();
+            var serviceList = await _fabricClient.QueryManager.GetServiceListAsync(new Uri(applicationName));
+            serviceList.Count(service => service.ServiceTypeName == serviceTypeName).Should().Be(instanceCount);
         }
-
         [Then(@"each service fabric application ""(.*)"" and service type ""(.*)"" instance should have the following configuration")]
         public async Task ThenEachServiceFabricApplicationAndServiceTypeInstanceShouldHaveTheFollowingConfiguration(string applicationName, string serviceTypeName, Table configurationTable)
         {

@@ -174,8 +174,8 @@ this.ScenarioInitialize(scenarioInfo);
 #line 18
  testRunner.Then("the \"fabric:/PoolManager.Tests/NoOp\" pool configuration should be", ((string)(null)), table2, "Then ");
 #line 30
- testRunner.And("there should be \"10\" service instances for service fabric application \"fabric:/Po" +
-                    "olManager.Tests\" and service type \"NoOp\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("there should be \"3\" service instances for service fabric application \"fabric:/Poo" +
+                    "lManager.Tests\" and service type \"NoOp\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "Field",
