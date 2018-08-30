@@ -1,6 +1,5 @@
 ﻿Feature: PoolManagerFeature
 
-@ignore
 Scenario: pool start creates service instances with provided configuration
 	Given the service fabric application name "fabric:/PoolManager.Tests" for type "PoolManager.Tests" exists with no services
 	And the service fabric application type "PoolManager.Tests" has "NoOp" service type
@@ -16,7 +15,7 @@ Scenario: pool start creates service instances with provided configuration
 	| IdleServicesPoolSize        | 3         |
 	| ServicesAllocationBlockSize | 2         |
 	| ExpirationQuanta            | 00:03:00  |
-	Then the pool configuration should be
+	Then the "fabric:/PoolManager.Tests/NoOp" pool configuration should be
 	| Field                       | Value     |
 	| IsServiceStateful           | true      |
 	| HasPersistedState           | true      |

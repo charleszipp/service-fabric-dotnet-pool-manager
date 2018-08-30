@@ -7,6 +7,7 @@ using System.Fabric.Description;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -83,11 +84,11 @@ namespace PoolManager.IntegrationTests
             var request = table.CreateImmutableInstance<StartPoolRequest>();
             await _pools.StartPoolAsync(serviceTypeUri, request);
         }
-
-        [Then(@"the pool configuration should be")]
-        public async Task ThenThePoolConfigurationShouldBe(Table table)
+        [Then(@"the ""(.*)"" pool configuration should be")]
+        public async Task ThenThePoolConfigurationShouldBe(string serviceTypeUri, Table table)
         {
-            ScenarioContext.Current.Pending();
+            var response = await _pools.GetConfigurationAsync(serviceTypeUri);
+            response.ServiceTypeUri.Should().Be(serviceTypeUri);
         }
 
         [Then(@"there should be ""(.*)"" service instances for service fabric application ""(.*)"" and service type ""(.*)""")]

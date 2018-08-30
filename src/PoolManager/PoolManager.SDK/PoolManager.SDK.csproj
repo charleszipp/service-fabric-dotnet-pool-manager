@@ -114,6 +114,7 @@
     <Compile Include="Instances\InstanceStates.cs" />
     <Compile Include="Instances\Requests\StartInstanceAsRequest.cs" />
     <Compile Include="Instances\Requests\StartInstanceRequest.cs" />
+    <Compile Include="Pools\Responses\ConfigurationResponse.cs" />
     <Compile Include="Pools\IPoolProxy.cs" />
     <Compile Include="Pools\PoolProxy.cs" />
     <Compile Include="Pools\Requests\GetInstanceRequest.cs" />
