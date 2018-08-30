@@ -46,10 +46,10 @@ namespace PoolManager.Pools
             catch (ReminderNotFoundException)
             {
             }
-            await RegisterReminderAsync("ensure-pool-size", null, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(1));
+            await RegisterReminderAsync("ensure-pool-size", null, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
         }        
 
-        public Task GetAsync(GetInstanceRequest request) => _context.GetAsync(request);
+        public Task<Guid> GetAsync(GetInstanceRequest request) => _context.GetAsync(request);
 
         public Task VacateInstanceAsync(VacateInstanceRequest request) => _context.VacateInstanceAsync(request);
 

@@ -41,7 +41,7 @@ namespace PoolManager.Tests.NoOp
         {
             _instanceId = Guid.Parse(instanceId);
             _serviceInstanceName = serviceInstanceName;
-            Task.Run(() => ReportActivityAsync(DateTime.Now.AddMinutes(3)), _runCancellation);
+            //Task.Run(() => ReportActivityAsync(DateTime.Now.AddMinutes(3)), _runCancellation);
             return Task.Delay(500);
         }
 

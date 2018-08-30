@@ -40,16 +40,24 @@ namespace PoolManager.Pools
         public override async Task VacateInstanceAsync(PoolContext context, VacateInstanceRequest request)
         {
             var poolInstances = await context.GetPoolInstancesAsync();
+            var poolConfig = await context.GetPoolConfigurationAsync();
             Guid instanceId = Guid.Empty;
             if (poolInstances.OccupiedInstances.TryRemove(request.ServiceInstanceName, out instanceId))
             {
-                await context.InstanceProxy.VacateAsync(instanceId);
-                poolInstances.VacantInstances.Enqueue(instanceId);
-                await context.SetPoolInstancesAsync(poolInstances);
+                if (poolInstances.VacantInstances.Count >= poolConfig.IdleServicesPoolSize)
+                {
+                    await context.InstanceProxy.RemoveAsync(instanceId);
+                }                    
+                else
+                {
+                    await context.InstanceProxy.VacateAsync(instanceId);
+                    poolInstances.VacantInstances.Enqueue(instanceId);
+                    await context.SetPoolInstancesAsync(poolInstances);
+                }                
             }
             else
             {
-                throw new ArgumentException("Attempt was made to vacate a service that is not currently occupied");
+                context.TelemetryClient.TrackTrace("Attempt was made to vacate a service that is not currently occupied");
             }
         }
     }

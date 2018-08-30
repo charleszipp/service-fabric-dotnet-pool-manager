@@ -39,7 +39,7 @@ namespace PoolManager.SDK.Instances
         public async Task RemoveAsync(Guid instanceId)
         {
             await GetProxy(instanceId).RemoveAsync();
-            await GetServiceProxy(instanceId).DeleteActorAsync(new ActorId(instanceId), CancellationToken.None);
+            //await GetServiceProxy(instanceId).DeleteActorAsync(new ActorId(instanceId), CancellationToken.None);
         }
 
         public Task VacateAsync(Guid instanceId) => 

@@ -40,24 +40,38 @@ namespace PoolManager.Instances
 
         public Task StartAsAsync(StartInstanceAsRequest request) => _context.StartAsAsync(request);
 
-        public Task RemoveAsync() => _context.RemoveAsync();
+        public async Task RemoveAsync()
+        {
+            try
+            {
+                await UnregisterReminderAsync(GetReminder("expiration-quanta"));
+            }
+            catch (ReminderNotFoundException) { }
+            await _context.RemoveAsync();
+        }
 
         public async Task OccupyAsync(OccupyRequest request)
         {
             await _context.OccupyAsync(request);
-            await RegisterReminderAsync("expiration-quanta", null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+            //calculate a seed value to the nearest 100ms to stagger the due time of the different actors.
+            //this prevents from all actors occupied within milliseconds of each other from all vacating at exactly the same time
+            //which will cause a deadlock on the pool actor.
+            var config = await _context.GetInstanceConfigurationAsync();
+            var intervalMs = (int)Math.Round(config.ExpirationQuanta.TotalMilliseconds / 5);
+            var dueMs = ((int)Math.Round((GetInstanceId().GetHashCode() % 1000) / 100.0) * 100) + intervalMs;
+            await RegisterReminderAsync("expiration-quanta", null, TimeSpan.FromMilliseconds(dueMs), TimeSpan.FromMilliseconds(intervalMs));
         }
 
         public Task<TimeSpan> ReportActivityAsync(ReportActivityRequest request) => _context.ReportActivityAsync(request);
 
         public async Task VacateAsync()
         {
-            await _context.VacateAsync();
             try
             {
                 await UnregisterReminderAsync(GetReminder("expiration-quanta"));
             }
             catch (ReminderNotFoundException) { }
+            await _context.VacateAsync();
         }
 
         protected override Task OnActivateAsync() => _context.ActivateAsync();

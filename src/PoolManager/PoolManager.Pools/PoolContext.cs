@@ -47,7 +47,7 @@ namespace PoolManager.Pools
 
         public async Task StartAsync(StartPoolRequest request) => _currentState = await _currentState.StartAsync(this, request);
 
-        public Task GetAsync(GetInstanceRequest request) => _currentState.GetAsync(this, request);
+        public Task<Guid> GetAsync(GetInstanceRequest request) => _currentState.GetAsync(this, request);
 
         public Task VacateInstanceAsync(VacateInstanceRequest request) => _currentState.VacateInstanceAsync(this, request);
 
