@@ -54,6 +54,7 @@ namespace PoolManager.Tests.NoOp
         private async Task ReportActivityAsync(DateTime reportUntil)
         {
             var nextReportDateUtc = DateTime.UtcNow;
+            var nextReportInterval = TimeSpan.MinValue;
 
             while(DateTime.Now < reportUntil && !_runCancellation.IsCancellationRequested)
             {
@@ -65,7 +66,7 @@ namespace PoolManager.Tests.NoOp
                         try
                         {
                             var reportActivityRequest = new ReportActivityRequest(_serviceInstanceName, utcNow);
-                            var nextReportInterval = await _instanceProxy.ReportActivityAsync(_instanceId.Value, reportActivityRequest);
+                            nextReportInterval = await _instanceProxy.ReportActivityAsync(_instanceId.Value, reportActivityRequest);
                             nextReportDateUtc = utcNow.Add(nextReportInterval);
                         }
                         catch (Exception ex)
@@ -76,7 +77,7 @@ namespace PoolManager.Tests.NoOp
                     }
                 }
 
-                await Task.Delay(30000, _runCancellation);
+                await Task.Delay(nextReportInterval, _runCancellation);
             }
         }
 
