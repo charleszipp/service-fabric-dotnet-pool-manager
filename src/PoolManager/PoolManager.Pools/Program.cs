@@ -1,6 +1,7 @@
 ﻿using Microsoft.ServiceFabric.Actors.Runtime;
 using PoolManager.Core;
 using System.Threading;
+using Ninject;
 
 namespace PoolManager.Pools
 {
@@ -11,13 +12,17 @@ namespace PoolManager.Pools
             var telemetryClient = new Microsoft.ApplicationInsights.TelemetryClient();
             ActorRuntime.RegisterActorAsync<Pool>(
                    (context, actorType) =>
-                    new PoolsActorService(
-                        context,
-                        actorType,
-                        "PoolActorServiceEndpoint",
-                        (svc, id) => new Pool(svc, id, telemetryClient)
-                    )
-            ).GetAwaiter().GetResult();
+                   {
+                       var kernel = new StandardKernel();
+                       kernel.Bind<PoolsActorService>().ToMethod(x => new PoolsActorService(
+                           context,
+                           actorType,
+                           "PoolActorServiceEndpoint",
+                           (svc, id) => new Pool(svc, id, telemetryClient)
+                       ));
+
+                       return kernel.Get<PoolsActorService>();
+                   }).GetAwaiter().GetResult();
 
             Thread.Sleep(Timeout.Infinite);
         }
