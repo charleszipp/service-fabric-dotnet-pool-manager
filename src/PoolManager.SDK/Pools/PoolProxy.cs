@@ -1,6 +1,7 @@
 ﻿using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
 using PoolManager.SDK.Pools.Requests;
+using PoolManager.SDK.Pools.Responses;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,16 +21,16 @@ namespace PoolManager.SDK.Pools
         public async Task StartPoolAsync(string serviceTypeUri, StartPoolRequest request) =>
             await GetProxy(serviceTypeUri).StartAsync(request);
 
-        public Task DeletePoolAsync(string serviceTypeUri) => 
+        public Task DeletePoolAsync(string serviceTypeUri) =>
             GetServiceProxy(serviceTypeUri).DeleteActorAsync(new ActorId(serviceTypeUri), CancellationToken.None);
 
-        private IPool GetProxy(string serviceTypeUri) =>
-            _actorProxyFactory.CreateActorProxy<IPool>(new ActorId(serviceTypeUri), "PoolManager", "PoolActorService");
+        public Task<GetInstanceResponse> GetInstanceAsync(string serviceTypeUri, GetInstanceRequest request) =>
+            GetProxy(serviceTypeUri).GetAsync(request);
 
         internal IActorService GetServiceProxy(string serviceTypeUri) =>
             _actorProxyFactory.CreateActorServiceProxy<IActorService>(new Uri("fabric:/PoolManager/PoolActorService"), new ActorId(serviceTypeUri));
 
-        public Task GetInstanceAsync(string serviceTypeUri, GetInstanceRequest request) =>
-            GetProxy(serviceTypeUri).GetAsync(request);
+        private IPool GetProxy(string serviceTypeUri) =>
+            _actorProxyFactory.CreateActorProxy<IPool>(new ActorId(serviceTypeUri), "PoolManager", "PoolActorService");
     }
 }

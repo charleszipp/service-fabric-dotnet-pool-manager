@@ -6,6 +6,7 @@ using Microsoft.ServiceFabric.Services.Remoting.Client;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
+using PoolManager.SDK.Pools.Responses;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -51,7 +52,7 @@ namespace PoolManager.Pools
             await StateManager.SetStateAsync(_poolStateKey, _currentState.State);
         }
 
-        public Task<Guid> GetAsync(GetInstanceRequest request) => _currentState.GetAsync(this, request);
+        public Task<GetInstanceResponse> GetAsync(GetInstanceRequest request) => _currentState.GetAsync(this, request);
 
         public Task VacateInstanceAsync(VacateInstanceRequest request) => _currentState.VacateInstanceAsync(this, request);
 
@@ -94,6 +95,11 @@ namespace PoolManager.Pools
             );
 
             poolInstances.VacantInstances.Enqueue(instanceId);
+        }
+
+        internal Uri CreateServiceInstanceUri(Guid instanceId)
+        {
+            return new Uri($"{ServiceTypeUri}/{instanceId}", UriKind.RelativeOrAbsolute);
         }
 
         private async Task RemoveInstanceAsync(ConcurrentQueue<Guid> vacantInstances)

@@ -1,4 +1,5 @@
 ﻿using PoolManager.SDK.Pools.Requests;
+using PoolManager.SDK.Pools.Responses;
 using System.Threading.Tasks;
 
 namespace PoolManager.SDK.Pools
@@ -7,7 +8,7 @@ namespace PoolManager.SDK.Pools
     {
         Task VacateInstanceAsync(string serviceTypeUri, VacateInstanceRequest request);
 
-        Task GetInstanceAsync(string serviceTypeUri, GetInstanceRequest request);
+        Task<GetInstanceResponse> GetInstanceAsync(string serviceTypeUri, GetInstanceRequest request);
 
         Task StartPoolAsync(string serviceTypeUri, StartPoolRequest request);
 

@@ -1,7 +1,9 @@
 ﻿using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 using MongoDB.Bson;
+using PoolManager.SDK;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Instances.Requests;
 using PoolManager.SDK.Pools;
@@ -42,11 +44,11 @@ namespace PoolManager.Terminal
             await ResetPool(pools);
 
 
-            int users = 250;
-            int serviceInstances = 215;
-            TimeSpan testLength = new TimeSpan(0, 15, 0);
-            TimeSpan rampUpTime = new TimeSpan(0, 12, 0);
-            int rampUpInterval = 10000;
+            int users = 5;
+            int serviceInstances = 3;
+            TimeSpan testLength = new TimeSpan(0, 1, 0);
+            TimeSpan rampUpTime = new TimeSpan(0, 0, 30);
+            int rampUpInterval = 2000;
             int rampUpIntervals = (int)rampUpTime.TotalMilliseconds / rampUpInterval;
             double usersPerRampUpInterval = (double)users / (double)rampUpIntervals;
 
@@ -121,9 +123,9 @@ namespace PoolManager.Terminal
                 1,
                 3,
                 SDK.PartitionSchemeDescription.Singleton,
-                500,
-                60,
+                10,
                 5,
+                1,
                 TimeSpan.FromMinutes(2)
                 );
             await pools.StartPoolAsync(NoOpServiceTypeUri, request);
@@ -158,7 +160,10 @@ namespace PoolManager.Terminal
             timer.Start();
             try
             {
-                await pools.GetInstanceAsync(serviceTypeName, new GetInstanceRequest(serviceInstanceName));
+                var response = await pools.GetInstanceAsync(serviceTypeName, new GetInstanceRequest(serviceInstanceName));
+                //verify the service instance uri returned exists
+                var serviceInstance = ServiceProxy.Create<IServiceInstance>(response.ServiceInstanceUri);
+                await serviceInstance.PingAsync();
             }
             catch (AggregateException ex)
             {

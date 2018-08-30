@@ -28,6 +28,10 @@ namespace PoolManager.Tests.NoOp
         private CancellationToken _runCancellation = default(CancellationToken);
         private readonly TelemetryClient _telemetryClient = new TelemetryClient();
 
+        private InstanceStates _currentState =>
+            _instanceId.HasValue && _instanceId.Value != default(Guid) && !string.IsNullOrEmpty(_serviceInstanceName) ? 
+                InstanceStates.Occupied : InstanceStates.Vacant;
+
         public NoOp(StatefulServiceContext context) : base(context)
         {
             _instanceProxy = new InstanceProxy(new CorrelatingActorProxyFactory(Context, callbackClient => new FabricTransportServiceRemotingClientFactory(callbackClient: callbackClient)));
@@ -87,6 +91,8 @@ namespace PoolManager.Tests.NoOp
             _serviceInstanceName = null;
             return Task.Delay(250);
         }
+
+        public Task<InstanceStates> PingAsync() => Task.FromResult(_currentState);
 
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
         {
