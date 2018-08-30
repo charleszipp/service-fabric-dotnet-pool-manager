@@ -76,6 +76,7 @@ namespace PoolManager.Instances
                     break;
             }
 
+            // TODO: Find a way to mock FabricClient's stuff (probably with a wrapper of wrappers :/)
             await context.FabricClient.ServiceManager.CreateServiceAsync(serviceDescription);
             await context.SetInstanceConfigurationAsync(config);
 

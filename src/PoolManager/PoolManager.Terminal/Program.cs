@@ -34,13 +34,13 @@ namespace PoolManager.Terminal
         static async Task MainAsync(string[] args)
         {
             WriteConsole("Press any key to start the test...");
+            Console.ReadKey();
 
             IPoolProxy pools = new PoolProxy(new ActorProxyFactory());
 
             await Reset();
             await ResetPool(pools);
 
-            Console.ReadKey();
 
             int users = 250;
             int serviceInstances = 215;

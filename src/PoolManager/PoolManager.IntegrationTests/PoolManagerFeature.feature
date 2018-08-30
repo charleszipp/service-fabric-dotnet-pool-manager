@@ -1,5 +1,6 @@
 ﻿Feature: PoolManagerFeature
 
+@ignore
 Scenario: pool start creates service instances with provided configuration
 	Given the service fabric application name "fabric:/PoolManager.Tests" for type "PoolManager.Tests" exists with no services
 	And the service fabric application type "PoolManager.Tests" has "NoOp" service type
