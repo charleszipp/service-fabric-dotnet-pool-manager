@@ -49,6 +49,16 @@ namespace PoolManager.Pools
             {
             }
             await RegisterReminderAsync("ensure-pool-size", null, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
+            try
+            {
+                var reminder = GetReminder("cleanup-removed-instances");
+                await UnregisterReminderAsync(reminder);
+            }
+            catch (ReminderNotFoundException)
+            {
+            }
+            var cleanupInterval = request.ExpirationQuanta.Add(TimeSpan.FromMilliseconds((int)request.ExpirationQuanta.TotalMilliseconds * 0.05));
+            await RegisterReminderAsync("cleanup-removed-instances", null, cleanupInterval, cleanupInterval);
         }        
 
         public Task<Guid> GetAsync(GetInstanceRequest request) => _context.GetAsync(request);
@@ -75,6 +85,9 @@ namespace PoolManager.Pools
                     {
                         case "ensure-pool-size":
                             await _context.EnsurePoolSizeAsync();
+                            break;
+                        case "cleanup-removed-instances":
+                            await _context.CleanupRemovedInstancesAsync();
                             break;
                     }
                 }

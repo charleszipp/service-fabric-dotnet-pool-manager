@@ -1,0 +1,25 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>PoolManager.SDK</id>
+    <version>$version$</version>
+    <title>Pool Manager SDK</title>
+    <authors>Global Audit</authors>
+    <owners>Wolters Kluwer</owners>
+    <description>Interfaces for pool management actors</description>
+    <copyright>Copyright 2018</copyright>
+    <dependencies>
+      <dependency id="Microsoft.ApplicationInsights" version="2.7.2" />
+      <dependency id="Microsoft.ApplicationInsights.ServiceFabric.Native" version="2.1.1" />
+      <dependency id="Microsoft.ServiceFabric" version="6.2.283" />
+      <dependency id="Microsoft.ServiceFabric.Actors" version="3.1.283" />
+      <dependency id="Microsoft.ServiceFabric.Data" version="3.1.283" />
+      <dependency id="Microsoft.ServiceFabric.Services" version="3.1.283" />
+      <dependency id="Microsoft.ServiceFabric.Services.Remoting" version="3.1.283" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\x64\Release\PoolManager.SDK.dll" target="lib\net461" />
+  </files>
+</package>
+
