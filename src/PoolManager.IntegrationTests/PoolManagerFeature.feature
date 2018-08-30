@@ -28,6 +28,7 @@ Scenario: pool start creates service instances with provided configuration
 	| ServiceTypeUri              | fabric:/PoolManager.Tests/NoOp |
 	| TargetReplicasetSize        | 3                              |
 	And there should be "3" service instances for service fabric application "fabric:/PoolManager.Tests" and service type "NoOp"
+	When one of the "fabric:/PoolManager.Tests/NoOp" services moves
 	And each service fabric application "fabric:/PoolManager.Tests" and service type "NoOp" instance should have the following configuration
 	| Field             | Value     |
 	| MinReplicaSize    | 1         |

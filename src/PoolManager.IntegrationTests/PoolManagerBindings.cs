@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Fabric;
 using System.Fabric.Description;
+using System.Fabric.Health;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -108,6 +109,29 @@ namespace PoolManager.IntegrationTests
             var serviceList = await _fabricClient.QueryManager.GetServiceListAsync(new Uri(applicationName));
             serviceList.Count(service => service.ServiceTypeName == serviceTypeName).Should().Be(instanceCount);
         }
+        [When(@"one of the ""(.*)"" services moves")]
+        public async Task WhenOneOfTheServicesMoves(string fullyQualifiedServiceTypeName)
+        {
+            var applicationName = fullyQualifiedServiceTypeName.ParseServiceTypeUri().ApplicationName;
+            var serviceTypeName = fullyQualifiedServiceTypeName.ParseServiceTypeUri().ServiceTypeName;
+            var service = (await _fabricClient.QueryManager.GetServiceListAsync(new Uri(applicationName)))
+                // TODO Pull back the first healthy one, instead of first overall and check health?
+                .First(x => x.ServiceTypeName == serviceTypeName);
+
+            var task = WaitForAnyServiceToBecomeHealthy();
+            if (await Task.WhenAny(task, Task.Delay(35000)) != task)
+                throw new Exception($"Gave up waiting for {service.ServiceName} to become healthy");
+            await _fabricClient.FaultManager.MovePrimaryAsync(PartitionSelector.SingletonOf(service.ServiceName));
+            async Task WaitForAnyServiceToBecomeHealthy()
+            {
+                while (service.HealthState != HealthState.Ok)
+                {
+                    service = (await _fabricClient.QueryManager.GetServiceListAsync(new Uri(applicationName)))
+                        .First(x => x.ServiceTypeName == serviceTypeName);
+                    await Task.Delay(1000);
+                }
+            }
+        }
         [Then(@"each service fabric application ""(.*)"" and service type ""(.*)"" instance should have the following configuration")]
         public async Task ThenEachServiceFabricApplicationAndServiceTypeInstanceShouldHaveTheFollowingConfiguration(string applicationName, string serviceTypeName, Table configurationTable)
         {
@@ -119,6 +143,26 @@ namespace PoolManager.IntegrationTests
         {
             ScenarioContext.Current.Pending();
         }
-
+    }
+    // TODO: Put this somewhere awesome
+    public static class ServiceTypeUriStringExtensions
+    {
+        internal static (string ApplicationName, string ServiceTypeName) ParseServiceTypeUri(this string serviceTypeUri)
+        {
+            var indexLastSlash = serviceTypeUri.LastIndexOf('/');
+            string applicationName;
+            string serviceTypeName;
+            if (indexLastSlash >= 0)
+            {
+                applicationName = serviceTypeUri.Substring(0, indexLastSlash);
+                serviceTypeName = serviceTypeUri.Substring(indexLastSlash + 1);
+            }
+            else
+            {
+                applicationName = null;
+                serviceTypeName = null;
+            }
+            return (applicationName, serviceTypeName);
+        }
     }
 }
