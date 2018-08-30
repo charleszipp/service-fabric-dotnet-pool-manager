@@ -132,6 +132,12 @@ namespace PoolManager.IntegrationTests
                 }
             }
         }
+        [When(@"an instance of ""(.*)"" named ""(.*)"" is gotten")]
+        public async Task WhenAnInstanceOfNamedIsGotten(string fullyQualifiedServiceTypeName, string instanceName)
+        {
+            var response = await _pools.GetInstanceAsync(fullyQualifiedServiceTypeName, new GetInstanceRequest(instanceName));
+            var serviceInstanceUri = response.ServiceInstanceUri;
+        }
         [Then(@"each service fabric application ""(.*)"" and service type ""(.*)"" instance should have the following configuration")]
         public async Task ThenEachServiceFabricApplicationAndServiceTypeInstanceShouldHaveTheFollowingConfiguration(string applicationName, string serviceTypeName, Table configurationTable)
         {
