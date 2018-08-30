@@ -50,20 +50,38 @@ namespace PoolManager.Instances
                 _currentState = InstanceStates.Get(state.Value);
         }
 
-        public async Task DeactivateAsync()
+        public Task DeactivateAsync() => 
+            SaveInstanceStateAsync();
+
+        public async Task StartAsync(StartInstanceRequest request)
         {
-            await StateManager.SetStateAsync(_instanceStateKey, _currentState.State);
+            _currentState = await _currentState.StartAsync(this, request);
+            await SaveInstanceStateAsync();
         }
 
-        public async Task StartAsync(StartInstanceRequest request) => _currentState = await _currentState.StartAsync(this, request);
+        public async Task StartAsAsync(StartInstanceAsRequest request)
+        {
+            _currentState = await _currentState.StartAsAsync(this, request);
+            await SaveInstanceStateAsync();
+        }
 
-        public async Task StartAsAsync(StartInstanceAsRequest request) => _currentState = await _currentState.StartAsAsync(this, request);
+        public async Task RemoveAsync()
+        {
+            _currentState = await _currentState.RemoveAsync(this);
+            await SaveInstanceStateAsync();
+        }
 
-        public async Task RemoveAsync() => _currentState = await _currentState.RemoveAsync(this);
+        public async Task VacateAsync()
+        {
+            _currentState = await _currentState.VacateAsync(this);
+            await SaveInstanceStateAsync();
+        }
 
-        public async Task VacateAsync() => _currentState = await _currentState.VacateAsync(this);
-
-        public async Task OccupyAsync(OccupyRequest request) => _currentState = await _currentState.OccupyAsync(this, request);
+        public async Task OccupyAsync(OccupyRequest request)
+        {
+            _currentState = await _currentState.OccupyAsync(this, request);
+            await SaveInstanceStateAsync();
+        }
 
         public Task<TimeSpan> ReportActivityAsync(ReportActivityRequest request) => _currentState.ReportActivityAsync(this, request);
 
@@ -118,5 +136,8 @@ namespace PoolManager.Instances
             var instanceProxy = ProxyFactory.CreateServiceProxy<IServiceInstance>(config.ServiceInstanceUri, servicePartitionKey);
             return instanceProxy;
         }
+
+        private Task SaveInstanceStateAsync() =>
+            StateManager.SetStateAsync(_instanceStateKey, _currentState.State);
     }
 }

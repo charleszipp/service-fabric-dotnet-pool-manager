@@ -1,4 +1,5 @@
-﻿using PoolManager.SDK.Pools.Requests;
+﻿using PoolManager.SDK.Pools;
+using PoolManager.SDK.Pools.Requests;
 using System;
 using System.Threading.Tasks;
 
@@ -6,6 +7,8 @@ namespace PoolManager.Pools
 {
     public class PoolStateActive : PoolState
     {
+        public override PoolStates State => PoolStates.Active;
+
         public override async Task<Guid> GetAsync(PoolContext context, GetInstanceRequest request)
         {
             var poolInstances = await context.GetPoolInstancesAsync();

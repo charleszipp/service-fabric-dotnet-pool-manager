@@ -7,7 +7,7 @@ namespace PoolManager.Pools
 {
     public abstract class PoolState
     {
-        public PoolStates State { get; }
+        public abstract PoolStates State { get; }
 
         public virtual async Task<PoolState> StartAsync(PoolContext context, StartPoolRequest request)
         {

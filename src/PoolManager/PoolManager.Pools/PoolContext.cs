@@ -45,7 +45,11 @@ namespace PoolManager.Pools
 
         public Task DeactivateAsync() => StateManager.SetStateAsync(_poolStateKey, _currentState.State);
 
-        public async Task StartAsync(StartPoolRequest request) => _currentState = await _currentState.StartAsync(this, request);
+        public async Task StartAsync(StartPoolRequest request)
+        {
+            _currentState = await _currentState.StartAsync(this, request);
+            await StateManager.SetStateAsync(_poolStateKey, _currentState.State);
+        }
 
         public Task<Guid> GetAsync(GetInstanceRequest request) => _currentState.GetAsync(this, request);
 
