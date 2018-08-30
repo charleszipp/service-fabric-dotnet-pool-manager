@@ -24,10 +24,9 @@ namespace PoolManager.Core
         {
             var transportSettings = new FabricTransportRemotingListenerSettings
             {
-                EndpointResourceName = endpointResourceName,
+                EndpointResourceName = endpointResourceName
             };
-
-            return new ServiceReplicaListener[1]
+            return new[]
             {
                 new ServiceReplicaListener(context => 
                     new FabricTransportActorServiceRemotingListener(context, 
