@@ -108,12 +108,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InstanceNotActivatedException.cs" />
     <Compile Include="Instances\IInstance.cs" />
     <Compile Include="Instances\IInstanceProxy.cs" />
     <Compile Include="Instances\InstanceProxy.cs" />
     <Compile Include="Instances\InstanceStates.cs" />
     <Compile Include="Instances\Requests\StartInstanceAsRequest.cs" />
     <Compile Include="Instances\Requests\StartInstanceRequest.cs" />
+    <Compile Include="PooledServiceProxy.cs" />
     <Compile Include="Pools\Responses\ConfigurationResponse.cs" />
     <Compile Include="Pools\IPoolProxy.cs" />
     <Compile Include="Pools\PoolProxy.cs" />

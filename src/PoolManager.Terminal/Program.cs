@@ -39,6 +39,7 @@ namespace PoolManager.Terminal
             Console.ReadKey();
 
             IPoolProxy pools = new PoolProxy(new ActorProxyFactory());
+            IServiceProxyFactory serviceProxyFactory = new ServiceProxyFactory();
 
             await Reset();
             await ResetPool(pools);
@@ -92,7 +93,7 @@ namespace PoolManager.Terminal
 
                 var activationId = ObjectId.GenerateNewId();
 
-                var activationTask = ActivateService(pools, NoOpServiceTypeUri, serviceInstanceNames[random.Next(nextInstanceCap)], activationId, intervals.Current.Item2);
+                var activationTask = ActivateService(pools, serviceProxyFactory, NoOpServiceTypeUri, serviceInstanceNames[random.Next(nextInstanceCap)], activationId, intervals.Current.Item2);
                 activationTasks.TryAdd(activationId, activationTask);
             }
 
@@ -154,16 +155,15 @@ namespace PoolManager.Terminal
                 throw new ArgumentException($"Application type '{NoOpApplicationTypeName}' not deployed to the cluster.");
         }
 
-        static async Task<int> ActivateService(IPoolProxy pools, string serviceTypeName, string serviceInstanceName, ObjectId activationId, int users)
+        static async Task<int> ActivateService(IPoolProxy pools, IServiceProxyFactory serviceProxyFactory, string serviceTypeName, string serviceInstanceName, ObjectId activationId, int users)
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
             try
             {
-                var response = await pools.GetInstanceAsync(serviceTypeName, new GetInstanceRequest(serviceInstanceName));
+                var serviceInstance = await PooledServiceProxy<IServiceInstance>.Create(pools, serviceProxyFactory, serviceTypeName, serviceInstanceName);
                 //verify the service instance uri returned exists
-                var serviceInstance = ServiceProxy.Create<IServiceInstance>(response.ServiceInstanceUri);
-                await serviceInstance.PingAsync();
+                //await serviceInstance.PingAsync();
             }
             catch (AggregateException ex)
             {
