@@ -79,13 +79,29 @@ namespace PoolManager.IntegrationTests
         {
             await _pools.DeletePoolAsync(serviceTypeUri);
         }
-
-
         [When(@"the ""(.*)"" pool is started with the following configuration")]
         public async Task WhenThePoolIsStartedWithTheFollowingConfiguration(string serviceTypeUri, Table table)
         {
             var request = table.CreateImmutableInstance<StartPoolRequest>();
             await _pools.StartPoolAsync(serviceTypeUri, request);
+            await WaitForHealthyState(serviceTypeUri);
+        }
+        private async Task WaitForHealthyState(string serviceTypeUri)
+        {
+            var applicationName = serviceTypeUri.ParseServiceTypeUri().ApplicationName;
+            var healthState = (await _fabricClient.QueryManager.GetServiceListAsync(new Uri(applicationName))).Select(x => x.HealthState);
+            var task = WaitForAllServicesToBecomeHealthy();
+            if (await Task.WhenAny(task, Task.Delay(35000)) != task)
+                throw new Exception($"Gave up waiting for {serviceTypeUri} to become healthy");
+            async Task WaitForAllServicesToBecomeHealthy()
+            {
+                while (healthState.Any(x => x != HealthState.Ok))
+                {
+                    healthState = (await _fabricClient.QueryManager.GetServiceListAsync(new Uri(applicationName)))
+                        .Select(x => x.HealthState);
+                    await Task.Delay(1000);
+                }
+            }
         }
         [Then(@"the ""(.*)"" pool configuration should be")]
         public async Task ThenThePoolConfigurationShouldBe(string serviceTypeUri, Table table)
@@ -115,22 +131,8 @@ namespace PoolManager.IntegrationTests
             var applicationName = fullyQualifiedServiceTypeName.ParseServiceTypeUri().ApplicationName;
             var serviceTypeName = fullyQualifiedServiceTypeName.ParseServiceTypeUri().ServiceTypeName;
             var service = (await _fabricClient.QueryManager.GetServiceListAsync(new Uri(applicationName)))
-                // TODO Pull back the first healthy one, instead of first overall and check health?
                 .First(x => x.ServiceTypeName == serviceTypeName);
-
-            var task = WaitForAnyServiceToBecomeHealthy();
-            if (await Task.WhenAny(task, Task.Delay(35000)) != task)
-                throw new Exception($"Gave up waiting for {service.ServiceName} to become healthy");
             await _fabricClient.FaultManager.MovePrimaryAsync(PartitionSelector.SingletonOf(service.ServiceName));
-            async Task WaitForAnyServiceToBecomeHealthy()
-            {
-                while (service.HealthState != HealthState.Ok)
-                {
-                    service = (await _fabricClient.QueryManager.GetServiceListAsync(new Uri(applicationName)))
-                        .First(x => x.ServiceTypeName == serviceTypeName);
-                    await Task.Delay(1000);
-                }
-            }
         }
         [When(@"an instance of ""(.*)"" named ""(.*)"" is gotten")]
         public async Task WhenAnInstanceOfNamedIsGotten(string fullyQualifiedServiceTypeName, string instanceName)

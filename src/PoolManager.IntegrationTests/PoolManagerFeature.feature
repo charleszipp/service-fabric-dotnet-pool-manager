@@ -29,7 +29,7 @@ Then the "fabric:/PoolManager.Tests/NoOp" pool configuration should be
 | TargetReplicasetSize        | 3                              |
 And there should be "3" service instances for service fabric application "fabric:/PoolManager.Tests" and service type "NoOp"
 When one of the "fabric:/PoolManager.Tests/NoOp" services moves
-And each service fabric application "fabric:/PoolManager.Tests" and service type "NoOp" instance should have the following configuration
+Then each service fabric application "fabric:/PoolManager.Tests" and service type "NoOp" instance should have the following configuration
 | Field             | Value     |
 | MinReplicaSize    | 1         |
 | TargetReplicaSize | 3         |

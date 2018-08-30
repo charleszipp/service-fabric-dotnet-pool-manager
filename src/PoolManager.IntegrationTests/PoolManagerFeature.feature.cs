@@ -198,8 +198,8 @@ testRunner.When("one of the \"fabric:/PoolManager.Tests/NoOp\" services moves", 
                         "HasPersistedState",
                         "true"});
 #line 32
-testRunner.And("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
-                    "p\" instance should have the following configuration", ((string)(null)), table3, "And ");
+testRunner.Then("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
+                    "p\" instance should have the following configuration", ((string)(null)), table3, "Then ");
 #line 39
 testRunner.And("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
                     "p\" instance partition should be healthy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
