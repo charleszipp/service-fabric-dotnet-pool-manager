@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.ServiceFabric.Actors;
+using Microsoft.ServiceFabric.Actors.Client;
+using PoolManager.SDK.Pools.Requests;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Actors;
@@ -17,7 +20,7 @@ namespace PoolManager.SDK.Pools
             GetServiceProxy(serviceTypeUri).DeleteActorAsync(new ActorId(serviceTypeUri), CancellationToken.None);
         public Task<ConfigurationResponse> GetConfigurationAsync(string serviceTypeUri) =>
             GetProxy(serviceTypeUri).GetConfigurationAsync();
-        public Task GetInstanceAsync(string serviceTypeUri, GetInstanceRequest request) =>
+        public Task<GetInstanceResponse> GetInstanceAsync(string serviceTypeUri, GetInstanceRequest request) =>
             GetProxy(serviceTypeUri).GetAsync(request);
         public async Task StartPoolAsync(string serviceTypeUri, StartPoolRequest request) =>
             await GetProxy(serviceTypeUri).StartAsync(request);

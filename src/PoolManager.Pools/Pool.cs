@@ -8,6 +8,7 @@ using Microsoft.ServiceFabric.Actors.Runtime;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
+using PoolManager.SDK.Pools.Responses;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +62,7 @@ namespace PoolManager.Pools
             await RegisterReminderAsync("cleanup-removed-instances", null, cleanupInterval, cleanupInterval);
         }        
 
-        public Task<Guid> GetAsync(GetInstanceRequest request) => _context.GetAsync(request);
+        public Task<GetInstanceResponse> GetAsync(GetInstanceRequest request) => _context.GetAsync(request);
 
         public Task VacateInstanceAsync(VacateInstanceRequest request) => _context.VacateInstanceAsync(request);
         public async Task<ConfigurationResponse> GetConfigurationAsync()

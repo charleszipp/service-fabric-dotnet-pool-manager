@@ -1,5 +1,6 @@
 ﻿using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
+using PoolManager.SDK.Pools.Responses;
 using System;
 using System.Threading.Tasks;
 
@@ -9,8 +10,9 @@ namespace PoolManager.Pools
     {
         public override PoolStates State => PoolStates.Active;
 
-        public override async Task<Guid> GetAsync(PoolContext context, GetInstanceRequest request)
+        public override async Task<GetInstanceResponse> GetAsync(PoolContext context, GetInstanceRequest request)
         {
+            Guid instanceId = default(Guid);
             var poolInstances = await context.GetPoolInstancesAsync();
             var configuration = await context.GetPoolConfigurationAsync();
 
@@ -18,17 +20,17 @@ namespace PoolManager.Pools
             if (poolInstances.OccupiedInstances.ContainsKey(request.ServiceInstanceName))
             {
                 //return the instance id
-                return poolInstances.OccupiedInstances[request.ServiceInstanceName];
+                instanceId = poolInstances.OccupiedInstances[request.ServiceInstanceName];
             }
             else
             {
                 //if one has not been occupied but, we have a vacant one available
-                Guid instanceId = Guid.Empty;
-                if (poolInstances.VacantInstances.TryDequeue(out instanceId))
+                Guid vacantInstanceId = Guid.Empty;
+                if (poolInstances.VacantInstances.TryDequeue(out vacantInstanceId))
                 {
-                    await context.InstanceProxy.OccupyAsync(instanceId, new SDK.Instances.Requests.OccupyRequest(request.ServiceInstanceName, configuration.ExpirationQuanta));
-                    poolInstances.OccupiedInstances[request.ServiceInstanceName] = instanceId;
-                    return instanceId;
+                    await context.InstanceProxy.OccupyAsync(vacantInstanceId, new SDK.Instances.Requests.OccupyRequest(request.ServiceInstanceName, configuration.ExpirationQuanta));
+                    poolInstances.OccupiedInstances[request.ServiceInstanceName] = vacantInstanceId;
+                    instanceId = vacantInstanceId;
                 }
                 else
                 {
@@ -36,9 +38,11 @@ namespace PoolManager.Pools
                     //this would likely happen if we are at or above the max pool size
                     //todo: instrument this situation so we can track how often we are hitting the cap
                     await context.AddInstanceAsAsync(request.ServiceInstanceName, configuration, poolInstances);
-                    return poolInstances.OccupiedInstances[request.ServiceInstanceName];
+                    instanceId = poolInstances.OccupiedInstances[request.ServiceInstanceName];
                 }
             }
+
+            return new GetInstanceResponse(context.CreateServiceInstanceUri(instanceId));
         }
 
         public override async Task VacateInstanceAsync(PoolContext context, VacateInstanceRequest request)

@@ -125,6 +125,7 @@
     <Compile Include="Pools\PoolStates.cs" />
     <Compile Include="Pools\Requests\StartPoolRequest.cs" />
     <Compile Include="Pools\Requests\VacateInstanceRequest.cs" />
+    <Compile Include="Pools\Responses\GetInstanceResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Instances\Requests\ReportActivityRequest.cs" />
     <Compile Include="Instances\ServiceStates.cs" />

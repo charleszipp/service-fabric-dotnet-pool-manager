@@ -1,6 +1,6 @@
 ﻿using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
-using System;
+using PoolManager.SDK.Pools.Responses;
 using System.Threading.Tasks;
 
 namespace PoolManager.Pools
@@ -32,7 +32,7 @@ namespace PoolManager.Pools
             return context.PoolStates.Get(PoolStates.Active);
         }
 
-        public abstract Task<Guid> GetAsync(PoolContext context, GetInstanceRequest request);
+        public abstract Task<GetInstanceResponse> GetAsync(PoolContext context, GetInstanceRequest request);
 
         public abstract Task VacateInstanceAsync(PoolContext poolContext, VacateInstanceRequest request);
     }
