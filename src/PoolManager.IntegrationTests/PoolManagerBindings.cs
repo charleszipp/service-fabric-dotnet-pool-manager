@@ -119,7 +119,7 @@ namespace PoolManager.IntegrationTests
                 .First(x => x.ServiceTypeName == serviceTypeName);
 
             var task = WaitForAnyServiceToBecomeHealthy();
-            if (await Task.WhenAny(task, Task.Delay(20000)) != task)
+            if (await Task.WhenAny(task, Task.Delay(35000)) != task)
                 throw new Exception($"Gave up waiting for {service.ServiceName} to become healthy");
             await _fabricClient.FaultManager.MovePrimaryAsync(PartitionSelector.SingletonOf(service.ServiceName));
             async Task WaitForAnyServiceToBecomeHealthy()
@@ -144,6 +144,7 @@ namespace PoolManager.IntegrationTests
             ScenarioContext.Current.Pending();
         }
     }
+    // TODO: Put this somewhere awesome
     public static class ServiceTypeUriStringExtensions
     {
         internal static (string ApplicationName, string ServiceTypeName) ParseServiceTypeUri(this string serviceTypeUri)
