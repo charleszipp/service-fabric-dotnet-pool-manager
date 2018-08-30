@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using PoolManager.SDK.Pools.Responses;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 
@@ -87,8 +88,18 @@ namespace PoolManager.IntegrationTests
         [Then(@"the ""(.*)"" pool configuration should be")]
         public async Task ThenThePoolConfigurationShouldBe(string serviceTypeUri, Table table)
         {
+            var expected = table.CreateImmutableInstance<ConfigurationResponse>();
             var response = await _pools.GetConfigurationAsync(serviceTypeUri);
-            response.ServiceTypeUri.Should().Be(serviceTypeUri);
+            response.ExpirationQuanta.Should().Be(expected.ExpirationQuanta);
+            response.HasPersistedState.Should().Be(expected.HasPersistedState);
+            response.IdleServicesPoolSize.Should().Be(expected.IdleServicesPoolSize);
+            response.IsServiceStateful.Should().Be(expected.IsServiceStateful);
+            response.MaxPoolSize.Should().Be(expected.MaxPoolSize);
+            response.MinReplicaSetSize.Should().Be(expected.MinReplicaSetSize);
+            response.PartitionScheme.Should().Be(expected.PartitionScheme);
+            response.ServicesAllocationBlockSize.Should().Be(expected.ServicesAllocationBlockSize);
+            response.ServiceTypeUri.Should().Be(expected.ServiceTypeUri);
+            response.TargetReplicasetSize.Should().Be(expected.TargetReplicasetSize);
         }
 
         [Then(@"there should be ""(.*)"" service instances for service fabric application ""(.*)"" and service type ""(.*)""")]

@@ -66,8 +66,11 @@ namespace PoolManager.Pools
         public Task VacateInstanceAsync(VacateInstanceRequest request) => _context.VacateInstanceAsync(request);
         public async Task<ConfigurationResponse> GetConfigurationAsync()
         {
-            var poolConfiguration = await _context.GetPoolConfigurationAsync();
-            return new ConfigurationResponse(poolConfiguration.ServiceTypeUri);
+            var config = await _context.GetPoolConfigurationAsync();
+            return new ConfigurationResponse(config.ExpirationQuanta, config.HasPersistedState,
+                config.IdleServicesPoolSize, config.IsServiceStateful, config.MaxPoolSize,
+                config.MinReplicaSetSize, config.PartitionScheme, config.ServicesAllocationBlockSize,
+                config.ServiceTypeUri, config.TargetReplicasetSize);
         }
         protected override Task OnActivateAsync() => _context.ActivateAsync();
 

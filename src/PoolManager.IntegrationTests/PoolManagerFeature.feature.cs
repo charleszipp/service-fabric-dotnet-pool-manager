@@ -142,35 +142,38 @@ this.ScenarioInitialize(scenarioInfo);
                         "Field",
                         "Value"});
             table2.AddRow(new string[] {
-                        "IsServiceStateful",
-                        "true"});
+                        "ExpirationQuanta",
+                        "00:03:00"});
             table2.AddRow(new string[] {
                         "HasPersistedState",
                         "true"});
             table2.AddRow(new string[] {
-                        "MinReplicas",
-                        "1"});
-            table2.AddRow(new string[] {
-                        "TargetReplicas",
+                        "IdleServicesPoolSize",
                         "3"});
             table2.AddRow(new string[] {
-                        "PartitionScheme",
-                        "Singleton"});
+                        "IsServiceStateful",
+                        "true"});
             table2.AddRow(new string[] {
                         "MaxPoolSize",
                         "10"});
             table2.AddRow(new string[] {
-                        "IdleServicesPoolSize",
-                        "3"});
+                        "MinReplicaSetSize",
+                        "1"});
+            table2.AddRow(new string[] {
+                        "PartitionScheme",
+                        "Singleton"});
             table2.AddRow(new string[] {
                         "ServicesAllocationBlockSize",
                         "2"});
             table2.AddRow(new string[] {
-                        "ExpirationQuanta",
-                        "00:03:00"});
+                        "ServiceTypeUri",
+                        "fabric:/PoolManager.Tests/NoOp"});
+            table2.AddRow(new string[] {
+                        "TargetReplicasetSize",
+                        "3"});
 #line 18
  testRunner.Then("the \"fabric:/PoolManager.Tests/NoOp\" pool configuration should be", ((string)(null)), table2, "Then ");
-#line 29
+#line 30
  testRunner.And("there should be \"10\" service instances for service fabric application \"fabric:/Po" +
                     "olManager.Tests\" and service type \"NoOp\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -192,10 +195,10 @@ this.ScenarioInitialize(scenarioInfo);
             table3.AddRow(new string[] {
                         "HasPersistedState",
                         "true"});
-#line 30
+#line 31
  testRunner.And("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
                     "p\" instance should have the following configuration", ((string)(null)), table3, "And ");
-#line 37
+#line 38
  testRunner.And("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
                     "p\" instance partition should be healthy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
