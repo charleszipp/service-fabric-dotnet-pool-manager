@@ -1,6 +1,5 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.ServiceFabric;
 using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
@@ -16,7 +15,7 @@ using System.Threading.Tasks;
 namespace PoolManager.Instances
 {
     [StatePersistence(StatePersistence.Persisted)]
-    internal class Instance : Actor, IInstance, IRemindable
+    public class Instance : Actor, IInstance, IRemindable
     {
         private readonly InstanceContext _context;
         private readonly TelemetryClient _telemetryClient;

@@ -27,7 +27,8 @@ namespace PoolManager.Pools
                 actorId.GetStringId(),
                 new PoolStateProvider(new PoolStateIdle(), new PoolStateActive()),
                 new InstanceProxy(
-                    new CorrelatingActorProxyFactory(ActorService.Context, callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient: callbackClient))
+                    new CorrelatingActorProxyFactory(ActorService.Context,
+                        callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient))
                 ),
                 StateManager,
                 telemetryClient

@@ -45,8 +45,7 @@ namespace PoolManager.Pools
         {
             var poolInstances = await context.GetPoolInstancesAsync();
             var poolConfig = await context.GetPoolConfigurationAsync();
-            Guid instanceId = Guid.Empty;
-            if (poolInstances.OccupiedInstances.TryRemove(request.ServiceInstanceName, out instanceId))
+            if (poolInstances.OccupiedInstances.TryRemove(request.ServiceInstanceName, out var instanceId))
             {
                 if (poolInstances.VacantInstances.Count >= poolConfig.IdleServicesPoolSize)
                 {
