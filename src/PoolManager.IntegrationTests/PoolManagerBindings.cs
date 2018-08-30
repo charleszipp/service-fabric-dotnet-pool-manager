@@ -7,8 +7,11 @@ using System.Fabric.Description;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using PoolManager.SDK.Pools.Responses;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
+using Service = System.Fabric.Query.Service;
 
 namespace PoolManager.IntegrationTests
 {
@@ -83,19 +86,28 @@ namespace PoolManager.IntegrationTests
             var request = table.CreateImmutableInstance<StartPoolRequest>();
             await _pools.StartPoolAsync(serviceTypeUri, request);
         }
-
-        [Then(@"the pool configuration should be")]
-        public async Task ThenThePoolConfigurationShouldBe(Table table)
+        [Then(@"the ""(.*)"" pool configuration should be")]
+        public async Task ThenThePoolConfigurationShouldBe(string serviceTypeUri, Table table)
         {
-            ScenarioContext.Current.Pending();
+            var expected = table.CreateImmutableInstance<ConfigurationResponse>();
+            var response = await _pools.GetConfigurationAsync(serviceTypeUri);
+            response.ExpirationQuanta.Should().Be(expected.ExpirationQuanta);
+            response.HasPersistedState.Should().Be(expected.HasPersistedState);
+            response.IdleServicesPoolSize.Should().Be(expected.IdleServicesPoolSize);
+            response.IsServiceStateful.Should().Be(expected.IsServiceStateful);
+            response.MaxPoolSize.Should().Be(expected.MaxPoolSize);
+            response.MinReplicaSetSize.Should().Be(expected.MinReplicaSetSize);
+            response.PartitionScheme.Should().Be(expected.PartitionScheme);
+            response.ServicesAllocationBlockSize.Should().Be(expected.ServicesAllocationBlockSize);
+            response.ServiceTypeUri.Should().Be(expected.ServiceTypeUri);
+            response.TargetReplicasetSize.Should().Be(expected.TargetReplicasetSize);
         }
-
         [Then(@"there should be ""(.*)"" service instances for service fabric application ""(.*)"" and service type ""(.*)""")]
-        public async Task ThenThereShouldBeServiceInstancesForServiceFabricApplicationAndServiceType(int instances, string applicationName, string serviceTypeName)
+        public async Task ThenThereShouldBeServiceInstancesForServiceFabricApplicationAndServiceType(int instanceCount, string applicationName, string serviceTypeName)
         {
-            ScenarioContext.Current.Pending();
+            var serviceList = await _fabricClient.QueryManager.GetServiceListAsync(new Uri(applicationName));
+            serviceList.Count(service => service.ServiceTypeName == serviceTypeName).Should().Be(instanceCount);
         }
-
         [Then(@"each service fabric application ""(.*)"" and service type ""(.*)"" instance should have the following configuration")]
         public async Task ThenEachServiceFabricApplicationAndServiceTypeInstanceShouldHaveTheFollowingConfiguration(string applicationName, string serviceTypeName, Table configurationTable)
         {

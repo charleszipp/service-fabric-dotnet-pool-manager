@@ -12,6 +12,7 @@ using PoolManager.SDK.Pools.Responses;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using PoolManager.SDK.Pools.Responses;
 
 namespace PoolManager.Pools
 {
@@ -64,7 +65,14 @@ namespace PoolManager.Pools
         public Task<GetInstanceResponse> GetAsync(GetInstanceRequest request) => _context.GetAsync(request);
 
         public Task VacateInstanceAsync(VacateInstanceRequest request) => _context.VacateInstanceAsync(request);
-
+        public async Task<ConfigurationResponse> GetConfigurationAsync()
+        {
+            var config = await _context.GetPoolConfigurationAsync();
+            return new ConfigurationResponse(config.ExpirationQuanta, config.HasPersistedState,
+                config.IdleServicesPoolSize, config.IsServiceStateful, config.MaxPoolSize,
+                config.MinReplicaSetSize, config.PartitionScheme, config.ServicesAllocationBlockSize,
+                config.ServiceTypeUri, config.TargetReplicasetSize);
+        }
         protected override Task OnActivateAsync() => _context.ActivateAsync();
 
         protected override Task OnDeactivateAsync() => _context.DeactivateAsync();
