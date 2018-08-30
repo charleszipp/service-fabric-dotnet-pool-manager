@@ -176,6 +176,8 @@ this.ScenarioInitialize(scenarioInfo);
 #line 30
  testRunner.And("there should be \"3\" service instances for service fabric application \"fabric:/Poo" +
                     "lManager.Tests\" and service type \"NoOp\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 31
+ testRunner.When("one of the \"fabric:/PoolManager.Tests/NoOp\" services moves", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "Field",
@@ -195,10 +197,10 @@ this.ScenarioInitialize(scenarioInfo);
             table3.AddRow(new string[] {
                         "HasPersistedState",
                         "true"});
-#line 31
+#line 32
  testRunner.And("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
                     "p\" instance should have the following configuration", ((string)(null)), table3, "And ");
-#line 38
+#line 39
  testRunner.And("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
                     "p\" instance partition should be healthy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
