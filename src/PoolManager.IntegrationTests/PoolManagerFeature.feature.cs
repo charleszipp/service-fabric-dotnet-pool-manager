@@ -97,12 +97,12 @@ namespace PoolManager.IntegrationTests
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 4
- testRunner.Given("the service fabric application name \"fabric:/PoolManager.Tests\" for type \"PoolMan" +
+testRunner.Given("the service fabric application name \"fabric:/PoolManager.Tests\" for type \"PoolMan" +
                     "ager.Tests\" exists with no services", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 5
- testRunner.And("the service fabric application type \"PoolManager.Tests\" has \"NoOp\" service type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("the service fabric application type \"PoolManager.Tests\" has \"NoOp\" service type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 6
- testRunner.And("the service pool \"fabric:/PoolManager.Tests/NoOp\" does not exist", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("the service pool \"fabric:/PoolManager.Tests/NoOp\" does not exist", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "Field",
@@ -135,7 +135,7 @@ this.ScenarioInitialize(scenarioInfo);
                         "ExpirationQuanta",
                         "00:03:00"});
 #line 7
- testRunner.When("the \"fabric:/PoolManager.Tests/NoOp\" pool is started with the following configura" +
+testRunner.When("the \"fabric:/PoolManager.Tests/NoOp\" pool is started with the following configura" +
                     "tion", ((string)(null)), table1, "When ");
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
@@ -172,12 +172,12 @@ this.ScenarioInitialize(scenarioInfo);
                         "TargetReplicasetSize",
                         "3"});
 #line 18
- testRunner.Then("the \"fabric:/PoolManager.Tests/NoOp\" pool configuration should be", ((string)(null)), table2, "Then ");
+testRunner.Then("the \"fabric:/PoolManager.Tests/NoOp\" pool configuration should be", ((string)(null)), table2, "Then ");
 #line 30
- testRunner.And("there should be \"3\" service instances for service fabric application \"fabric:/Poo" +
+testRunner.And("there should be \"3\" service instances for service fabric application \"fabric:/Poo" +
                     "lManager.Tests\" and service type \"NoOp\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 31
- testRunner.When("one of the \"fabric:/PoolManager.Tests/NoOp\" services moves", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("one of the \"fabric:/PoolManager.Tests/NoOp\" services moves", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "Field",
@@ -198,11 +198,65 @@ this.ScenarioInitialize(scenarioInfo);
                         "HasPersistedState",
                         "true"});
 #line 32
- testRunner.And("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
-                    "p\" instance should have the following configuration", ((string)(null)), table3, "And ");
+testRunner.Then("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
+                    "p\" instance should have the following configuration", ((string)(null)), table3, "Then ");
 #line 39
- testRunner.And("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
+testRunner.And("each service fabric application \"fabric:/PoolManager.Tests\" and service type \"NoO" +
                     "p\" instance partition should be healthy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get an instance")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "PoolManagerFeature")]
+        public virtual void GetAnInstance()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get an instance", null, ((string[])(null)));
+#line 41
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 42
+testRunner.Given("the service fabric application name \"fabric:/PoolManager.Tests\" for type \"PoolMan" +
+                    "ager.Tests\" exists with no services", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 43
+testRunner.And("the service pool \"fabric:/PoolManager.Tests/NoOp\" does not exist", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Field",
+                        "Value"});
+            table4.AddRow(new string[] {
+                        "IsServiceStateful",
+                        "true"});
+            table4.AddRow(new string[] {
+                        "HasPersistedState",
+                        "true"});
+            table4.AddRow(new string[] {
+                        "MinReplicas",
+                        "1"});
+            table4.AddRow(new string[] {
+                        "TargetReplicas",
+                        "3"});
+            table4.AddRow(new string[] {
+                        "PartitionScheme",
+                        "Singleton"});
+            table4.AddRow(new string[] {
+                        "MaxPoolSize",
+                        "10"});
+            table4.AddRow(new string[] {
+                        "IdleServicesPoolSize",
+                        "3"});
+            table4.AddRow(new string[] {
+                        "ServicesAllocationBlockSize",
+                        "2"});
+            table4.AddRow(new string[] {
+                        "ExpirationQuanta",
+                        "00:03:00"});
+#line 44
+testRunner.When("the \"fabric:/PoolManager.Tests/NoOp\" pool is started with the following configura" +
+                    "tion", ((string)(null)), table4, "When ");
+#line 55
+testRunner.And("an instance of \"fabric:/PoolManager.Tests/NoOp\" named \"myNoOpInstance\" is gotten", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
