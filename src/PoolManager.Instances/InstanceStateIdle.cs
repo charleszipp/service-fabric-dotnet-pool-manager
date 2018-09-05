@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using System.Fabric.Description;
 using PoolManager.SDK.Instances.Requests;
 using PoolManager.SDK.Instances;
+using PoolManager.SDK;
+using PoolManager.Core;
 
 namespace PoolManager.Instances
 {
@@ -31,55 +33,15 @@ namespace PoolManager.Instances
 
         public override async Task<InstanceState> StartAsync(InstanceContext context, StartInstanceRequest request)
         {
-            string applicationName = null;
-            string serviceTypeName = null;
-            context.ParseServiceTypeUri(request.ServiceTypeUri, out applicationName, out serviceTypeName);
-            ServiceDescription serviceDescription = null;
-            var instanceId = context.InstanceId;
-            var instanceUri = context.CreateServiceInstanceUri(request.ServiceTypeUri, instanceId);
-            var config = new ServiceConfiguration(instanceUri, request.ServiceTypeUri, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme, request.ExpirationQuanta);
+            var partitionSchemeDescription = request.PartitionScheme.ToServiceFabricDescription();
+            var serviceDescriptionFactory = new ServiceDescriptionFactory(request.ServiceTypeUri, context.InstanceId, partitionSchemeDescription);
+            var config = new ServiceConfiguration(serviceDescriptionFactory.ServiceName, request.ServiceTypeUri, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme, request.ExpirationQuanta);
 
             if (config.IsServiceStateful)
-            {
-                serviceDescription = new StatefulServiceDescription()
-                {
-                    ApplicationName = new Uri(applicationName, UriKind.RelativeOrAbsolute),
-                    MinReplicaSetSize = config.MinReplicas,
-                    TargetReplicaSetSize = config.TargetReplicas,
-                    HasPersistedState = config.HasPersistedState,
-                    InitializationData = null,
-                    ServiceTypeName = $"{serviceTypeName}",
-                    ServiceName = config.ServiceInstanceUri
-                };
-            }
+                await context.Cluster.CreateStatefulServiceAsync(serviceDescriptionFactory, request.MinReplicas, request.TargetReplicas, request.HasPersistedState);
             else
-            {
-                serviceDescription = new StatelessServiceDescription()
-                {
-                    ApplicationName = new Uri(applicationName, UriKind.RelativeOrAbsolute),
-                    InstanceCount = 1,
-                    InitializationData = null,
-                    ServiceTypeName = $"{serviceTypeName}",
-                    ServiceName = config.ServiceInstanceUri
-                };
-            }
-            switch (request.PartitionScheme)
-            {
-                case SDK.PartitionSchemeDescription.Singleton:
-                    serviceDescription.PartitionSchemeDescription = new SingletonPartitionSchemeDescription();
-                    break;
-                case SDK.PartitionSchemeDescription.UniformInt64Name:
-                    serviceDescription.PartitionSchemeDescription = new UniformInt64RangePartitionSchemeDescription();
-                    break;
-                case SDK.PartitionSchemeDescription.Named:
-                    serviceDescription.PartitionSchemeDescription = new NamedPartitionSchemeDescription();
-                    break;
-            }
-
-            // TODO: Find a way to mock FabricClient's stuff (probably with a wrapper of wrappers :/)
-            await context.FabricClient.ServiceManager.CreateServiceAsync(serviceDescription);
+                await context.Cluster.CreateStatelessServiceAsync(serviceDescriptionFactory);
             await context.SetInstanceConfigurationAsync(config);
-
             return context.InstanceStates.Get(InstanceStates.Vacant);
         }
 

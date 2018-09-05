@@ -108,6 +108,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="InstanceNotActivatedException.cs" />
     <Compile Include="Instances\IInstance.cs" />
     <Compile Include="Instances\IInstanceProxy.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Instances\InstanceStates.cs" />
     <Compile Include="Instances\Requests\StartInstanceAsRequest.cs" />
     <Compile Include="Instances\Requests\StartInstanceRequest.cs" />
+    <Compile Include="PartitionSchemeDescription.cs" />
     <Compile Include="PooledServiceProxy.cs" />
     <Compile Include="Pools\Responses\ConfigurationResponse.cs" />
     <Compile Include="Pools\IPoolProxy.cs" />
@@ -123,7 +125,6 @@
     <Compile Include="Pools\IPool.cs" />
     <Compile Include="IServiceInstance.cs" />
     <Compile Include="Instances\Requests\OccupyInstanceRequest.cs" />
-    <Compile Include="PartitionSchemeDescription.cs" />
     <Compile Include="Pools\PoolStates.cs" />
     <Compile Include="Pools\Requests\StartPoolRequest.cs" />
     <Compile Include="Pools\Requests\VacateInstanceRequest.cs" />

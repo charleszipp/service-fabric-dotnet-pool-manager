@@ -18,7 +18,7 @@ namespace PoolManager.Instances
                            context,
                            actorType,
                            "InstanceActorServiceEndpoint",
-                           (svc, id) => new Instance(svc, id, telemetryClient)
+                           (svc, id) => new Instance(svc, id, new ClusterClient(new System.Fabric.FabricClient(), telemetryClient), telemetryClient)
                        ));
                        return kernel.Get<PoolsActorService>();
                    }).GetAwaiter().GetResult();

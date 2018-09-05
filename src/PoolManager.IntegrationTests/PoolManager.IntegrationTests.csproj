@@ -151,6 +151,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoolManager.Core.Tests\PoolManager.Core.Tests.csproj">
+      <Project>{e80dbe77-379d-4f71-bd67-4cd7adea4214}</Project>
+      <Name>PoolManager.Core.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoolManager.SDK\PoolManager.SDK.csproj">
       <Project>{D7435252-F5FD-4200-A483-9D69A7F2ED85}</Project>
       <Name>PoolManager.SDK</Name>

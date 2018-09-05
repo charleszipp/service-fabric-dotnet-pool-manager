@@ -1,6 +1,5 @@
 ﻿using PoolManager.SDK.Pools.Requests;
 using System.Threading.Tasks;
-using PoolManager.SDK.Pools.Requests;
 using PoolManager.SDK.Pools.Responses;
 
 namespace PoolManager.SDK.Pools

@@ -35,21 +35,20 @@ namespace PoolManager.Terminal
 
         static async Task MainAsync(string[] args)
         {
-            WriteConsole("Press any key to start the test...");
-            Console.ReadKey();
+            WriteConsole("Press any key to start the test...");            
 
             IPoolProxy pools = new PoolProxy(new ActorProxyFactory());
             IServiceProxyFactory serviceProxyFactory = new ServiceProxyFactory();
 
             await Reset();
             await ResetPool(pools);
+            Console.ReadKey();
 
-
-            int users = 5;
-            int serviceInstances = 3;
-            TimeSpan testLength = new TimeSpan(0, 1, 0);
-            TimeSpan rampUpTime = new TimeSpan(0, 0, 30);
-            int rampUpInterval = 2000;
+            int users = 500;
+            int serviceInstances = 385;
+            TimeSpan testLength = new TimeSpan(0, 15, 0);
+            TimeSpan rampUpTime = new TimeSpan(0, 12, 0);
+            int rampUpInterval = 15000;
             int rampUpIntervals = (int)rampUpTime.TotalMilliseconds / rampUpInterval;
             double usersPerRampUpInterval = (double)users / (double)rampUpIntervals;
 
@@ -124,10 +123,10 @@ namespace PoolManager.Terminal
                 1,
                 3,
                 SDK.PartitionSchemeDescription.Singleton,
-                10,
+                500,
+                60,
                 5,
-                1,
-                TimeSpan.FromMinutes(2)
+                TimeSpan.FromMinutes(5)
                 );
             await pools.StartPoolAsync(NoOpServiceTypeUri, request);
 
@@ -179,6 +178,8 @@ namespace PoolManager.Terminal
                 WriteConsoleActivationStatus($"Finished in {timer.ElapsedMilliseconds} ms", activationId, serviceInstanceName, users);
             }
 
+            // 'think' time
+            await Task.Delay(3000);
             return (int)timer.ElapsedMilliseconds;
         }
 

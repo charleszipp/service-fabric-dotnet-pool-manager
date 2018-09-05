@@ -28,24 +28,7 @@ namespace PoolManager.Instances
         public override async Task<InstanceState> RemoveAsync(InstanceContext context)
         {
             var config = await context.GetInstanceConfigurationAsync();
-            DeleteServiceDescription ds = new DeleteServiceDescription(config.ServiceInstanceUri);
-            Dictionary<string, string> properties = new Dictionary<string, string>()
-                {
-                    { "ServiceName", ds.ServiceName?.ToString() },
-                    { "ForceDelete", ds.ForceDelete.ToString() }
-                };
-            try
-            {
-                await context.FabricClient.ServiceManager.DeleteServiceAsync(ds);
-            }
-            catch (TimeoutException ex)
-            {
-                //for timeout exceptions, record that they happened as traces but, 
-                properties.Add("ExceptionMessage", ex.Message);
-                properties.Add("ExceptionStack", ex.StackTrace);
-                context.TelemetryClient.TrackTrace("Remove instance timed out", properties);
-            }
-
+            await context.Cluster.DeleteServiceAsync(config.ServiceInstanceUri);
             return context.InstanceStates.Get(InstanceStates.Idle);
         }
 

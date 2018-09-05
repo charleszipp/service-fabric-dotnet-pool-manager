@@ -108,9 +108,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClusterClient.cs" />
     <Compile Include="FabricTelemetryInitializingHandler.cs" />
+    <Compile Include="IClusterClient.cs" />
     <Compile Include="PoolsActorService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceDescriptionFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

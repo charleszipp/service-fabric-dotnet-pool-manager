@@ -1,18 +1,15 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Metrics;
-using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
 using Microsoft.ServiceFabric.Actors;
-using Microsoft.ServiceFabric.Actors.Remoting.V1.FabricTransport.Client;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
 using PoolManager.SDK.Pools.Responses;
 using System;
-using System.Threading;
+using System.Fabric;
 using System.Threading.Tasks;
-using PoolManager.SDK.Pools.Responses;
+using Microsoft.ServiceFabric.Actors.Client;
 
 namespace PoolManager.Pools
 {
@@ -21,23 +18,21 @@ namespace PoolManager.Pools
     {
         private readonly PoolContext _context;
         private readonly TelemetryClient _telemetryClient;
-
-        public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient)
+        public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient,
+            Func<StatefulServiceContext, IActorProxyFactory> actorProxyFactoryFactory)
             : base(actorService, actorId)
         {
             _context = new PoolContext(
                 actorId.GetStringId(),
                 new PoolStateProvider(new PoolStateIdle(), new PoolStateActive()),
                 new InstanceProxy(
-                    new CorrelatingActorProxyFactory(ActorService.Context,
-                        callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient))
+                    actorProxyFactoryFactory(ActorService.Context)
                 ),
                 StateManager,
                 telemetryClient
-                );
+            );
             _telemetryClient = telemetryClient;
         }
-
         public async Task StartAsync(StartPoolRequest request)
         {
             await _context.StartAsync(request);

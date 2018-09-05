@@ -4,9 +4,6 @@ using PoolManager.SDK.Pools.Requests;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ServiceFabric.Actors;
-using Microsoft.ServiceFabric.Actors.Client;
-using PoolManager.SDK.Pools.Requests;
 using PoolManager.SDK.Pools.Responses;
 
 namespace PoolManager.SDK.Pools
