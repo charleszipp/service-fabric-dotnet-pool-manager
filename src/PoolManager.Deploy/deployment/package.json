@@ -29,10 +29,7 @@
           "PoolManager": {
             "type": "asf",
             "target": "[GetGraphCluster('1')]",
-            "appname": "[concat('fabric:/','PoolManager')]",
-            "parameters": [
-              "AppInsightsInstrumentationKey"
-            ]
+            "appname": "[concat('fabric:/','PoolManager')]"
           }
         }
       }

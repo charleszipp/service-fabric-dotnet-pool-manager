@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="ClusterClient.cs" />
     <Compile Include="FabricTelemetryInitializingHandler.cs" />
+    <Compile Include="MetricTimer.cs" />
     <Compile Include="IClusterClient.cs" />
     <Compile Include="PoolsActorService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -117,9 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

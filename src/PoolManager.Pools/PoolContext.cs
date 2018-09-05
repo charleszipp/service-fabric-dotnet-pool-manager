@@ -3,6 +3,7 @@ using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
+using PoolManager.Core;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
@@ -10,6 +11,8 @@ using PoolManager.SDK.Pools.Responses;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -125,33 +128,49 @@ namespace PoolManager.Pools
             long allInstancesCount = idleInstancesCount + activeInstancesCount;
             long idleInstanceDelta = configuration.IdleServicesPoolSize - idleInstancesCount;
 
+            TelemetryClient.GetMetric("pools.occupied.size", nameof(ServiceTypeUri)).TrackValue(activeInstancesCount, ServiceTypeUri);
+            TelemetryClient.GetMetric("pools.vacant.size", nameof(ServiceTypeUri)).TrackValue(idleInstancesCount, ServiceTypeUri);
+            TelemetryClient.GetMetric("pools.vacant.target", nameof(ServiceTypeUri)).TrackValue(configuration.IdleServicesPoolSize, ServiceTypeUri);
+            TelemetryClient.GetMetric("pools.vacant.max", nameof(ServiceTypeUri)).TrackValue(configuration.MaxPoolSize, ServiceTypeUri);
+            TelemetryClient.GetMetric("pools.vacant.block.size", nameof(ServiceTypeUri)).TrackValue(configuration.IdleServicesPoolSize, ServiceTypeUri);
+            TelemetryClient.GetMetric("pools.vacant.deficit", nameof(ServiceTypeUri)).TrackValue(idleInstanceDelta, ServiceTypeUri);
+
             long allocationCount = 0;
             if (idleInstanceDelta > 0)
             {
                 allocationCount = Math.Min(configuration.MaxPoolSize - allInstancesCount, idleInstanceDelta);
+                TelemetryClient.GetMetric("pools.vacant.grow", nameof(ServiceTypeUri)).TrackValue(allocationCount, ServiceTypeUri);
             }
             else if (idleInstanceDelta < 0)
             {
                 allocationCount = -idleInstanceDelta;
+                TelemetryClient.GetMetric("pools.vacant.shrink", nameof(ServiceTypeUri)).TrackValue(allocationCount, ServiceTypeUri);
             }
             else
                 return;
+
 
             while (allocationCount > 0)
             {
                 if (idleInstanceDelta > 0)
                 {
-                    List<Task> addTasks = new List<Task>();
-                    for (int i = 0; i < configuration.ServicesAllocationBlockSize && i < allocationCount; i++)
-                        addTasks.Add(AddInstanceAsync(configuration, poolInstances));
-                    Task.WaitAll(addTasks.ToArray());
+                    using (TelemetryClient.TrackMetricTimer("pools.vacant.grow.block.time", nameof(ServiceTypeUri), ServiceTypeUri))
+                    {
+                        List<Task> addTasks = new List<Task>();
+                        for (int i = 0; i < configuration.ServicesAllocationBlockSize && i < allocationCount; i++)
+                            addTasks.Add(AddInstanceAsync(configuration, poolInstances));
+                        Task.WaitAll(addTasks.ToArray());
+                    }
                 }
                 else
                 {
-                    List<Task> removeTasks = new List<Task>();
-                    for (int i = 0; i < configuration.ServicesAllocationBlockSize && i < allocationCount; i++)
-                        removeTasks.Add(RemoveInstanceAsync(poolInstances.VacantInstances));
-                    Task.WaitAll(removeTasks.ToArray());
+                    using (TelemetryClient.TrackMetricTimer("pools.vacant.shrink.block.time", nameof(ServiceTypeUri), ServiceTypeUri))
+                    {
+                        List<Task> removeTasks = new List<Task>();
+                        for (int i = 0; i < configuration.ServicesAllocationBlockSize && i < allocationCount; i++)
+                            removeTasks.Add(RemoveInstanceAsync(poolInstances.VacantInstances));
+                        Task.WaitAll(removeTasks.ToArray());
+                    }
                 }
                 allocationCount -= configuration.ServicesAllocationBlockSize;
             }
@@ -162,16 +181,24 @@ namespace PoolManager.Pools
         public async Task CleanupRemovedInstancesAsync()
         {
             var poolInstances = await GetPoolInstancesAsync();
+            TelemetryClient.GetMetric("pools.removed.size", nameof(ServiceTypeUri)).TrackValue(poolInstances.RemovedInstances.Count, ServiceTypeUri);
 
             List<Task> deletes = new List<Task>();
-            while(!poolInstances.RemovedInstances.IsEmpty)
-            {
-                Guid instanceId = Guid.Empty;
-                if (poolInstances.RemovedInstances.TryDequeue(out instanceId))
-                    deletes.Add(InstanceProxy.DisposeAsync(instanceId));
+            try
+            {                
+                while (!poolInstances.RemovedInstances.IsEmpty)
+                {
+                    Guid instanceId = Guid.Empty;
+                    if (poolInstances.RemovedInstances.TryDequeue(out instanceId))
+                        deletes.Add(InstanceProxy.DisposeAsync(instanceId));
+                }
+                await Task.WhenAll(deletes);
             }
-
-            await Task.WhenAll(deletes);
+            finally
+            {
+                TelemetryClient.GetMetric("pools.removed.completed", nameof(ServiceTypeUri)).TrackValue(deletes.Count(d => d.IsCompleted), ServiceTypeUri);
+                TelemetryClient.GetMetric("pools.removed.failed", nameof(ServiceTypeUri)).TrackValue(deletes.Count(d => d.IsFaulted), ServiceTypeUri);
+            }
         }
     }
 }
