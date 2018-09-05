@@ -2,6 +2,8 @@
 using PoolManager.Core;
 using System.Threading;
 using Ninject;
+using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
+using Microsoft.ServiceFabric.Services.Remoting.V1.FabricTransport.Client;
 
 namespace PoolManager.Instances
 {
@@ -18,7 +20,14 @@ namespace PoolManager.Instances
                            context,
                            actorType,
                            "InstanceActorServiceEndpoint",
-                           (svc, id) => new Instance(svc, id, new ClusterClient(new System.Fabric.FabricClient(), telemetryClient), telemetryClient)
+                           (svc, id) => new Instance(
+                               svc, 
+                               id, 
+                               new ClusterClient(new System.Fabric.FabricClient(), telemetryClient), 
+                               telemetryClient,
+                               new CorrelatingActorProxyFactory(svc.Context, callbackClient => new FabricTransportServiceRemotingClientFactory(callbackClient: callbackClient)),
+                               new CorrelatingServiceProxyFactory(svc.Context, callbackClient => new FabricTransportServiceRemotingClientFactory(callbackClient: callbackClient))
+                            )
                        ));
                        return kernel.Get<PoolsActorService>();
                    }).GetAwaiter().GetResult();

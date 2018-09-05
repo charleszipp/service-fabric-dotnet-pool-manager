@@ -2,7 +2,9 @@
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
 using Microsoft.ServiceFabric.Actors;
+using Microsoft.ServiceFabric.Actors.Client;
 using Microsoft.ServiceFabric.Actors.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Microsoft.ServiceFabric.Services.Remoting.V1.FabricTransport.Client;
 using PoolManager.Core;
 using PoolManager.SDK.Instances;
@@ -21,14 +23,14 @@ namespace PoolManager.Instances
         private readonly InstanceContext _context;
         private readonly TelemetryClient _telemetryClient;
 
-        public Instance(ActorService actorService, ActorId actorId, IClusterClient cluster, TelemetryClient telemetryClient)
+        public Instance(ActorService actorService, ActorId actorId, IClusterClient cluster, TelemetryClient telemetryClient, IActorProxyFactory actorProxyFactory, IServiceProxyFactory serviceProxyFactory)
             : base(actorService, actorId)
         {
             _context = new InstanceContext(
                 GetInstanceId(),
                 new InstanceStateProvider(new InstanceStateIdle(), new InstanceStateVacant(), new InstanceStateOccupied()),
-                new PoolProxy(new CorrelatingActorProxyFactory(ActorService.Context, callbackClient => new FabricTransportServiceRemotingClientFactory(callbackClient: callbackClient))),
-                new CorrelatingServiceProxyFactory(ActorService.Context, callbackClient => new FabricTransportServiceRemotingClientFactory(callbackClient: callbackClient)),
+                new PoolProxy(actorProxyFactory),
+                serviceProxyFactory,
                 cluster,
                 StateManager,
                 telemetryClient

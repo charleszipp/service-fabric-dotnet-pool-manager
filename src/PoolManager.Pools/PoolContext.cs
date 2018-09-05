@@ -36,9 +36,9 @@ namespace PoolManager.Pools
         public string ServiceTypeUri { get; }
         public IPoolStateProvider PoolStates { get; }
         public IInstanceProxy InstanceProxy { get; }
-        public IServiceProxyFactory ServiceProxyFactory { get; }
         public IActorStateManager StateManager { get; }
         public TelemetryClient TelemetryClient { get; }
+        public PoolStates CurrentState => _currentState.State;
 
         public async Task ActivateAsync()
         {
@@ -52,6 +52,12 @@ namespace PoolManager.Pools
         public async Task StartAsync(StartPoolRequest request)
         {
             _currentState = await _currentState.StartAsync(this, request);
+            await StateManager.SetStateAsync(_poolStateKey, _currentState.State);
+        }
+
+        public async Task StopAsync()
+        {
+            _currentState = await _currentState.StopAsync(this);
             await StateManager.SetStateAsync(_poolStateKey, _currentState.State);
         }
 

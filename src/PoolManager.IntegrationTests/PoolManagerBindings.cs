@@ -77,6 +77,7 @@ namespace PoolManager.IntegrationTests
         [Given(@"the service pool ""(.*)"" does not exist")]
         public async Task GivenTheServicePoolDoesNotExist(string serviceTypeUri)
         {
+            await _pools.StopPoolAsync(serviceTypeUri);
             await _pools.DeletePoolAsync(serviceTypeUri);
         }
         [When(@"the ""(.*)"" pool is started with the following configuration")]

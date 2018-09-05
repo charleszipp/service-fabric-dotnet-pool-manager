@@ -43,7 +43,7 @@ namespace PoolManager.UnitTests
             _container.RegisterInstanceAs<IServiceProxyFactory>(new MockServiceProxyFactory());
             _container.RegisterFactoryAs(container =>
                 MockActorServiceFactory.CreateActorServiceForActor<Pool>(
-                    (svc, id) => new Pool(svc, id, container.Resolve<TelemetryClient>(), x=>new Mock<IActorProxyFactory>().Object)
+                    (svc, id) => new Pool(svc, id, container.Resolve<TelemetryClient>(), new Mock<IActorProxyFactory>().Object)
                 )
             );
         }

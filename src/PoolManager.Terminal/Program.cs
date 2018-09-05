@@ -114,6 +114,7 @@ namespace PoolManager.Terminal
         static async Task ResetPool(IPoolProxy pools)
         {
             WriteConsole("Removing old pool");
+            await pools.StopPoolAsync(NoOpServiceTypeUri);
             await pools.DeletePoolAsync(NoOpServiceTypeUri);
 
             WriteConsole("Registering Service with Pool Manager...");

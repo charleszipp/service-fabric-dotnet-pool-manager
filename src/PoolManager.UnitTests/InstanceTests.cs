@@ -53,7 +53,7 @@ namespace PoolManager.UnitTests
         private static MockActorService<Instance> CreateInstanceActorService(IClusterClient cluster, TelemetryClient telemetryClient)
         {
             return MockActorServiceFactory.CreateActorServiceForActor<Instance>(
-                (svc, id) => new Instance(svc, id, cluster, telemetryClient));
+                (svc, id) => new Instance(svc, id, cluster, telemetryClient, new MockActorProxyFactory(), new MockServiceProxyFactory()));
         }
     }
 }

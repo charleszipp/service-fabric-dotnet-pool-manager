@@ -41,7 +41,7 @@ namespace PoolManager.UnitTests
         private static MockActorService<Pool> CreatePoolActorService(TelemetryClient telemetryClient, IActorProxyFactory actorProxyFactory)
         {
             return MockActorServiceFactory.CreateActorServiceForActor<Pool>(
-                (svc, id) => new Pool(svc, id, telemetryClient, x => actorProxyFactory));
+                (svc, id) => new Pool(svc, id, telemetryClient, actorProxyFactory));
         }
     }
 }

@@ -69,7 +69,7 @@ namespace PoolManager.Tests.NoOp
                     {
                         try
                         {
-                            var reportActivityRequest = new ReportActivityRequest(_serviceInstanceName, utcNow);
+                            var reportActivityRequest = new ReportActivityRequest(utcNow);
                             nextReportInterval = await _instanceProxy.ReportActivityAsync(_instanceId.Value, reportActivityRequest);
                             nextReportDateUtc = utcNow.Add(nextReportInterval);
                         }

@@ -19,8 +19,12 @@ namespace PoolManager.SDK.Pools
             GetProxy(serviceTypeUri).GetConfigurationAsync();
         public Task<GetInstanceResponse> GetInstanceAsync(string serviceTypeUri, GetInstanceRequest request) =>
             GetProxy(serviceTypeUri).GetAsync(request);
+        public Task<bool> IsActive(string serviceTypeUri) => 
+            GetProxy(serviceTypeUri).IsActive();
         public async Task StartPoolAsync(string serviceTypeUri, StartPoolRequest request) =>
             await GetProxy(serviceTypeUri).StartAsync(request);
+        public Task StopPoolAsync(string serviceTypeUri) => 
+            GetProxy(serviceTypeUri).StopAsync();
         public async Task VacateInstanceAsync(string serviceTypeUri, VacateInstanceRequest request) =>
             await GetProxy(serviceTypeUri).VacateInstanceAsync(request);
         internal IActorService GetServiceProxy(string serviceTypeUri) =>

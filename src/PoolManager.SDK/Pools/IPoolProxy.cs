@@ -9,7 +9,9 @@ namespace PoolManager.SDK.Pools
         Task VacateInstanceAsync(string serviceTypeUri, VacateInstanceRequest request);
         Task<GetInstanceResponse> GetInstanceAsync(string serviceTypeUri, GetInstanceRequest request);
         Task StartPoolAsync(string serviceTypeUri, StartPoolRequest request);
+        Task StopPoolAsync(string serviceTypeUri);
         Task DeletePoolAsync(string serviceTypeUri);
         Task<ConfigurationResponse> GetConfigurationAsync(string serviceTypeUri);
+        Task<bool> IsActive(string serviceTypeUri);
     }
 }

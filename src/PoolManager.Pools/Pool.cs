@@ -1,15 +1,15 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
 using Microsoft.ServiceFabric.Actors;
+using Microsoft.ServiceFabric.Actors.Client;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
 using PoolManager.SDK.Pools.Responses;
 using System;
-using System.Fabric;
 using System.Threading.Tasks;
-using Microsoft.ServiceFabric.Actors.Client;
 
 namespace PoolManager.Pools
 {
@@ -18,16 +18,16 @@ namespace PoolManager.Pools
     {
         private readonly PoolContext _context;
         private readonly TelemetryClient _telemetryClient;
-        public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient,
-            Func<StatefulServiceContext, IActorProxyFactory> actorProxyFactoryFactory)
+        private const string EnsurePoolSizeReminderKey = "ensure-pool-size";
+        private const string CleanupRemovedInstancesReminderKey = "cleanup-removed-instances";
+
+        public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, IActorProxyFactory actorProxyFactory)
             : base(actorService, actorId)
         {
             _context = new PoolContext(
                 actorId.GetStringId(),
                 new PoolStateProvider(new PoolStateIdle(), new PoolStateActive()),
-                new InstanceProxy(
-                    actorProxyFactoryFactory(ActorService.Context)
-                ),
+                new InstanceProxy(actorProxyFactory),
                 StateManager,
                 telemetryClient
             );
@@ -36,30 +36,22 @@ namespace PoolManager.Pools
         public async Task StartAsync(StartPoolRequest request)
         {
             await _context.StartAsync(request);
-            try
-            {
-                var reminder = GetReminder("ensure-pool-size");
-                await UnregisterReminderAsync(reminder);
-            }
-            catch (ReminderNotFoundException)
-            {
-            }
-            await RegisterReminderAsync("ensure-pool-size", null, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
-            try
-            {
-                var reminder = GetReminder("cleanup-removed-instances");
-                await UnregisterReminderAsync(reminder);
-            }
-            catch (ReminderNotFoundException)
-            {
-            }
+            await SetReminderAsync(EnsurePoolSizeReminderKey, null, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
             var cleanupInterval = request.ExpirationQuanta.Add(TimeSpan.FromMilliseconds((int)request.ExpirationQuanta.TotalMilliseconds * 0.05));
-            await RegisterReminderAsync("cleanup-removed-instances", null, cleanupInterval, cleanupInterval);
-        }        
+            await SetReminderAsync(CleanupRemovedInstancesReminderKey, null, cleanupInterval, cleanupInterval);
+        }   
+        
+        public async Task StopAsync()
+        {
+            await _context.StopAsync();
+            await UnregisterReminderAsync(EnsurePoolSizeReminderKey);
+            await UnregisterReminderAsync(CleanupRemovedInstancesReminderKey);
+        }
 
         public Task<GetInstanceResponse> GetAsync(GetInstanceRequest request) => _context.GetAsync(request);
 
         public Task VacateInstanceAsync(VacateInstanceRequest request) => _context.VacateInstanceAsync(request);
+
         public async Task<ConfigurationResponse> GetConfigurationAsync()
         {
             var config = await _context.GetPoolConfigurationAsync();
@@ -68,6 +60,9 @@ namespace PoolManager.Pools
                 config.MinReplicaSetSize, config.PartitionScheme, config.ServicesAllocationBlockSize,
                 config.ServiceTypeUri, config.TargetReplicasetSize);
         }
+
+        public Task<bool> IsActive() => Task.FromResult(_context.CurrentState == PoolStates.Active);
+
         protected override Task OnActivateAsync() => _context.ActivateAsync();
 
         protected override Task OnDeactivateAsync() => _context.DeactivateAsync();
@@ -82,10 +77,10 @@ namespace PoolManager.Pools
                 {
                     switch (reminderName)
                     {
-                        case "ensure-pool-size":
+                        case EnsurePoolSizeReminderKey:
                             await _context.EnsurePoolSizeAsync();
                             break;
-                        case "cleanup-removed-instances":
+                        case CleanupRemovedInstancesReminderKey:
                             await _context.CleanupRemovedInstancesAsync();
                             break;
                     }
@@ -96,6 +91,24 @@ namespace PoolManager.Pools
                     _telemetryClient.TrackException(ex);
                 }
             }            
+        }
+
+        private async Task UnregisterReminderAsync(string name)
+        {
+            try
+            {
+                var reminder = GetReminder(name);
+                await UnregisterReminderAsync(reminder);
+            }
+            catch (ReminderNotFoundException)
+            {
+            }
+        }
+
+        private async Task SetReminderAsync(string name, byte[] state, TimeSpan dueTime, TimeSpan period)
+        {
+            await UnregisterReminderAsync(name);
+            await RegisterReminderAsync(name, state, dueTime, period);
         }
     }
 }

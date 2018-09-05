@@ -22,8 +22,12 @@ namespace PoolManager.Pools
                            context,
                            actorType,
                            "PoolActorServiceEndpoint",
-                           (svc, id) => new Pool(svc, id, kernel.Get<TelemetryClient>(), (ctx) => new CorrelatingActorProxyFactory(ctx,
-                               callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient)))
+                           (svc, id) => new Pool(
+                                svc, 
+                                id, 
+                                kernel.Get<TelemetryClient>(), 
+                                new CorrelatingActorProxyFactory(svc.Context, callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient))
+                            )
                        ));
                        return kernel.Get<PoolsActorService>();
                    }).GetAwaiter().GetResult();

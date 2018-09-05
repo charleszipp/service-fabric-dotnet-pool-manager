@@ -2,6 +2,8 @@
 using PoolManager.SDK.Pools.Requests;
 using PoolManager.SDK.Pools.Responses;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PoolManager.Pools
@@ -43,6 +45,21 @@ namespace PoolManager.Pools
             }
 
             return new GetInstanceResponse(context.CreateServiceInstanceUri(instanceId));
+        }
+
+        public override async Task<PoolState> StopAsync(PoolContext context)
+        {
+            var poolInstances = await context.GetPoolInstancesAsync();
+            var removes = poolInstances.VacantInstances
+                .Select(i => context.InstanceProxy.RemoveAsync(i))
+                .Union(poolInstances.OccupiedInstances.Select(i => context.InstanceProxy.RemoveAsync(i.Value)))
+                .ToArray();
+
+            await Task.WhenAll(removes);
+            await context.CleanupRemovedInstancesAsync();
+            await context.SetPoolInstancesAsync(new PoolInstances());
+
+            return context.PoolStates.Get(PoolStates.Idle);
         }
 
         public override async Task VacateInstanceAsync(PoolContext context, VacateInstanceRequest request)
