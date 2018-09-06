@@ -25,7 +25,7 @@ namespace PoolManager.Pools
             : base(actorService, actorId)
         {
             _context = new PoolContext(
-                actorId.GetStringId(),
+                GetServiceTypeUri(actorId),
                 new PoolStateProvider(new PoolStateIdle(), new PoolStateActive()),
                 new InstanceProxy(actorProxyFactory),
                 StateManager,
@@ -109,6 +109,14 @@ namespace PoolManager.Pools
         {
             await UnregisterReminderAsync(name);
             await RegisterReminderAsync(name, state, dueTime, period);
+        }
+
+        private static string GetServiceTypeUri(ActorId actorId)
+        {
+            var rvalue = actorId.GetStringId();
+            if (rvalue.Contains("?"))
+                rvalue = rvalue.Substring(0, rvalue.IndexOf('?'));
+            return rvalue;
         }
     }
 }
