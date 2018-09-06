@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Fabric.Description;
 using PoolManager.SDK.Instances.Requests;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK;
@@ -13,7 +12,7 @@ namespace PoolManager.Instances
         public override InstanceStates State => InstanceStates.Idle;
 
         public override Task<InstanceState> OccupyAsync(InstanceContext context, OccupyRequest request) => 
-            throw new Exception($"Invalid state transition. Cannot occupy an idle service.");
+            throw new Exception("Invalid state transition. Cannot occupy an idle service.");
 
         public override Task<InstanceState> RemoveAsync(InstanceContext context) => 
             Task.FromResult<InstanceState>(this);
@@ -47,7 +46,7 @@ namespace PoolManager.Instances
 
         public override Task<InstanceState> VacateAsync(InstanceContext context)
         {
-            throw new Exception($"Invalid state transition. Cannot vacate an idle service.");
+            throw new Exception("Invalid state transition. Cannot vacate an idle service.");
         }
     }
 }

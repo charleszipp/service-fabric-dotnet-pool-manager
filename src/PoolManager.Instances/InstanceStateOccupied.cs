@@ -31,10 +31,10 @@ namespace PoolManager.Instances
         }
 
         public override Task<InstanceState> StartAsAsync(InstanceContext context, StartInstanceAsRequest request) =>
-            throw new Exception($"Invalid state transition. Instance is already started");
+            throw new Exception("Invalid state transition. Instance is already started");
 
         public override Task<InstanceState> StartAsync(InstanceContext context, StartInstanceRequest request) =>
-            throw new Exception($"Invalid state transition. Instance is already started");
+            throw new Exception("Invalid state transition. Instance is already started");
 
         public override async Task<InstanceState> VacateAsync(InstanceContext context)
         {

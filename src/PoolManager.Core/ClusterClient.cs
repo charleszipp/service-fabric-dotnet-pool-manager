@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Fabric;
 using System.Fabric.Description;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PoolManager.Core
@@ -46,22 +44,15 @@ namespace PoolManager.Core
 
         public async Task DeleteServiceAsync(Uri serviceInstanceUri, bool force = false)
         {
-            DeleteServiceDescription ds = new DeleteServiceDescription(serviceInstanceUri);
-            ds.ForceDelete = force;
-            Dictionary<string, string> properties = new Dictionary<string, string>()
-                {
-                    { "ServiceName", ds.ServiceName?.ToString() },
-                    { "ForceDelete", ds.ForceDelete.ToString() }
-                };
-            try
-            {
-                await _fabricClient.ServiceManager.DeleteServiceAsync(ds);
-            }
+            var ds = new DeleteServiceDescription(serviceInstanceUri) {ForceDelete = force};
+            try { await _fabricClient.ServiceManager.DeleteServiceAsync(ds); }
             catch (TimeoutException ex)
             {
-                //for timeout exceptions, record that they happened as traces 
-                properties.Add("ExceptionMessage", ex.Message);
-                properties.Add("ExceptionStack", ex.StackTrace);
+                var properties = new Dictionary<string, string>
+                {
+                    {"ServiceName", ds.ServiceName?.ToString()}, {"ForceDelete", ds.ForceDelete.ToString()},
+                    {"ExceptionMessage", ex.Message}, {"ExceptionStack", ex.StackTrace}
+                };
                 _telemetryClient.TrackTrace("Remove instance timed out", properties);
             }
         }

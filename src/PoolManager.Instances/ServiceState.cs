@@ -27,6 +27,6 @@ namespace PoolManager.Instances
         public string ServiceInstanceName { get; private set; }
 
         [DataMember]
-        public DateTime? LastActiveUtc { get; set; }
+        public DateTime LastActiveUtc { get; set; }
     }
 }

@@ -8,14 +8,13 @@ using PoolManager.SDK.Instances;
 using PoolManager.SDK.Instances.Requests;
 using PoolManager.SDK.Pools;
 using System;
-using System.Fabric;
 using System.Threading.Tasks;
 
 namespace PoolManager.Instances
 {
     public class InstanceContext
     {
-        private const string _instanceStateKey = "instance-state";
+        private const string InstanceStateKey = "instance-state";
         private InstanceState _currentState;
 
         public InstanceContext(string instanceId, IInstanceStateProvider instanceStates, IPoolProxy poolProxy, IServiceProxyFactory proxyFactory, IClusterClient cluster, IActorStateManager stateManager, TelemetryClient telemetryClient)
@@ -30,7 +29,7 @@ namespace PoolManager.Instances
             _currentState = InstanceStates.Get(SDK.Instances.InstanceStates.Idle);
         }
 
-        public IActorStateManager StateManager { get; private set; }
+        public IActorStateManager StateManager { get; }
 
         public string InstanceId { get; }
 
@@ -46,7 +45,7 @@ namespace PoolManager.Instances
 
         public async Task ActivateAsync()
         {
-            var state = await StateManager.TryGetStateAsync<InstanceStates>(_instanceStateKey);
+            var state = await StateManager.TryGetStateAsync<InstanceStates>(InstanceStateKey);
             if (state.HasValue)
                 _currentState = InstanceStates.Get(state.Value);
         }
@@ -103,6 +102,6 @@ namespace PoolManager.Instances
         }
 
         private Task SaveInstanceStateAsync() =>
-            StateManager.SetStateAsync(_instanceStateKey, _currentState.State);
+            StateManager.SetStateAsync(InstanceStateKey, _currentState.State);
     }
 }

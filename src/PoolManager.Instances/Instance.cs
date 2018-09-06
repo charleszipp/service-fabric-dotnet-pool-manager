@@ -110,7 +110,7 @@ namespace PoolManager.Instances
                     {
                         var serviceState = await _context.GetServiceStateAsync();
                         var config = await _context.GetInstanceConfigurationAsync();
-                        TimeSpan inactivityPeriod = DateTime.UtcNow.Subtract(serviceState.LastActiveUtc.Value);
+                        var inactivityPeriod = DateTime.UtcNow.Subtract(serviceState.LastActiveUtc);
                         if (inactivityPeriod > config.ExpirationQuanta)
                         {
                             var vacateInstanceRequest = new VacateInstanceRequest(this.GetActorId().GetGuidId(), serviceState.ServiceInstanceName);

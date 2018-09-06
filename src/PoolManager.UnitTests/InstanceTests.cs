@@ -5,7 +5,6 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
-using Microsoft.ServiceFabric.Services.Remoting.V1.FabricTransport.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using PoolManager.Core;

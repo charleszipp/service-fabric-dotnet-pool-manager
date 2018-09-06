@@ -24,9 +24,9 @@ namespace PoolManager.SDK
         {
             switch (desc)
             {
-                case SDK.PartitionSchemeDescription.UniformInt64Name:
+                case PartitionSchemeDescription.UniformInt64Name:
                     return new ServicePartitionKey(1);
-                case SDK.PartitionSchemeDescription.Named:
+                case PartitionSchemeDescription.Named:
                     return new ServicePartitionKey(instanceId);
                 default:
                     return null;

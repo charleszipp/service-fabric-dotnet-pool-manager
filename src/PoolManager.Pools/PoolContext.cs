@@ -1,8 +1,5 @@
 ﻿using Microsoft.ApplicationInsights;
-using Microsoft.ServiceFabric.Actors;
-using Microsoft.ServiceFabric.Actors.Client;
 using Microsoft.ServiceFabric.Actors.Runtime;
-using Microsoft.ServiceFabric.Services.Remoting.Client;
 using PoolManager.Core;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Pools;
@@ -11,9 +8,7 @@ using PoolManager.SDK.Pools.Responses;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace PoolManager.Pools
@@ -21,7 +16,7 @@ namespace PoolManager.Pools
     public class PoolContext
     {
         private PoolState _currentState;
-        private const string _poolStateKey = "pool-state";
+        private const string PoolStateKey = "pool-state";
 
         public PoolContext(string serviceTypeUri, IPoolStateProvider poolStates, IInstanceProxy instanceProxy, IActorStateManager stateManager, TelemetryClient telemetryClient)
         {
@@ -42,23 +37,23 @@ namespace PoolManager.Pools
 
         public async Task ActivateAsync()
         {
-            var state = await StateManager.TryGetStateAsync<PoolStates>(_poolStateKey);
+            var state = await StateManager.TryGetStateAsync<PoolStates>(PoolStateKey);
             if (state.HasValue)
                 _currentState = PoolStates.Get(state.Value);
         }
 
-        public Task DeactivateAsync() => StateManager.SetStateAsync(_poolStateKey, _currentState.State);
+        public Task DeactivateAsync() => StateManager.SetStateAsync(PoolStateKey, _currentState.State);
 
         public async Task StartAsync(StartPoolRequest request)
         {
             _currentState = await _currentState.StartAsync(this, request);
-            await StateManager.SetStateAsync(_poolStateKey, _currentState.State);
+            await StateManager.SetStateAsync(PoolStateKey, _currentState.State);
         }
 
         public async Task StopAsync()
         {
             _currentState = await _currentState.StopAsync(this);
-            await StateManager.SetStateAsync(_poolStateKey, _currentState.State);
+            await StateManager.SetStateAsync(PoolStateKey, _currentState.State);
         }
 
         public Task<GetInstanceResponse> GetAsync(GetInstanceRequest request) => _currentState.GetAsync(this, request);
@@ -110,12 +105,9 @@ namespace PoolManager.Pools
         {
             return new Uri($"{ServiceTypeUri}/{instanceId}", UriKind.RelativeOrAbsolute);
         }
-
         private async Task RemoveInstanceAsync(ConcurrentQueue<Guid> vacantInstances)
         {
-            Guid instanceId = Guid.Empty;
-            if(vacantInstances.TryDequeue(out instanceId))
-                await InstanceProxy.RemoveAsync(instanceId);
+            if (vacantInstances.TryDequeue(out var instanceId)) await InstanceProxy.RemoveAsync(instanceId);
         }
 
         public async Task EnsurePoolSizeAsync(PoolConfiguration configuration = null)
@@ -125,14 +117,11 @@ namespace PoolManager.Pools
             var activeInstances = poolInstances.OccupiedInstances;
             var idleInstances = poolInstances.VacantInstances;
 
-            long idleInstancesCount = 0;
-            long activeInstancesCount = 0;
+            long idleInstancesCount = idleInstances.Count;
+            long activeInstancesCount = activeInstances.Count;
 
-            idleInstancesCount = idleInstances.Count;
-            activeInstancesCount = activeInstances.Count;
-
-            long allInstancesCount = idleInstancesCount + activeInstancesCount;
-            long idleInstanceDelta = configuration.IdleServicesPoolSize - idleInstancesCount;
+            var allInstancesCount = idleInstancesCount + activeInstancesCount;
+            var idleInstanceDelta = configuration.IdleServicesPoolSize - idleInstancesCount;
 
             TelemetryClient.GetMetric("pools.occupied.size", nameof(ServiceTypeUri)).TrackValue(activeInstancesCount, ServiceTypeUri);
             TelemetryClient.GetMetric("pools.vacant.size", nameof(ServiceTypeUri)).TrackValue(idleInstancesCount, ServiceTypeUri);
@@ -141,7 +130,7 @@ namespace PoolManager.Pools
             TelemetryClient.GetMetric("pools.vacant.block.size", nameof(ServiceTypeUri)).TrackValue(configuration.IdleServicesPoolSize, ServiceTypeUri);
             TelemetryClient.GetMetric("pools.vacant.deficit", nameof(ServiceTypeUri)).TrackValue(idleInstanceDelta, ServiceTypeUri);
 
-            long allocationCount = 0;
+            long allocationCount;
             if (idleInstanceDelta > 0)
             {
                 allocationCount = Math.Min(configuration.MaxPoolSize - allInstancesCount, idleInstanceDelta);
@@ -162,8 +151,8 @@ namespace PoolManager.Pools
                 {
                     using (TelemetryClient.TrackMetricTimer("pools.vacant.grow.block.time", nameof(ServiceTypeUri), ServiceTypeUri))
                     {
-                        List<Task> addTasks = new List<Task>();
-                        for (int i = 0; i < configuration.ServicesAllocationBlockSize && i < allocationCount; i++)
+                        var addTasks = new List<Task>();
+                        for (var i = 0; i < configuration.ServicesAllocationBlockSize && i < allocationCount; i++)
                             addTasks.Add(AddInstanceAsync(configuration, poolInstances));
                         Task.WaitAll(addTasks.ToArray());
                     }
@@ -172,8 +161,8 @@ namespace PoolManager.Pools
                 {
                     using (TelemetryClient.TrackMetricTimer("pools.vacant.shrink.block.time", nameof(ServiceTypeUri), ServiceTypeUri))
                     {
-                        List<Task> removeTasks = new List<Task>();
-                        for (int i = 0; i < configuration.ServicesAllocationBlockSize && i < allocationCount; i++)
+                        var removeTasks = new List<Task>();
+                        for (var i = 0; i < configuration.ServicesAllocationBlockSize && i < allocationCount; i++)
                             removeTasks.Add(RemoveInstanceAsync(poolInstances.VacantInstances));
                         Task.WaitAll(removeTasks.ToArray());
                     }
@@ -189,13 +178,12 @@ namespace PoolManager.Pools
             var poolInstances = await GetPoolInstancesAsync();
             TelemetryClient.GetMetric("pools.removed.size", nameof(ServiceTypeUri)).TrackValue(poolInstances.RemovedInstances.Count, ServiceTypeUri);
 
-            List<Task> deletes = new List<Task>();
+            var deletes = new List<Task>();
             try
             {                
                 while (!poolInstances.RemovedInstances.IsEmpty)
                 {
-                    Guid instanceId = Guid.Empty;
-                    if (poolInstances.RemovedInstances.TryDequeue(out instanceId))
+                    if (poolInstances.RemovedInstances.TryDequeue(out var instanceId))
                         deletes.Add(InstanceProxy.DeleteAsync(instanceId));
                 }
                 await Task.WhenAll(deletes);

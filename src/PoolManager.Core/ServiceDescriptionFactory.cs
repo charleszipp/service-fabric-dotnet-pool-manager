@@ -7,9 +7,7 @@ namespace PoolManager.Core
     {
         public ServiceDescriptionFactory(string serviceTypeUri, string instanceId, PartitionSchemeDescription partitionSchemeDescription)
         {
-            string applicationName = null;
-            string serviceTypeName = null;
-            ParseServiceTypeUri(serviceTypeUri, out applicationName, out serviceTypeName);
+            ParseServiceTypeUri(serviceTypeUri, out var applicationName, out var serviceTypeName);
             ApplicationName = new Uri(applicationName, UriKind.RelativeOrAbsolute);
             ServiceTypeName = serviceTypeName;
             ServiceName = CreateServiceName(serviceTypeUri, instanceId);
@@ -46,7 +44,7 @@ namespace PoolManager.Core
 
         public StatelessServiceDescription CreateStateless(int instanceCount = 1, byte[] initializationData = null)
         {
-            return new StatelessServiceDescription()
+            return new StatelessServiceDescription
             {
                 ApplicationName = ApplicationName,
                 InstanceCount = instanceCount,
@@ -59,7 +57,7 @@ namespace PoolManager.Core
 
         public StatefulServiceDescription CreateStateful(int minReplicas = 1, int targetReplicas = 3, bool hasPersistedState = true)
         {
-            return new StatefulServiceDescription()
+            return new StatefulServiceDescription
             {
                 ApplicationName = ApplicationName,
                 MinReplicaSetSize = minReplicas,
