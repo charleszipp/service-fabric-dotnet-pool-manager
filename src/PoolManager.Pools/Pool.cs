@@ -20,17 +20,11 @@ namespace PoolManager.Pools
         private readonly TelemetryClient _telemetryClient;
         private const string EnsurePoolSizeReminderKey = "ensure-pool-size";
         private const string CleanupRemovedInstancesReminderKey = "cleanup-removed-instances";
-
-        public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, IActorProxyFactory actorProxyFactory)
+        public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, IInstanceProxy instanceProxy)
             : base(actorService, actorId)
         {
-            _context = new PoolContext(
-                GetServiceTypeUri(actorId),
-                new PoolStateProvider(new PoolStateIdle(), new PoolStateActive()),
-                new InstanceProxy(actorProxyFactory),
-                StateManager,
-                telemetryClient
-            );
+            _context = new PoolContext(GetServiceTypeUri(actorId), new PoolStateProvider(new PoolStateIdle(), new PoolStateActive()),
+                instanceProxy, StateManager, telemetryClient);
             _telemetryClient = telemetryClient;
         }
         public async Task StartAsync(StartPoolRequest request)

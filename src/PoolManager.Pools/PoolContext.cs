@@ -196,7 +196,7 @@ namespace PoolManager.Pools
                 {
                     Guid instanceId = Guid.Empty;
                     if (poolInstances.RemovedInstances.TryDequeue(out instanceId))
-                        deletes.Add(InstanceProxy.DisposeAsync(instanceId));
+                        deletes.Add(InstanceProxy.DeleteAsync(instanceId));
                 }
                 await Task.WhenAll(deletes);
             }

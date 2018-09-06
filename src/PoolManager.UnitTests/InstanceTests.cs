@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Remoting.V1.FabricTransport.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using PoolManager.Core;
 using PoolManager.Instances;
-using PoolManager.Pools;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Instances.Requests;
 using ServiceFabric.Mocks;
@@ -22,7 +23,6 @@ namespace PoolManager.UnitTests
         private Mock<IInstance> _instance;
         private TelemetryClient _telemetryClient;
         private ActorId _actorId;
-        private Pool _sut;
         private Mock<IClusterClient> _clusterClient;
         [TestInitialize]
         public async Task StartingAnInstance()
@@ -53,7 +53,7 @@ namespace PoolManager.UnitTests
         private static MockActorService<Instance> CreateInstanceActorService(IClusterClient cluster, TelemetryClient telemetryClient)
         {
             return MockActorServiceFactory.CreateActorServiceForActor<Instance>(
-                (svc, id) => new Instance(svc, id, cluster, telemetryClient, new MockActorProxyFactory(), new MockServiceProxyFactory()));
+                (svc, id) => new Instance(svc, id, cluster, telemetryClient, new Mock<IActorProxyFactory>().Object, new Mock<IServiceProxyFactory>().Object));
         }
     }
 }

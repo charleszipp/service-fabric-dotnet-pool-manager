@@ -1,6 +1,13 @@
 ﻿<ProjectConfiguration>
   <Settings>
     <DefaultTestTimeout>180000</DefaultTestTimeout>
-    <IgnoreThisComponentCompletely>True</IgnoreThisComponentCompletely>
+    <IgnoredTests>
+      <NamedTestSelector>
+        <TestName>PoolManager.IntegrationTests.PoolManagerFeatureFeature.PoolStartCreatesServiceInstancesWithProvidedConfiguration</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>PoolManager.IntegrationTests.PoolManagerFeatureFeature.GetAnInstance</TestName>
+      </NamedTestSelector>
+    </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

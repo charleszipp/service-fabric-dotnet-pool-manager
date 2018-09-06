@@ -1,18 +1,15 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.ServiceFabric.Remoting.Activities;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
-using Microsoft.ServiceFabric.Services.Remoting.V1.FabricTransport.Client;
 using PoolManager.Core;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Instances.Requests;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
 using System;
-using System.Fabric;
 using System.Threading.Tasks;
 
 namespace PoolManager.Instances

@@ -31,16 +31,17 @@ namespace PoolManager.Tests.NoOp
         private InstanceStates _currentState =>
             _instanceId.HasValue && _instanceId.Value != default(Guid) && !string.IsNullOrEmpty(_serviceInstanceName) ? 
                 InstanceStates.Occupied : InstanceStates.Vacant;
-
         public NoOp(StatefulServiceContext context) : base(context)
         {
-            _instanceProxy = new InstanceProxy(new CorrelatingActorProxyFactory(Context, callbackClient => new FabricTransportServiceRemotingClientFactory(callbackClient: callbackClient)));
+            _instanceProxy =
+                new InstanceProxy(
+                    new CorrelatingActorProxyFactory(Context,
+                        callbackClient => new FabricTransportServiceRemotingClientFactory(callbackClient: callbackClient)),
+                    new GuidGetter());
         }
-
         public NoOp(StatefulServiceContext context, IReliableStateManagerReplica replica) : base(context, replica)
         {
         }
-
         public Task OccupyAsync(string instanceId, string serviceInstanceName)
         {
             _instanceId = Guid.Parse(instanceId);

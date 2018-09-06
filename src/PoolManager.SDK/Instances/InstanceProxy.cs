@@ -10,19 +10,19 @@ namespace PoolManager.SDK.Instances
     public class InstanceProxy : IInstanceProxy
     {
         private readonly IActorProxyFactory _actorProxyFactory;
-
-        public InstanceProxy(IActorProxyFactory actorProxyFactory)
+        private readonly IGuidGetter _guidGetter;
+        public InstanceProxy(IActorProxyFactory actorProxyFactory, IGuidGetter guidGetter)
         {
             _actorProxyFactory = actorProxyFactory;
+            _guidGetter = guidGetter;
         }
 
         public async Task<Guid> StartAsync(StartInstanceRequest request)
         {
-            var rvalue = Guid.NewGuid();
+            var rvalue = _guidGetter.GetAGuid();
             await GetProxy(rvalue).StartAsync(request);
             return rvalue;
         }
-
         public async Task<Guid> StartAsAsync(StartInstanceAsRequest request)
         {
             var rvalue = Guid.NewGuid();
@@ -39,7 +39,7 @@ namespace PoolManager.SDK.Instances
         public Task RemoveAsync(Guid instanceId) => 
             GetProxy(instanceId).RemoveAsync();
 
-        public Task DisposeAsync(Guid instanceId) =>
+        public Task DeleteAsync(Guid instanceId) =>
             GetServiceProxy(instanceId).DeleteActorAsync(new ActorId(instanceId), CancellationToken.None);
 
         public Task VacateAsync(Guid instanceId) => 
