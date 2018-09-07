@@ -37,7 +37,7 @@ namespace PoolManager.UnitTests
             _clusterClient = new Mock<IClusterClient>();
             var instanceActorService = CreateInstanceActorService(_clusterClient.Object, _telemetryClient);
             var instanceActor = instanceActorService.Activate(_actorId);
-            await instanceActor.StartAsync(new StartInstanceRequest("fabric:/ServicePoolManagerLoadTestHarness/NoOpType"));
+            await instanceActor.StartAsync(new StartInstanceRequest("fabric:/ServicePoolManagerLoadTestHarness/NoOpType", "fabric:/ServicePoolManagerLoadTestHarness/NoOpType"));
         }
         [TestMethod]
         public void CreatesAStatefulService()

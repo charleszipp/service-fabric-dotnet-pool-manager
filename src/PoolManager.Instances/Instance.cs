@@ -114,7 +114,7 @@ namespace PoolManager.Instances
                         if (inactivityPeriod > config.ExpirationQuanta)
                         {
                             var vacateInstanceRequest = new VacateInstanceRequest(this.GetActorId().GetGuidId(), serviceState.ServiceInstanceName);
-                            await _context.PoolProxy.VacateInstanceAsync(config.ServiceTypeUri, vacateInstanceRequest);
+                            await _context.PoolProxy.VacateInstanceAsync(config.PoolId, vacateInstanceRequest);
                         }
                     }
                 }

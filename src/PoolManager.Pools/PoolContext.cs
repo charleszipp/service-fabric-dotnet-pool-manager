@@ -18,9 +18,10 @@ namespace PoolManager.Pools
         private PoolState _currentState;
         private const string PoolStateKey = "pool-state";
 
-        public PoolContext(string serviceTypeUri, IPoolStateProvider poolStates, IInstanceProxy instanceProxy, IActorStateManager stateManager, TelemetryClient telemetryClient)
+        public PoolContext(string poolId, IPoolStateProvider poolStates, IInstanceProxy instanceProxy, IActorStateManager stateManager, TelemetryClient telemetryClient)
         {
-            ServiceTypeUri = serviceTypeUri;
+            ServiceTypeUri = GetServiceTypeUri(poolId);
+            PoolId = poolId;
             PoolStates = poolStates;
             InstanceProxy = instanceProxy;
             StateManager = stateManager;
@@ -29,6 +30,7 @@ namespace PoolManager.Pools
         }
 
         public string ServiceTypeUri { get; }
+        public string PoolId { get; }
         public IPoolStateProvider PoolStates { get; }
         public IInstanceProxy InstanceProxy { get; }
         public IActorStateManager StateManager { get; }
@@ -71,6 +73,7 @@ namespace PoolManager.Pools
         internal async Task AddInstanceAsAsync(string serviceInstanceName, PoolConfiguration configuration, PoolInstances poolInstances)
         {            
             var instanceId = await InstanceProxy.StartAsAsync(new SDK.Instances.Requests.StartInstanceAsRequest(
+                PoolId,
                 serviceInstanceName,
                 ServiceTypeUri,
                 configuration.IsServiceStateful,
@@ -88,6 +91,7 @@ namespace PoolManager.Pools
         internal async Task AddInstanceAsync(PoolConfiguration configuration, PoolInstances poolInstances)
         {
             var instanceId = await InstanceProxy.StartAsync(new SDK.Instances.Requests.StartInstanceRequest(
+                PoolId,
                 ServiceTypeUri,
                 configuration.IsServiceStateful,
                 configuration.HasPersistedState,
@@ -194,5 +198,8 @@ namespace PoolManager.Pools
                 TelemetryClient.GetMetric("pools.removed.failed", nameof(ServiceTypeUri)).TrackValue(deletes.Count(d => d.IsFaulted), ServiceTypeUri);
             }
         }
+
+        private static string GetServiceTypeUri(string poolId) => 
+            poolId.Contains("?") ? poolId.Substring(0, poolId.IndexOf('?')) : poolId;
     }
 }

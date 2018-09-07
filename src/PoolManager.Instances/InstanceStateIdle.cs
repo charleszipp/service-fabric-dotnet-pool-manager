@@ -25,7 +25,7 @@ namespace PoolManager.Instances
 
         public override async Task<InstanceState> StartAsAsync(InstanceContext context, StartInstanceAsRequest request)
         {
-            var rvalue = await StartAsync(context, new StartInstanceRequest(request.ServiceTypeUri, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme));
+            var rvalue = await StartAsync(context, new StartInstanceRequest(request.PoolId, request.ServiceTypeUri, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme));
             rvalue = await rvalue.OccupyAsync(context, new OccupyRequest(request.ServiceInstanceName, request.ExpirationQuanta));
             return rvalue;
         }
@@ -34,7 +34,7 @@ namespace PoolManager.Instances
         {
             var partitionSchemeDescription = request.PartitionScheme.ToServiceFabricDescription();
             var serviceDescriptionFactory = new ServiceDescriptionFactory(request.ServiceTypeUri, context.InstanceId, partitionSchemeDescription);
-            var config = new ServiceConfiguration(serviceDescriptionFactory.ServiceName, request.ServiceTypeUri, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme, request.ExpirationQuanta);
+            var config = new ServiceConfiguration(serviceDescriptionFactory.ServiceName, request.PoolId, request.IsServiceStateful, request.HasPersistedState, request.MinReplicas, request.TargetReplicas, request.PartitionScheme, request.ExpirationQuanta);
 
             if (config.IsServiceStateful)
                 await context.Cluster.CreateStatefulServiceAsync(serviceDescriptionFactory, request.MinReplicas, request.TargetReplicas, request.HasPersistedState);

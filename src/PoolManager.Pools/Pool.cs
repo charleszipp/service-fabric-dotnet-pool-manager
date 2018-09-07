@@ -21,7 +21,7 @@ namespace PoolManager.Pools
         public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, IInstanceProxy instanceProxy)
             : base(actorService, actorId)
         {
-            _context = new PoolContext(GetServiceTypeUri(actorId), new PoolStateProvider(new PoolStateIdle(), new PoolStateActive()),
+            _context = new PoolContext(actorId.GetStringId(), new PoolStateProvider(new PoolStateIdle(), new PoolStateActive()),
                 instanceProxy, StateManager, telemetryClient);
             _telemetryClient = telemetryClient;
         }
@@ -101,14 +101,6 @@ namespace PoolManager.Pools
         {
             await UnregisterReminderAsync(name);
             await RegisterReminderAsync(name, state, dueTime, period);
-        }
-
-        private static string GetServiceTypeUri(ActorId actorId)
-        {
-            var rvalue = actorId.GetStringId();
-            if (rvalue.Contains("?"))
-                rvalue = rvalue.Substring(0, rvalue.IndexOf('?'));
-            return rvalue;
         }
     }
 }
