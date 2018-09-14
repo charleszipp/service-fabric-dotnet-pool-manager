@@ -36,14 +36,16 @@ namespace PoolManager.Terminal
                 .WithCommandHandler<RestartApplicationHandler, RestartApplication>()
                 .WithCommandHandler<RestartPoolHandler, RestartPool>()
                 .WithCommandHandler<GetInstanceHandler, GetInstance>()
+                .WithCommandHandler<SwarmHandler, Swarm>()
                 .Build();
 
-            var parsed = Parser.Default.ParseArguments<RestartApplication, RestartPool, GetInstance>(args);
+            var parsed = Parser.Default.ParseArguments<RestartApplication, RestartPool, GetInstance, Swarm>(args);
             await parsed.MapResult(
                 async (RestartApplication opts) => await pools.ExecuteAsync(opts, cancellation.Token),
                 async (RestartPool opts) => await pools.ExecuteAsync(opts, cancellation.Token),
                 async (GetInstance opts) => await pools.ExecuteAsync(opts, cancellation.Token),
-                err => Task.FromException(new Exception(err.First().Tag.ToString())));
+                async (Swarm opts) => await pools.ExecuteAsync(opts, cancellation.Token),
+                err => Task.FromResult(-1));
         }
     }
 }

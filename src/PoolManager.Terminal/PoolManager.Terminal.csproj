@@ -7,7 +7,7 @@
     <ProjectGuid>{E7D906A4-615E-428D-8914-11654C142048}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>PoolManager.Terminal</RootNamespace>
-    <AssemblyName>PoolManager.Terminal</AssemblyName>
+    <AssemblyName>pools</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -130,6 +130,7 @@
     <Compile Include="Commands\IHandleCommand.cs" />
     <Compile Include="Commands\RestartApplication.cs" />
     <Compile Include="Commands\RestartPool.cs" />
+    <Compile Include="Commands\Swarm.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ITerminal.cs" />
     <Compile Include="Pools.cs" />

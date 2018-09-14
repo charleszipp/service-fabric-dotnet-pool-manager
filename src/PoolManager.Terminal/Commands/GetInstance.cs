@@ -36,32 +36,7 @@ namespace PoolManager.Terminal.Commands
             _terminal = terminal;
         }
 
-        public async Task ExecuteAsync(GetInstance command, CancellationToken cancellationToken)
-        {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-            try
-            {
-                await _pools.GetInstanceAsync(command.PoolId, new SDK.Pools.Requests.GetInstanceRequest(command.Name));
-            }
-            catch (AggregateException ex)
-            {
-                WriteActivationStatus($"Failed with message {ex.InnerException.Message}", command.Name);
-            }
-            catch (Exception ex)
-            {
-                WriteActivationStatus($"Failed with message {ex.Message}", command.Name);
-            }
-            finally
-            {
-                timer.Stop();
-                WriteActivationStatus($"Finished in {timer.ElapsedMilliseconds} ms", command.Name);
-            }
-        }
-
-        public void WriteActivationStatus(string message, string serviceInstanceName)
-        {
-            _terminal.Write($"{serviceInstanceName}, {message}");
-        }
+        public async Task ExecuteAsync(GetInstance command, CancellationToken cancellationToken) => 
+            await _pools.GetInstanceAsync(command.PoolId, new SDK.Pools.Requests.GetInstanceRequest(command.Name));
     }
 }

@@ -12,17 +12,17 @@ namespace PoolManager.Terminal.Commands
     public class RestartPool : ICommand
     {
         public RestartPool(
-            string poolId,
-            string serviceTypeUri,
-            bool isServiceStateful,
-            bool hasPersistedState,
-            int minReplicas,
-            int targetReplicas,
-            int maxPoolSize,
-            int idleServicesPoolSize,
-            int servicesAllocationBlockSize,
-            PartitionSchemeDescription partitionScheme,
-            TimeSpan? expirationQuanta
+            string poolId = Constants.NoOpServiceTypeUri,
+            string serviceTypeUri = Constants.NoOpServiceTypeUri,
+            bool isServiceStateful = true,
+            bool hasPersistedState = true,
+            int minReplicas = 1,
+            int targetReplicas = 3,
+            int maxPoolSize = 20,
+            int idleServicesPoolSize = 3,
+            int servicesAllocationBlockSize = 2,
+            PartitionSchemeDescription partitionScheme = PartitionSchemeDescription.Singleton,
+            TimeSpan? expirationQuanta = null
             )
         {
             PoolId = poolId;
@@ -56,13 +56,13 @@ namespace PoolManager.Terminal.Commands
         [Option('t', "target", Default = 3)]
         public int TargetReplicas { get; }
 
-        [Option('m', "max", Default = int.MaxValue)]
+        [Option('m', "max", Default = 20)]
         public int MaxPoolSize { get; }
 
-        [Option('i', "idle", Default = 10)]
+        [Option('i', "idle", Default = 3)]
         public int IdleServicesPoolSize { get; }
 
-        [Option('b', "blocks", Default = 5)]
+        [Option('b', "blocks", Default = 2)]
         public int ServicesAllocationBlockSize { get; }
 
         [Option('n', "partition", Default = PartitionSchemeDescription.Singleton)]
@@ -87,13 +87,13 @@ namespace PoolManager.Terminal.Commands
         {
             if (await _pools.IsActive(command.PoolId))
             {
-                _terminal.Write("pool started, stopping and deleting pool...");
+                _terminal.Write($"{command.PoolId}, pool started, stopping and deleting pool...");
                 await _pools.StopPoolAsync(command.PoolId);
                 await _pools.DeletePoolAsync(command.PoolId);
                 _terminal.Write("pool removed");
             }
 
-            _terminal.Write("starting new pool...");
+            _terminal.Write($"{command.PoolId}, starting pool");
             var request = new StartPoolRequest(
                 isServiceStateful: command.IsServiceStateful,
                 hasPersistedState: command.HasPersistedState,
@@ -106,7 +106,9 @@ namespace PoolManager.Terminal.Commands
                 expirationQuanta: command.ExpirationQuanta
                 );
             await _pools.StartPoolAsync(command.PoolId, request);
-            _terminal.Write("pool started");
+            _terminal.Write($"{command.PoolId}, pool started. pausing for service creation");
+            await Task.Delay(2000);
+            _terminal.Write($"{command.PoolId}, pool ready.");
         }
     }
 }
