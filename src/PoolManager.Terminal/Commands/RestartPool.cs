@@ -107,7 +107,7 @@ namespace PoolManager.Terminal.Commands
                 );
             await _pools.StartPoolAsync(command.PoolId, request);
             _terminal.Write($"{command.PoolId}, pool started. pausing for service creation");
-            await Task.Delay(2000);
+            await Task.Delay(6000);
             _terminal.Write($"{command.PoolId}, pool ready.");
         }
     }
