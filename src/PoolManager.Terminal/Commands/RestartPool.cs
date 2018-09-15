@@ -22,7 +22,7 @@ namespace PoolManager.Terminal.Commands
             int idleServicesPoolSize = 3,
             int servicesAllocationBlockSize = 2,
             PartitionSchemeDescription partitionScheme = PartitionSchemeDescription.Singleton,
-            TimeSpan? expirationQuanta = null
+            double expirationQuanta = 15
             )
         {
             PoolId = poolId;
@@ -59,7 +59,7 @@ namespace PoolManager.Terminal.Commands
         [Option('m', "max", Default = 20)]
         public int MaxPoolSize { get; }
 
-        [Option('i', "idle", Default = 3)]
+        [Option('i', "idle", Default = 5)]
         public int IdleServicesPoolSize { get; }
 
         [Option('b', "blocks", Default = 2)]
@@ -68,8 +68,8 @@ namespace PoolManager.Terminal.Commands
         [Option('n', "partition", Default = PartitionSchemeDescription.Singleton)]
         public PartitionSchemeDescription PartitionScheme { get; }
 
-        [Option('e', "expiry")]
-        public TimeSpan? ExpirationQuanta { get; }
+        [Option('e', "expiry", Default = 15)]
+        public double ExpirationQuanta { get; }
     }
 
     public class RestartPoolHandler : IHandleCommand<RestartPool>
@@ -103,11 +103,10 @@ namespace PoolManager.Terminal.Commands
                 maxPoolSize: command.MaxPoolSize,
                 idleServicesPoolSize: command.IdleServicesPoolSize,
                 servicesAllocationBlockSize: command.ServicesAllocationBlockSize,
-                expirationQuanta: command.ExpirationQuanta
+                expirationQuanta: TimeSpan.FromMinutes(command.ExpirationQuanta)
                 );
             await _pools.StartPoolAsync(command.PoolId, request);
             _terminal.Write($"{command.PoolId}, pool started. pausing for service creation");
-            await Task.Delay(6000);
             _terminal.Write($"{command.PoolId}, pool ready.");
         }
     }

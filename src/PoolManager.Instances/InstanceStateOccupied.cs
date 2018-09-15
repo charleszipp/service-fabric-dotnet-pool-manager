@@ -27,7 +27,7 @@ namespace PoolManager.Instances
 
             var config = await context.GetInstanceConfigurationAsync();
 
-            return TimeSpan.FromMilliseconds(config.ExpirationQuanta.TotalMilliseconds / 10);
+            return TimeSpan.FromMilliseconds(config.ExpirationQuanta.TotalMilliseconds / 3);
         }
 
         public override Task<InstanceState> StartAsAsync(InstanceContext context, StartInstanceAsRequest request) =>

@@ -125,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builders\PoolsCommandDecorator.cs" />
+    <Compile Include="Commands\EnsureAppReady.cs" />
     <Compile Include="Commands\GetInstance.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\IHandleCommand.cs" />

@@ -16,7 +16,7 @@ namespace PoolManager.Terminal
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main(string[] args) 
         {
             MainAsync(args).Wait();
         }
@@ -37,14 +37,16 @@ namespace PoolManager.Terminal
                 .WithCommandHandler<RestartPoolHandler, RestartPool>()
                 .WithCommandHandler<GetInstanceHandler, GetInstance>()
                 .WithCommandHandler<SwarmHandler, Swarm>()
+                .WithCommandHandler<EnsureAppReadyHandler, EnsureAppReady>()
                 .Build();
 
-            var parsed = Parser.Default.ParseArguments<RestartApplication, RestartPool, GetInstance, Swarm>(args);
+            var parsed = Parser.Default.ParseArguments<RestartApplication, RestartPool, GetInstance, Swarm, EnsureAppReady>(args);
             await parsed.MapResult(
                 async (RestartApplication opts) => await pools.ExecuteAsync(opts, cancellation.Token),
                 async (RestartPool opts) => await pools.ExecuteAsync(opts, cancellation.Token),
                 async (GetInstance opts) => await pools.ExecuteAsync(opts, cancellation.Token),
                 async (Swarm opts) => await pools.ExecuteAsync(opts, cancellation.Token),
+                async (EnsureAppReady opts) => await pools.ExecuteAsync(opts, cancellation.Token),
                 err => Task.FromResult(-1));
         }
     }

@@ -64,37 +64,53 @@ namespace PoolManager.Terminal.Commands
         private readonly IHandleCommand<GetInstance> getInstanceHandler;
         private readonly IHandleCommand<RestartApplication> restartAppHandler;
         private readonly IHandleCommand<RestartPool> restartPoolHandler;
+        private readonly IHandleCommand<EnsureAppReady> ensureAppReadyHandler;
         private readonly Random random = new Random();
 
-        public SwarmHandler(ITerminal terminal, IHandleCommand<GetInstance> getInstanceHandler, IHandleCommand<RestartApplication> restartAppHandler, IHandleCommand<RestartPool> restartPoolHandler)
+        public SwarmHandler(ITerminal terminal, 
+            IHandleCommand<GetInstance> getInstanceHandler, 
+            IHandleCommand<RestartApplication> restartAppHandler, 
+            IHandleCommand<RestartPool> restartPoolHandler,
+            IHandleCommand<EnsureAppReady> ensureAppReadyHandler)
         {
             this.terminal = terminal;
             this.getInstanceHandler = getInstanceHandler;
             this.restartAppHandler = restartAppHandler;
             this.restartPoolHandler = restartPoolHandler;
+            this.ensureAppReadyHandler = ensureAppReadyHandler;
         }
 
         public async Task ExecuteAsync(Swarm command, CancellationToken cancellationToken)
         {
-            await restartAppHandler.ExecuteAsync(new RestartApplication(command.ApplicationType, command.ApplicationName, command.ApplicationVersion), cancellationToken);
-
+            terminal.Write($"SWARM USERS: {command.Users}");
+            terminal.Write($"SWARM TENANTS: {command.Tenants}");
+            terminal.Write($"SWARM DURATION: {command.Duration}");
             terminal.Write($"SWARM RAMP UP TIME: {command.RampUpTime}");
             terminal.Write($"SWARM RAMP UP INTERVAL: {command.RampUpInterval}");
             terminal.Write($"SWARM RAMP UP INTERVALS: {command.RampUpIntervals}");
             terminal.Write($"SWARM RAMP UP USERS: {command.RampUpUsers}");
+
+            await Task.WhenAll(
+                restartAppHandler.ExecuteAsync(new RestartApplication("PoolManager", "fabric:/PoolManager", command.ApplicationVersion), cancellationToken),
+                restartAppHandler.ExecuteAsync(new RestartApplication(command.ApplicationType, command.ApplicationName, command.ApplicationVersion), cancellationToken)
+            );
+            await Task.Delay(15000);
+            await ensureAppReadyHandler.ExecuteAsync(new EnsureAppReady("fabric:/PoolManager"), cancellationToken);
 
             var intervals = GetIntervals(command.RampUpIntervals, command.RampUpInterval, command.RampUpUsers);
             var instanceNames = GetInstanceNames(command.Instances);
             var tenants = GetTenantIds(command.Tenants);
             var users = GetUsers(command.Users, command.ServiceTypeUri, tenants);
 
-            foreach(var poolId in users.Select(u => u.PoolId).Distinct())
+            foreach (var poolId in users.Select(u => u.PoolId).Distinct())
             {
                 await restartPoolHandler.ExecuteAsync(
-                    new RestartPool(poolId, command.ServiceTypeUri, expirationQuanta: TimeSpan.FromMinutes(3)),
+                    new RestartPool(poolId, command.ServiceTypeUri),
                     cancellationToken
                 );
             }
+            await Task.Delay(15000);
+            await ensureAppReadyHandler.ExecuteAsync(new EnsureAppReady(command.ApplicationName), cancellationToken);
 
             intervals.MoveNext();
             ConcurrentDictionary<ObjectId, Task<SwarmExecution>> executionTasks = new ConcurrentDictionary<ObjectId, Task<SwarmExecution>>();
@@ -114,7 +130,7 @@ namespace PoolManager.Terminal.Commands
                 //this governs the degree of parallelism. can comment this out to make all run in parallel 
                 var runningTasks = executionTasks.Where(t => !t.Value.IsCompleted).Select(t => t.Value);
                 if (runningTasks.Count() >= intervals.Current.Users)
-                    await Task.WhenAny(runningTasks);
+                    try { await Task.WhenAny(runningTasks); } catch (ArgumentException) { }
 
                 var executionTask = GetInstanceAsync(
                     intervals.Current.Users,
@@ -150,6 +166,7 @@ namespace PoolManager.Terminal.Commands
                 timer.Stop();
             }
             terminal.Write($"{users}, {executionId}, {timer.Elapsed}, {exception?.Message ?? "success"}");
+            await Task.Delay(3000);
             return new SwarmExecution(timer.Elapsed, exception);
         }
         private LinkedList<SwarmInterval>.Enumerator GetIntervals(int rampUpIntervals, TimeSpan rampUpInterval, int rampUpUsers)

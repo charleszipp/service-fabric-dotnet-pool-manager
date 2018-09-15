@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 using PoolManager.SDK;
 using PoolManager.SDK.Pools;
 
@@ -36,7 +37,11 @@ namespace PoolManager.Terminal.Commands
             _terminal = terminal;
         }
 
-        public async Task ExecuteAsync(GetInstance command, CancellationToken cancellationToken) => 
-            await _pools.GetInstanceAsync(command.PoolId, new SDK.Pools.Requests.GetInstanceRequest(command.Name));
+        public async Task ExecuteAsync(GetInstance command, CancellationToken cancellationToken)
+        {
+            var response = await _pools.GetInstanceAsync(command.PoolId, new SDK.Pools.Requests.GetInstanceRequest(command.Name));
+            var proxy = ServiceProxy.Create<IServiceInstance>(response.ServiceInstanceUri);
+            await proxy.PingAsync();
+        }
     }
 }
