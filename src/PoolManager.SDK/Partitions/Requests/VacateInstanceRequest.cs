@@ -7,12 +7,15 @@ namespace PoolManager.SDK.Partitions.Requests
     [DataContract]
     public class VacateInstanceRequest
     {
-        public VacateInstanceRequest(Guid instanceId)
+        public VacateInstanceRequest(string serviceTypeUri, string instanceName)
         {
-            InstanceId = instanceId;
+            ServiceTypeUri = serviceTypeUri;
+            InstanceName = instanceName;
         }
 
         [DataMember]
-        public Guid InstanceId { get; private set; }
+        public string ServiceTypeUri { get; private set; }
+        [DataMember]
+        public string InstanceName { get; private set; }
     }
 }
