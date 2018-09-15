@@ -1,13 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="PoolManager" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
-    <Parameter Name="InstanceActorService_PartitionCount" DefaultValue="10" />
-    <Parameter Name="InstanceActorService_MinReplicaSetSize" DefaultValue="$$audit-poolmanager-minReplicaSetSize$$" />
-    <Parameter Name="InstanceActorService_TargetReplicaSetSize" DefaultValue="$$audit-poolmanager-targetReplicaSetSize$$" />
-    <Parameter Name="PoolActorService_PartitionCount" DefaultValue="10" />
-    <Parameter Name="PoolActorService_MinReplicaSetSize" DefaultValue="$$audit-poolmanager-minReplicaSetSize$$" />
-    <Parameter Name="PoolActorService_TargetReplicaSetSize" DefaultValue="$$audit-poolmanager-targetReplicaSetSize$$" />
+    <Parameter Name="InstanceActorService_PartitionCount" DefaultValue="3" />
+    <Parameter Name="InstanceActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="InstanceActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="PoolActorService_PartitionCount" DefaultValue="3" />
+    <Parameter Name="PoolActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="PoolActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="PartitionsActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="PartitionsActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="PartitionsActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="PoolManager.PartitionsPkg" ServiceManifestVersion="1.0.0" />
+  </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="PoolManager.InstancesPkg" ServiceManifestVersion="1.0.0" />
   </ServiceManifestImport>
@@ -23,6 +29,11 @@
     <Service Name="PoolActorService" GeneratedIdRef="2610a22d-efc3-4c45-bf34-2d9bfd6a74ce|Persisted">
       <StatefulService ServiceTypeName="PoolActorServiceType" TargetReplicaSetSize="[PoolActorService_TargetReplicaSetSize]" MinReplicaSetSize="[PoolActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[PoolActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="PartitionsActorService" GeneratedIdRef="458e8497-d7be-40d9-9f69-a92092359ed5|Persisted">
+      <StatefulService ServiceTypeName="PartitionsActorServiceType" TargetReplicaSetSize="[PartitionsActorService_TargetReplicaSetSize]" MinReplicaSetSize="[PartitionsActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[PartitionsActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
   </DefaultServices>

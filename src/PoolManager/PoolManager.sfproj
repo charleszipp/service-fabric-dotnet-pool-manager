@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PoolManager.Instances\PoolManager.Instances.csproj" />
+    <ProjectReference Include="..\PoolManager.Partitions\PoolManager.Partitions.csproj" />
     <ProjectReference Include="..\PoolManager.Pools\PoolManager.Pools.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
