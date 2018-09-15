@@ -7,15 +7,15 @@ namespace PoolManager.SDK.Partitions.Requests
     [DataContract]
     public class GetInstanceRequest
     {
-        public GetInstanceRequest(string serviceTypeUri, string serviceInstanceName)
+        public GetInstanceRequest(string serviceTypeUri, string instanceName)
         {
             ServiceTypeUri = serviceTypeUri;
-            ServiceInstanceName = serviceInstanceName;
+            InstanceName = instanceName;
         }
 
         [DataMember]
         public string ServiceTypeUri { get; private set; }
         [DataMember]
-        public string ServiceInstanceName { get; private set; }
+        public string InstanceName { get; private set; }
     }
 }
