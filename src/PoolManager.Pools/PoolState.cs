@@ -31,11 +31,5 @@ namespace PoolManager.Pools
             await context.EnsurePoolSizeAsync(config);
             return context.PoolStates.Get(PoolStates.Active);
         }
-
-        public abstract Task<PoolState> StopAsync(PoolContext context);
-
-        public abstract Task<GetInstanceResponse> GetAsync(PoolContext context, GetInstanceRequest request);
-
-        public abstract Task VacateInstanceAsync(PoolContext poolContext, VacateInstanceRequest request);
     }
 }

@@ -17,7 +17,6 @@ namespace PoolManager.Pools
         private readonly PoolContext _context;
         private readonly TelemetryClient _telemetryClient;
         private const string EnsurePoolSizeReminderKey = "ensure-pool-size";
-        private const string CleanupRemovedInstancesReminderKey = "cleanup-removed-instances";
         public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, IInstanceProxy instanceProxy)
             : base(actorService, actorId)
         {
@@ -29,20 +28,7 @@ namespace PoolManager.Pools
         {
             await _context.StartAsync(request);
             await SetReminderAsync(EnsurePoolSizeReminderKey, null, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
-            var cleanupInterval = request.ExpirationQuanta.Add(TimeSpan.FromMilliseconds((int)request.ExpirationQuanta.TotalMilliseconds * 0.05));
-            await SetReminderAsync(CleanupRemovedInstancesReminderKey, null, cleanupInterval, cleanupInterval);
         }   
-        
-        public async Task StopAsync()
-        {
-            await _context.StopAsync();
-            await UnregisterReminderAsync(EnsurePoolSizeReminderKey);
-            await UnregisterReminderAsync(CleanupRemovedInstancesReminderKey);
-        }
-
-        public Task<GetInstanceResponse> GetAsync(GetInstanceRequest request) => _context.GetAsync(request);
-
-        public Task VacateInstanceAsync(VacateInstanceRequest request) => _context.VacateInstanceAsync(request);
 
         public async Task<ConfigurationResponse> GetConfigurationAsync()
         {
@@ -52,8 +38,6 @@ namespace PoolManager.Pools
                 config.MinReplicaSetSize, config.PartitionScheme, config.ServicesAllocationBlockSize,
                 config.ServiceTypeUri, config.TargetReplicasetSize);
         }
-
-        public Task<bool> IsActive() => Task.FromResult(_context.CurrentState == PoolStates.Active);
 
         protected override Task OnActivateAsync() => _context.ActivateAsync();
 
@@ -71,9 +55,6 @@ namespace PoolManager.Pools
                     {
                         case EnsurePoolSizeReminderKey:
                             await _context.EnsurePoolSizeAsync();
-                            break;
-                        case CleanupRemovedInstancesReminderKey:
-                            await _context.CleanupRemovedInstancesAsync();
                             break;
                     }
                 }
