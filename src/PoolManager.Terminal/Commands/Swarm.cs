@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 using MongoDB.Bson;
-using PoolManager.Core.Commands;
+using PoolManager.Core.Mediators.Commands;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

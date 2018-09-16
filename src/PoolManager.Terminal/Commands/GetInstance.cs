@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
-using PoolManager.Core.Commands;
+using PoolManager.Core.Mediators.Commands;
 using PoolManager.SDK;
 using PoolManager.SDK.Pools;
 

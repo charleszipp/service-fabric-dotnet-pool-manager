@@ -1,8 +1,8 @@
 ﻿using CommandLine;
 using Microsoft.ServiceFabric.Actors.Client;
 using Ninject;
-using PoolManager.Core.Builders;
-using PoolManager.Core.Resolvers;
+using PoolManager.Core.Mediators.Builders;
+using PoolManager.Core.Mediators.Resolvers;
 using PoolManager.SDK.Pools;
 using PoolManager.Terminal.Commands;
 using System.Fabric;

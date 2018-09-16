@@ -9,5 +9,6 @@ namespace PoolManager.SDK.Pools
     {
         Task StartAsync(StartPoolRequest request);
         Task<ConfigurationResponse> GetConfigurationAsync();
+        Task<PopVacantInstanceResponse> PopVacantInstanceAsync(PopVacantInstanceRequest request);
     }
 }

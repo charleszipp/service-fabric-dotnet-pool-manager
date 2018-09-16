@@ -1,5 +1,5 @@
 ﻿using CommandLine;
-using PoolManager.Core.Commands;
+using PoolManager.Core.Mediators.Commands;
 using PoolManager.SDK;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;

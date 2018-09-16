@@ -2,11 +2,14 @@
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
+using PoolManager.Core.Mediators;
+using PoolManager.Domains.Pools;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
 using PoolManager.SDK.Pools.Responses;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PoolManager.Pools
@@ -14,34 +17,55 @@ namespace PoolManager.Pools
     [StatePersistence(StatePersistence.Persisted)]
     public class Pool : Actor, IPool, IRemindable
     {
-        private readonly PoolContext _context;
         private readonly TelemetryClient _telemetryClient;
+        private readonly Mediator _mediator;
         private const string EnsurePoolSizeReminderKey = "ensure-pool-size";
-        public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, IInstanceProxy instanceProxy)
+
+        public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, Mediator mediator)
             : base(actorService, actorId)
         {
-            _context = new PoolContext(actorId.GetStringId(), new PoolStateProvider(new PoolStateIdle(), new PoolStateActive()),
-                instanceProxy, StateManager, telemetryClient);
             _telemetryClient = telemetryClient;
+            _mediator = mediator;
         }
         public async Task StartAsync(StartPoolRequest request)
         {
-            await _context.StartAsync(request);
+            await _mediator.ExecuteAsync(
+                new StartPool(
+                    request.ServiceTypeUri, 
+                    request.IsServiceStateful, 
+                    request.HasPersistedState, 
+                    request.MinReplicas, 
+                    request.TargetReplicas,
+                    (PartitionSchemeDescription)Enum.Parse(typeof(PartitionSchemeDescription), request.PartitionScheme.ToString()), 
+                    request.MaxPoolSize, 
+                    request.IdleServicesPoolSize, 
+                    request.ServicesAllocationBlockSize, 
+                    request.ExpirationQuanta), 
+                default(CancellationToken));
             await SetReminderAsync(EnsurePoolSizeReminderKey, null, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
         }   
 
         public async Task<ConfigurationResponse> GetConfigurationAsync()
         {
-            var config = await _context.GetPoolConfigurationAsync();
-            return new ConfigurationResponse(config.ExpirationQuanta, config.HasPersistedState,
-                config.IdleServicesPoolSize, config.IsServiceStateful, config.MaxPoolSize,
-                config.MinReplicaSetSize, config.PartitionScheme, config.ServicesAllocationBlockSize,
-                config.ServiceTypeUri, config.TargetReplicasetSize);
+            var config = await _mediator.ExecuteAsync(new GetPoolConfiguration(), default(CancellationToken));
+            return new ConfigurationResponse(
+                config.ExpirationQuanta, 
+                config.HasPersistedState,
+                config.IdleServicesPoolSize, 
+                config.IsServiceStateful, 
+                config.MaxPoolSize,
+                config.MinReplicaSetSize, 
+                (SDK.PartitionSchemeDescription)Enum.Parse(typeof(SDK.PartitionSchemeDescription), config.PartitionScheme.ToString()), 
+                config.ServicesAllocationBlockSize,
+                config.ServiceTypeUri, 
+                config.TargetReplicasetSize);
         }
 
-        protected override Task OnActivateAsync() => _context.ActivateAsync();
-
-        protected override Task OnDeactivateAsync() => _context.DeactivateAsync();
+        public async Task<PopVacantInstanceResponse> PopVacantInstanceAsync(PopVacantInstanceRequest request)
+        {
+            var result = await _mediator.ExecuteAsync(new PopVacantInstance(), default(CancellationToken));
+            return new PopVacantInstanceResponse(result.InstanceId);
+        }
 
         public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
         {
@@ -54,7 +78,7 @@ namespace PoolManager.Pools
                     switch (reminderName)
                     {
                         case EnsurePoolSizeReminderKey:
-                            await _context.EnsurePoolSizeAsync();
+                            await _mediator.ExecuteAsync(new EnsurePoolSize(), default(CancellationToken));
                             break;
                     }
                 }

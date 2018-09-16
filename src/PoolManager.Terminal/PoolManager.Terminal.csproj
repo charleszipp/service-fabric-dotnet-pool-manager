@@ -143,6 +143,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoolManager.Core.Mediators\PoolManager.Core.Mediators.csproj">
+      <Project>{6654A45A-A0AA-4EBC-9C42-6C143DE56A3D}</Project>
+      <Name>PoolManager.Core.Mediators</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoolManager.Core\PoolManager.Core.csproj">
       <Project>{82aced8a-4579-49c9-9e64-d7e380ad18f4}</Project>
       <Name>PoolManager.Core</Name>

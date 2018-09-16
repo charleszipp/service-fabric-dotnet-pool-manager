@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
-using PoolManager.Core.Commands;
+using PoolManager.Core.Mediators.Commands;
 
 namespace PoolManager.Terminal.Commands
 {
