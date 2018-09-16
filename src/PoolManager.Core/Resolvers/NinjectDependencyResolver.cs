@@ -1,6 +1,6 @@
 ﻿using Ninject;
 
-namespace PoolManager.Terminal.Resolvers
+namespace PoolManager.Core.Resolvers
 {
     public class NinjectDependencyResolver : DependencyResolver
     {

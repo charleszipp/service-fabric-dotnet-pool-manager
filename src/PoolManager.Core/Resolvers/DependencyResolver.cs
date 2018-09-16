@@ -1,6 +1,6 @@
-﻿using PoolManager.Terminal.Commands;
+﻿using PoolManager.Core.Commands;
 
-namespace PoolManager.Terminal.Resolvers
+namespace PoolManager.Core.Resolvers
 {
     public abstract class DependencyResolver
     {

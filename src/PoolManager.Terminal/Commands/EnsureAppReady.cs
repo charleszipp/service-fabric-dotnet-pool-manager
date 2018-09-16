@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using PoolManager.Core.Commands;
 using System;
 using System.Collections.Generic;
 using System.Fabric;

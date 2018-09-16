@@ -1,9 +1,9 @@
-﻿using PoolManager.Terminal.Commands;
-using PoolManager.Terminal.Resolvers;
+﻿using PoolManager.Core.Commands;
+using PoolManager.Core.Resolvers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PoolManager.Terminal.Mediators
+namespace PoolManager.Core.Mediators
 {
     internal abstract class VoidCommandInvoker
     {

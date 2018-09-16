@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace PoolManager.Terminal.Commands
+namespace PoolManager.Core.Commands
 {
     public interface IHandleCommand<in TCommand>
         where TCommand : ICommand
