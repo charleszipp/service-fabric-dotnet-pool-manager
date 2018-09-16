@@ -114,8 +114,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\MappedInstance.cs" />
+    <Compile Include="Partition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Partitions.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

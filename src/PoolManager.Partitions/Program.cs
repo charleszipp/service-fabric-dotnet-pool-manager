@@ -13,12 +13,12 @@ namespace PoolManager.Partitions
     {
         private static void Main()
         {
-            ActorRuntime.RegisterActorAsync<Partitions>((context, actorType) =>
+            ActorRuntime.RegisterActorAsync<Partition>((context, actorType) =>
             {
                 var kernel = new StandardKernel();
                 kernel.Bind<TelemetryClient>().ToSelf();
                 kernel.Bind<PoolsActorService>().ToMethod(x => new PoolsActorService(context, actorType, "PoolActorServiceEndpoint",
-                    (svc, id) => new Partitions(svc, id, kernel.Get<TelemetryClient>(), new InstanceProxy(new CorrelatingActorProxyFactory(context,
+                    (svc, id) => new Partition(svc, id, kernel.Get<TelemetryClient>(), new InstanceProxy(new CorrelatingActorProxyFactory(context,
                             callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient)), new GuidGetter()))));
                 return kernel.Get<PoolsActorService>();
             }).GetAwaiter().GetResult();
