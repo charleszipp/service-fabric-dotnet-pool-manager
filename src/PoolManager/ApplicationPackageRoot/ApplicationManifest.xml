@@ -31,8 +31,8 @@
         <UniformInt64Partition PartitionCount="[PoolActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
-    <Service Name="PartitionsActorService" GeneratedIdRef="458e8497-d7be-40d9-9f69-a92092359ed5|Persisted">
-      <StatefulService ServiceTypeName="PartitionsActorServiceType" TargetReplicaSetSize="[PartitionsActorService_TargetReplicaSetSize]" MinReplicaSetSize="[PartitionsActorService_MinReplicaSetSize]">
+    <Service Name="PartitionsActorService" GeneratedIdRef="0ea8637e-dcb3-452c-b7c2-13f3cd5d10f6|Persisted">
+      <StatefulService ServiceTypeName="PartitionActorServiceType" TargetReplicaSetSize="[PartitionsActorService_TargetReplicaSetSize]" MinReplicaSetSize="[PartitionsActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[PartitionsActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
