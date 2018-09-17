@@ -12,6 +12,6 @@ namespace PoolManager.Domains.Pools
         Task<int> GetVacantInstanceCountAsync(CancellationToken cancellationToken);
         Task<int> GetAllocationBlockSizeAsync(CancellationToken cancellationToken);
         Task PushVacantInstanceAsync(Guid instanceId, CancellationToken cancellationToken);
-        Task<GetPoolConfigurationResult> GetPoolConfigurationAsync(CancellationToken cancellation);
+        Task<GetPoolConfigurationResult> TryGetPoolConfigurationAsync(CancellationToken cancellation);
     }
 }

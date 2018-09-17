@@ -12,6 +12,6 @@ namespace PoolManager.Domains.Pools
             this.repository = repository;
 
         public Task<GetPoolConfigurationResult> ExecuteAsync(GetPoolConfiguration query, CancellationToken cancellationToken) => 
-            repository.GetPoolConfigurationAsync(cancellationToken);
+            repository.TryGetPoolConfigurationAsync(cancellationToken);
     }
 }

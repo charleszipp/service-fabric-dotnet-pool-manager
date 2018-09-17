@@ -102,9 +102,24 @@ namespace PoolManager.Pools
                 cancellationToken);
         }
 
-        public Task<GetPoolConfigurationResult> GetPoolConfigurationAsync(CancellationToken cancellation)
+        public async Task<GetPoolConfigurationResult> TryGetPoolConfigurationAsync(CancellationToken cancellation)
         {
-            throw new NotImplementedException();
+            var config = await TryGetConfigurationStateAsync(cancellation);
+            if (config.HasValue)
+                return new GetPoolConfigurationResult(
+                    config.Value.ExpirationQuanta,
+                    config.Value.HasPersistedState,
+                    config.Value.IdleServicesPoolSize,
+                    config.Value.IsServiceStateful,
+                    config.Value.MaxPoolSize,
+                    config.Value.MinReplicaSetSize,
+                    config.Value.PartitionScheme,
+                    config.Value.ServicesAllocationBlockSize,
+                    config.Value.ServiceTypeUri,
+                    config.Value.TargetReplicasetSize
+                    );
+            else
+                return null;
         }
     }
 }
