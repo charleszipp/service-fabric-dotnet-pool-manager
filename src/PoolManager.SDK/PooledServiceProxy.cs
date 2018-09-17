@@ -1,9 +1,10 @@
-﻿using Microsoft.ServiceFabric.Services.Client;
+﻿using Microsoft.ServiceFabric.Actors;
+using Microsoft.ServiceFabric.Actors.Client;
+using Microsoft.ServiceFabric.Services.Client;
 using Microsoft.ServiceFabric.Services.Communication.Client;
 using Microsoft.ServiceFabric.Services.Remoting;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
-using PoolManager.SDK.Pools;
-using PoolManager.SDK.Pools.Requests;
+using PoolManager.SDK.Partitions;
 using System;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
@@ -21,10 +22,11 @@ namespace PoolManager.SDK
         protected PooledServiceProxy(TService service)
             : base(typeof(TService)) => _service = service;
 
-        public static async Task<TService> Create(IPoolProxy poolProxy, IServiceProxyFactory serviceProxyFactory, string serviceTypeUri, string serviceInstanceName, ServicePartitionKey partitionKey = null, TargetReplicaSelector targetReplicaSelector = TargetReplicaSelector.Default, string listenerName = null)
+        public static async Task<TService> Create(IActorProxyFactory actorProxyFactory, IServiceProxyFactory serviceProxyFactory, string partitionId, string serviceTypeUri, string serviceInstanceName, ServicePartitionKey servicePartitionKey = null, TargetReplicaSelector targetReplicaSelector = TargetReplicaSelector.Default, string listenerName = null)
         {
-            var response = await poolProxy.GetInstanceAsync(serviceTypeUri, new GetInstanceRequest(serviceInstanceName));
-            var serviceProxy = serviceProxyFactory.CreateServiceProxy<TService>(response.ServiceInstanceUri, partitionKey, targetReplicaSelector, listenerName);
+            var partition = actorProxyFactory.CreateActorProxy<IPartition>(new ActorId(partitionId));
+            var instance = await partition.GetInstanceAsync(new Partitions.Requests.GetInstanceRequest(serviceTypeUri, serviceInstanceName));
+            var serviceProxy = serviceProxyFactory.CreateServiceProxy<TService>(instance.ServiceInstanceUri, servicePartitionKey, targetReplicaSelector, listenerName);
             return Create(serviceProxy);
         }
 
