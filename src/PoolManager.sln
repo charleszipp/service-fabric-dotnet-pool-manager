@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolManager.Core.Mediators"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolManager.Core.ApplicationInsights", "PoolManager.Core.ApplicationInsights\PoolManager.Core.ApplicationInsights.csproj", "{FBA1D507-C412-407F-91A6-C8839A241007}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolManager.Domains.Instances", "PoolManager.Domains.Instances\PoolManager.Domains.Instances.csproj", "{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +159,14 @@ Global
 		{FBA1D507-C412-407F-91A6-C8839A241007}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FBA1D507-C412-407F-91A6-C8839A241007}.Release|x64.ActiveCfg = Release|Any CPU
 		{FBA1D507-C412-407F-91A6-C8839A241007}.Release|x64.Build.0 = Release|Any CPU
+		{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}.Debug|x64.Build.0 = Debug|Any CPU
+		{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}.Release|x64.ActiveCfg = Release|Any CPU
+		{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
