@@ -118,7 +118,7 @@
     <Compile Include="Instances\InstanceProxy.cs" />
     <Compile Include="Instances\Requests\StartInstanceRequest.cs" />
     <Compile Include="PartitionSchemeDescription.cs" />
-    <Compile Include="Partitions\IPartitions.cs" />
+    <Compile Include="Partitions\IPartition.cs" />
     <Compile Include="PooledServiceProxy.cs" />
     <Compile Include="Pools\Requests\GetInstanceRequest.cs" />
     <Compile Include="Pools\Requests\PopVacantInstanceRequest.cs" />

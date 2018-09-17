@@ -3,9 +3,9 @@ using PoolManager.SDK.Partitions.Requests;
 using PoolManager.SDK.Partitions.Responses;
 using System.Threading.Tasks;
 
-namespace PoolManager.Partitions.Interfaces
+namespace PoolManager.SDK.Partitions
 {
-    public interface IPartitions : IActor
+    public interface IPartition : IActor
     {
         Task CleanupDeletedInstancesAsync();
 

@@ -3,9 +3,8 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Data;
-using PoolManager.Partitions.Interfaces;
-using PoolManager.Partitions.Models;
 using PoolManager.SDK.Instances;
+using PoolManager.SDK.Partitions;
 using PoolManager.SDK.Partitions.Requests;
 using PoolManager.SDK.Partitions.Responses;
 using System;
@@ -16,7 +15,7 @@ using System.Threading.Tasks;
 namespace PoolManager.Partitions
 {
     [StatePersistence(StatePersistence.Persisted)]
-    internal class Partition : Actor, IPartitions, IRemindable
+    internal class Partition : Actor, IPartition, IRemindable
     {
         private readonly TelemetryClient telemetryClient;
         private readonly IInstanceProxy instances;
