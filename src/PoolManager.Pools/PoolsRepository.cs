@@ -26,7 +26,7 @@ namespace PoolManager.Pools
             return nextInstanceId;
         }
 
-        public async Task SetConfigurationAsync(bool isServiceStateful, bool hasPersistedState, int minReplicas, int targetReplicas, Enums partitionScheme, int maxPoolSize, int idleServicesPoolSize, int servicesAllocationBlockSize, TimeSpan expirationQuanta, CancellationToken cancellationToken)
+        public async Task SetConfigurationAsync(bool isServiceStateful, bool hasPersistedState, int minReplicas, int targetReplicas, PartitionSchemeDescription partitionScheme, int maxPoolSize, int idleServicesPoolSize, int servicesAllocationBlockSize, TimeSpan expirationQuanta, CancellationToken cancellationToken)
         {
             PoolConfiguration config = new PoolConfiguration
             {
@@ -36,7 +36,7 @@ namespace PoolManager.Pools
                 IsServiceStateful = isServiceStateful,
                 MaxPoolSize = maxPoolSize,
                 MinReplicaSetSize = minReplicas,
-                PartitionScheme = (SDK.PartitionSchemeDescription)Enum.Parse(typeof(SDK.PartitionSchemeDescription), partitionScheme.ToString()),
+                PartitionScheme = partitionScheme,
                 ServicesAllocationBlockSize = servicesAllocationBlockSize,
                 TargetReplicasetSize = targetReplicas
             };
