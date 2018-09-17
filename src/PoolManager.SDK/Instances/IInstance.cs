@@ -9,8 +9,6 @@ namespace PoolManager.SDK.Instances
     {
         Task StartAsync(StartInstanceRequest request);
 
-        Task StartAsAsync(StartInstanceAsRequest request);
-
         Task RemoveAsync();
 
         Task OccupyAsync(OccupyRequest request);

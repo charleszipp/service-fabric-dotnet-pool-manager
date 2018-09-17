@@ -7,16 +7,12 @@ namespace PoolManager.SDK.Instances.Requests
     [DataContract]
     public class OccupyRequest
     {
-        public OccupyRequest(string serviceInstanceName, TimeSpan expirationQuanta)
+        public OccupyRequest(string serviceInstanceName)
         {
             ServiceInstanceName = serviceInstanceName;
-            ExpirationQuanta = expirationQuanta;
         }
 
         [DataMember]
         public string ServiceInstanceName { get; private set; }
-
-        [DataMember]
-        public TimeSpan ExpirationQuanta { get; private set; }
     }
 }

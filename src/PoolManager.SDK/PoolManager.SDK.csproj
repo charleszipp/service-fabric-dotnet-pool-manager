@@ -116,8 +116,6 @@
     <Compile Include="Instances\IInstance.cs" />
     <Compile Include="Instances\IInstanceProxy.cs" />
     <Compile Include="Instances\InstanceProxy.cs" />
-    <Compile Include="Instances\InstanceStates.cs" />
-    <Compile Include="Instances\Requests\StartInstanceAsRequest.cs" />
     <Compile Include="Instances\Requests\StartInstanceRequest.cs" />
     <Compile Include="PartitionSchemeDescription.cs" />
     <Compile Include="Partitions\IPartitions.cs" />
@@ -132,7 +130,6 @@
     <Compile Include="Pools\IPool.cs" />
     <Compile Include="IServiceInstance.cs" />
     <Compile Include="Instances\Requests\OccupyInstanceRequest.cs" />
-    <Compile Include="Pools\PoolStates.cs" />
     <Compile Include="Pools\Requests\StartPoolRequest.cs" />
     <Compile Include="Partitions\Requests\VacateInstanceRequest.cs" />
     <Compile Include="Partitions\Responses\GetInstanceResponse.cs" />
@@ -140,7 +137,6 @@
     <Compile Include="Pools\Responses\PopVacantInstanceResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Instances\Requests\ReportActivityRequest.cs" />
-    <Compile Include="Instances\ServiceStates.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -10,7 +10,6 @@ namespace PoolManager.SDK.Instances
         Task RemoveAsync(Guid instanceId);
         Task DeleteAsync(Guid instanceId);
         Task VacateAsync(Guid instanceId);
-        Task<Guid> StartAsAsync(StartInstanceAsRequest request);
         Task<Guid> StartAsync(StartInstanceRequest request);
         Task<TimeSpan> ReportActivityAsync(Guid instanceId, ReportActivityRequest request);
     }

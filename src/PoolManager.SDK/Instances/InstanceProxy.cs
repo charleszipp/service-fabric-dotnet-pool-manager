@@ -11,6 +11,7 @@ namespace PoolManager.SDK.Instances
     {
         private readonly IActorProxyFactory _actorProxyFactory;
         private readonly IGuidGetter _guidGetter;
+
         public InstanceProxy(IActorProxyFactory actorProxyFactory, IGuidGetter guidGetter)
         {
             _actorProxyFactory = actorProxyFactory;
@@ -21,12 +22,6 @@ namespace PoolManager.SDK.Instances
         {
             var rvalue = _guidGetter.GetAGuid();
             await GetProxy(rvalue).StartAsync(request);
-            return rvalue;
-        }
-        public async Task<Guid> StartAsAsync(StartInstanceAsRequest request)
-        {
-            var rvalue = Guid.NewGuid();
-            await GetProxy(rvalue).StartAsAsync(request);
             return rvalue;
         }
 
