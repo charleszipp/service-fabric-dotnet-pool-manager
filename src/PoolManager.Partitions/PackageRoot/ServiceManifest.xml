@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="PoolManager.PartitionsPkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <ServiceTypes>
-    <StatefulServiceType ServiceTypeName="PartitionsActorServiceType" HasPersistedState="true">
+    <StatefulServiceType ServiceTypeName="PartitionActorServiceType" HasPersistedState="true">
       <Extensions>
-        <Extension Name="__GeneratedServiceType__" GeneratedId="458e8497-d7be-40d9-9f69-a92092359ed5|Persisted">
+        <Extension Name="__GeneratedServiceType__" GeneratedId="0ea8637e-dcb3-452c-b7c2-13f3cd5d10f6|Persisted">
           <GeneratedNames xmlns="http://schemas.microsoft.com/2015/03/fabact-no-schema">
             <DefaultService Name="PartitionsActorService" />
-            <ReplicatorEndpoint Name="PartitionsActorServiceReplicatorEndpoint" />
-            <ReplicatorConfigSection Name="PartitionsActorServiceReplicatorConfig" />
-            <ReplicatorSecurityConfigSection Name="PartitionsActorServiceReplicatorSecurityConfig" />
-            <StoreConfigSection Name="PartitionsActorServiceLocalStoreConfig" />
-            <ServiceEndpoint Name="PartitionsActorServiceEndpoint" />
+            <ReplicatorEndpoint Name="PartitionActorServiceReplicatorEndpoint" />
+            <ReplicatorConfigSection Name="PartitionActorServiceReplicatorConfig" />
+            <ReplicatorSecurityConfigSection Name="PartitionActorServiceReplicatorSecurityConfig" />
+            <StoreConfigSection Name="PartitionActorServiceLocalStoreConfig" />
+            <ServiceEndpoint Name="PartitionActorServiceEndpoint" />
           </GeneratedNames>
         </Extension>
       </Extensions>
@@ -26,8 +26,8 @@
   <ConfigPackage Name="Config" Version="1.0.0" />
   <Resources>
     <Endpoints>
-      <Endpoint Name="PartitionsActorServiceEndpoint" />
-      <Endpoint Name="PartitionsActorServiceReplicatorEndpoint" />
+      <Endpoint Name="PartitionActorServiceEndpoint" />
+      <Endpoint Name="PartitionActorServiceReplicatorEndpoint" />
     </Endpoints>
   </Resources>
   <!-- The content will be generated during build -->
