@@ -47,6 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckForExpiration\CheckForExpiration.cs" />
+    <Compile Include="CheckForExpiration\CheckForExpirationHandler.cs" />
+    <Compile Include="IPartitionProxy.cs" />
     <Compile Include="IServiceInstanceProxy.cs" />
     <Compile Include="OccupyInstance\OccupyInstance.cs" />
     <Compile Include="OccupyInstance\OccupyInstanceHandler.cs" />
