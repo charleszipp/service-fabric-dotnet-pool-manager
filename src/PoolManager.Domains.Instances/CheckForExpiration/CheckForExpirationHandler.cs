@@ -18,13 +18,13 @@ namespace PoolManager.Domains.Instances
         public async Task ExecuteAsync(CheckForExpiration command, CancellationToken cancellationToken)
         {
             var expirationQuanta = await repository.GetExpirationQuantaAsync(cancellationToken);
-            var lastActive = await repository.GetServiceLastActiveAsync(cancellationToken);
+            var lastActive = await repository.TryGetServiceLastActiveAsync(cancellationToken);
             if(lastActive.HasValue)
             {
                 var inactivityPeriod = command.AsOfDate.Subtract(lastActive.Value);
                 if(inactivityPeriod > expirationQuanta)
                 {
-                    string instanceName = await repository.GetServiceInstanceNameAsync(cancellationToken);
+                    string instanceName = await repository.TryGetServiceInstanceNameAsync(cancellationToken);
                     string partitionId = await repository.GetPartitionIdAsync(cancellationToken);
                     await partitions.VacateInstanceAsync(partitionId, command.InstanceId, instanceName);
                 }

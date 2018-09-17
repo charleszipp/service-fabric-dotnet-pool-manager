@@ -8,6 +8,9 @@ namespace PoolManager.Domains.Instances.States
     {
         public override InstanceStates State => InstanceStates.Occupied;
 
+        public override Task CheckForExpirationAsync(InstanceContext instanceContext, CheckForExpiration command, CancellationToken cancellationToken) =>
+            instanceContext.Mediator.ExecuteAsync(command, cancellationToken);
+
         public override Task<InstanceState> OccupyAsync(InstanceContext context, OccupyInstance command, CancellationToken cancellationToken) =>
             Task.FromResult<InstanceState>(this);
 

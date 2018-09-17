@@ -24,7 +24,7 @@ namespace PoolManager.Domains.Instances.States
 
         public async Task ActivateAsync(CancellationToken cancellationToken)
         {
-            var instanceState = await repository.GetInstanceStateAsync(cancellationToken);
+            var instanceState = await repository.TryGetInstanceStateAsync(cancellationToken);
             if (instanceState.HasValue)
                 _currentState = InstanceStates.Get(instanceState.Value);
         }
@@ -58,5 +58,8 @@ namespace PoolManager.Domains.Instances.States
 
         public Task<ReportActivityResult> ReportActivityAsync(ReportActivity command, CancellationToken cancellationToken) =>
             _currentState.ReportActivityAsync(this, command, cancellationToken);
+
+        public Task CheckForExpirationAsync(CheckForExpiration command, CancellationToken cancellationToken) =>
+            _currentState.CheckForExpirationAsync(this, command, cancellationToken);
     }
 }

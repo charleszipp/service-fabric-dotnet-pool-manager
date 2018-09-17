@@ -22,12 +22,14 @@ namespace PoolManager.Domains.Instances
 
         Task SetInstanceStateAsync(InstanceStates state, CancellationToken cancellation);
 
-        Task<DateTime?> GetServiceLastActiveAsync(CancellationToken cancellationToken);
+        Task<DateTime?> TryGetServiceLastActiveAsync(CancellationToken cancellationToken);
 
-        Task<InstanceStates?> GetInstanceStateAsync(CancellationToken cancellationToken);
+        Task<InstanceStates?> TryGetInstanceStateAsync(CancellationToken cancellationToken);
 
-        Task<string> GetServiceInstanceNameAsync(CancellationToken cancellationToken);
+        Task<string> TryGetServiceInstanceNameAsync(CancellationToken cancellationToken);
 
         Task<string> GetPartitionIdAsync(CancellationToken cancellationToken);
+
+        Task SetPartitionIdAsync(string partitionId, CancellationToken cancellationToken);
     }
 }

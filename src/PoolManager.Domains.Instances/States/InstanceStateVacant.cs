@@ -31,5 +31,8 @@ namespace PoolManager.Domains.Instances.States
 
         public override Task<InstanceState> VacateAsync(InstanceContext context, VacateInstance command, CancellationToken cancellationToken) =>
             Task.FromResult<InstanceState>(this);
+
+        public override Task CheckForExpirationAsync(InstanceContext instanceContext, CheckForExpiration command, CancellationToken cancellationToken) =>
+            throw new Exception("Cannot check for expiration against a vacant instance");
     }
 }

@@ -16,5 +16,7 @@ namespace PoolManager.Domains.Instances.States
         public abstract Task<InstanceState> RemoveAsync(InstanceContext context, RemoveInstance command, CancellationToken cancellationToken);
 
         public abstract Task<ReportActivityResult> ReportActivityAsync(InstanceContext context, ReportActivity command, CancellationToken cancellationToken);
+
+        public abstract Task CheckForExpirationAsync(InstanceContext instanceContext, CheckForExpiration command, CancellationToken cancellationToken);
     }
 }

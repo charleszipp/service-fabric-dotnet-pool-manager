@@ -8,6 +8,9 @@ namespace PoolManager.Domains.Instances.States
     {
         public override InstanceStates State => InstanceStates.Idle;
 
+        public override Task CheckForExpirationAsync(InstanceContext instanceContext, CheckForExpiration command, CancellationToken cancellationToken) => 
+            throw new Exception("Cannot check for expiration against an idle instance");
+
         public override Task<InstanceState> OccupyAsync(InstanceContext context, OccupyInstance command, CancellationToken cancellationToken) => 
             throw new Exception("Invalid state transition. Cannot occupy an idle service.");
 
