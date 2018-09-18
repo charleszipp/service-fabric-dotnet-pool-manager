@@ -28,7 +28,7 @@ namespace PoolManager.Domains.Instances
             Bind<InstanceContext>().ToSelf();
             Kernel
                 .WithCommandHandler<StartInstanceHandler, StartInstance>()
-                .WithCommandHandler<OccupyInstanceHandler, OccupyInstance>()
+                .WithCommandHandler<OccupyInstanceHandler, OccupyInstance, OccupyInstanceResult>()
                 .WithCommandHandler<ReportActivityHandler, ReportActivity, ReportActivityResult>()
                 .WithCommandHandler<VacateInstanceHandler, VacateInstance>()
                 .WithCommandHandler<RemoveInstanceHandler, RemoveInstance>();

@@ -116,7 +116,9 @@
     <Compile Include="Instances\IInstance.cs" />
     <Compile Include="Instances\IInstanceProxy.cs" />
     <Compile Include="Instances\InstanceProxy.cs" />
+    <Compile Include="Instances\Requests\OccupyRequest.cs" />
     <Compile Include="Instances\Requests\StartInstanceRequest.cs" />
+    <Compile Include="Instances\Responses\OccupyResponse.cs" />
     <Compile Include="PartitionSchemeDescription.cs" />
     <Compile Include="Partitions\IPartition.cs" />
     <Compile Include="Partitions\IPartitionProxy.cs" />
@@ -129,7 +131,6 @@
     <Compile Include="Partitions\Requests\GetInstanceRequest.cs" />
     <Compile Include="Pools\IPool.cs" />
     <Compile Include="IServiceInstance.cs" />
-    <Compile Include="Instances\Requests\OccupyInstanceRequest.cs" />
     <Compile Include="Pools\Requests\StartPoolRequest.cs" />
     <Compile Include="Partitions\Requests\VacateInstanceRequest.cs" />
     <Compile Include="Partitions\Responses\GetInstanceResponse.cs" />

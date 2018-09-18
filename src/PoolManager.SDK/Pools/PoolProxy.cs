@@ -1,8 +1,6 @@
 ﻿using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
 using PoolManager.SDK.Pools.Requests;
-using System;
-using System.Threading;
 using System.Threading.Tasks;
 using PoolManager.SDK.Pools.Responses;
 
@@ -15,6 +13,8 @@ namespace PoolManager.SDK.Pools
             _actorProxyFactory = actorProxyFactory;
         public Task<ConfigurationResponse> GetConfigurationAsync(string serviceTypeUri) =>
             GetProxy(serviceTypeUri).GetConfigurationAsync();
+        public Task<PopVacantInstanceResponse> PopVacantInstanceAsync(string serviceTypeUri, PopVacantInstanceRequest request) =>
+            GetProxy(serviceTypeUri).PopVacantInstanceAsync(request);
         public async Task StartPoolAsync(string serviceTypeUri, StartPoolRequest request) =>
             await GetProxy(serviceTypeUri).StartAsync(request);
         private IPool GetProxy(string serviceTypeUri) =>

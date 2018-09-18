@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PoolManager.Partitions.Models;
+using PoolManager.SDK.Pools;
+using PoolManager.SDK.Instances.Requests;
 
 namespace PoolManager.Partitions
 {
@@ -20,13 +22,15 @@ namespace PoolManager.Partitions
     {
         private readonly TelemetryClient telemetryClient;
         private readonly IInstanceProxy instances;
+        private readonly IPoolProxy pools;
         private const string CleanupRemovedInstancesReminderKey = "cleanup-removed-instances";
 
-        public Partition(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, IInstanceProxy instances)
+        public Partition(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, IInstanceProxy instances, IPoolProxy pools)
             : base(actorService, actorId)
         {
             this.telemetryClient = telemetryClient;
             this.instances = instances;
+            this.pools = pools;
         }
 
         public async Task<GetInstanceResponse> GetInstanceAsync(GetInstanceRequest request)
@@ -36,11 +40,16 @@ namespace PoolManager.Partitions
                 return new GetInstanceResponse(instance.Value.ServiceName);
             else
             {
-                //todo: ask pool for a vacant instance
-                //todo: occupy vacant instance from pool
-                //todo: return service name of occupied instance
-                //todo: if occupy fails or takes over a certain time, mark the instance for deletion and retry
-                //todo: add the occupied instance back to the state manager
+                var popVacantInstanceResponse = await pools.PopVacantInstanceAsync(request.ServiceTypeUri, new SDK.Pools.Requests.PopVacantInstanceRequest());
+                if(popVacantInstanceResponse.InstanceId.HasValue)
+                {
+                    var occupyResponse = await instances.OccupyAsync(popVacantInstanceResponse.InstanceId.Value, new OccupyRequest(this.GetActorId().GetStringId(), request.InstanceName));
+                    await SetMappedInstanceAsync(request.ServiceTypeUri, request.InstanceName, popVacantInstanceResponse.InstanceId.Value, occupyResponse.ServiceName);
+                    return new GetInstanceResponse(occupyResponse.ServiceName);
+                    //todo: if occupy fails or takes over a certain time, mark the instance for deletion and retry
+
+                    throw new Exception("Pool was unable to provide a vacant instance to occupy.");
+                }
 
                 throw new ArgumentException("Unable to find a mapped instance for given pool and name");
             }
@@ -100,6 +109,9 @@ namespace PoolManager.Partitions
 
         private Task<ConditionalValue<MappedInstance>> TryGetAsync(string serviceTypeUri, string instanceName) => 
             StateManager.TryGetStateAsync<MappedInstance>(GetStateName(serviceTypeUri, instanceName));
+
+        private Task SetMappedInstanceAsync(string serviceTypeUri, string instanceName, Guid instanceId, Uri serviceName) =>
+            StateManager.SetStateAsync(GetStateName(serviceTypeUri, instanceName), new MappedInstance(instanceId, serviceName));
 
         private string GetStateName(string serviceTypeUri, string serviceInstanceName) => 
             $"{serviceTypeUri.TrimEnd('/')}/{serviceInstanceName}";

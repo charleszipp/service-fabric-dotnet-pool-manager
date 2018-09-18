@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PoolManager.Domains.Instances
 {
-    public class OccupyInstanceHandler : IHandleCommand<OccupyInstance>
+    public class OccupyInstanceHandler : IHandleCommand<OccupyInstance, OccupyInstanceResult>
     {
         private readonly IInstanceRepository repository;
         private readonly IServiceInstanceProxy instanceProxy;
@@ -16,7 +16,7 @@ namespace PoolManager.Domains.Instances
             this.instanceProxy = instanceProxy;
         }
 
-        public async Task ExecuteAsync(OccupyInstance command, CancellationToken cancellationToken)
+        public async Task<OccupyInstanceResult> ExecuteAsync(OccupyInstance command, CancellationToken cancellationToken)
         {
             Uri serviceUri = await repository.GetServiceUriAsync(cancellationToken);
             await instanceProxy.OccupyAsync(serviceUri, command.InstanceId, command.InstanceName);
@@ -24,6 +24,8 @@ namespace PoolManager.Domains.Instances
                 repository.SetServiceInstanceName(command.InstanceName, cancellationToken),
                 repository.SetPartitionIdAsync(command.PartitionId, cancellationToken)
             );
+
+            return new OccupyInstanceResult(serviceUri);
         }
     }
 }

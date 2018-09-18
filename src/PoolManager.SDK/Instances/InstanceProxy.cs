@@ -1,6 +1,7 @@
 ﻿using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
 using PoolManager.SDK.Instances.Requests;
+using PoolManager.SDK.Instances.Responses;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace PoolManager.SDK.Instances
             return rvalue;
         }
 
-        public Task OccupyAsync(Guid instanceId, OccupyRequest request) => 
+        public Task<OccupyResponse> OccupyAsync(Guid instanceId, OccupyRequest request) => 
             GetProxy(instanceId).OccupyAsync(request);
 
         public Task<TimeSpan> ReportActivityAsync(Guid instanceId, ReportActivityRequest request) =>
