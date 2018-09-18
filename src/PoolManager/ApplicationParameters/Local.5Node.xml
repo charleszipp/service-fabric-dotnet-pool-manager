@@ -7,8 +7,6 @@
     <Parameter Name="PoolActorService_PartitionCount" Value="3" />
     <Parameter Name="PoolActorService_TargetReplicaSetSize" Value="3" />
     <Parameter Name="PoolActorService_MinReplicaSetSize" Value="3" />
-    <Parameter Name="PartitionsActorService_PartitionCount" Value="3" />
-    <Parameter Name="PartitionsActorService_TargetReplicaSetSize" Value="3" />
-    <Parameter Name="PartitionsActorService_MinReplicaSetSize" Value="3" />
+    <Parameter Name="PartitionActorService_PartitionCount" Value="1" />
   </Parameters>
 </Application>

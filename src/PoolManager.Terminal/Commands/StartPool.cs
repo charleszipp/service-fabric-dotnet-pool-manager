@@ -97,7 +97,6 @@ namespace PoolManager.Terminal.Commands
         {
             _terminal.Write($"{command.ServiceTypeUri}, starting pool");
             var request = new StartPoolRequest(
-                serviceTypeUri: command.ServiceTypeUri,
                 isServiceStateful: command.IsServiceStateful,
                 hasPersistedState: command.HasPersistedState,
                 minReplicas: command.MinReplicas,
