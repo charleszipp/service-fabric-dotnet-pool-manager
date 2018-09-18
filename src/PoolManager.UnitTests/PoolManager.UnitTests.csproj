@@ -157,6 +157,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoolManager.Core.Mediators\PoolManager.Core.Mediators.csproj">
+      <Project>{6654A45A-A0AA-4EBC-9C42-6C143DE56A3D}</Project>
+      <Name>PoolManager.Core.Mediators</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoolManager.Core.Tests\PoolManager.Core.Tests.csproj">
       <Project>{e80dbe77-379d-4f71-bd67-4cd7adea4214}</Project>
       <Name>PoolManager.Core.Tests</Name>
@@ -164,6 +168,10 @@
     <ProjectReference Include="..\PoolManager.Core\PoolManager.Core.csproj">
       <Project>{82ACED8A-4579-49C9-9E64-D7E380AD18F4}</Project>
       <Name>PoolManager.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoolManager.Domains.Instances\PoolManager.Domains.Instances.csproj">
+      <Project>{BD1058AB-40A6-4BDA-A4D2-CC1E528C906F}</Project>
+      <Name>PoolManager.Domains.Instances</Name>
     </ProjectReference>
     <ProjectReference Include="..\PoolManager.Instances\PoolManager.Instances.csproj">
       <Project>{43F5C31A-D7E5-4CA4-9A7A-85366181BAEA}</Project>

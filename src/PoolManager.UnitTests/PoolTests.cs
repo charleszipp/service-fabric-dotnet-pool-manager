@@ -41,9 +41,7 @@ namespace PoolManager.UnitTests
                 var actorProxyFactory = new MockActorProxyFactory();
                 var mockServiceProxyFactory = new MockServiceProxyFactory();
                 var actorServiceForActor = MockActorServiceFactory.CreateActorServiceForActor<Instance>();
-                var instance = new Instance(actorServiceForActor,
-                    new ActorId(x), testContext.ClusterClient.Object, testContext.TelemetryClient, actorProxyFactory,
-                    mockServiceProxyFactory);
+                var instance = new Instance(actorServiceForActor, new ActorId(x));
                 return instance;
             }).ToList();
 

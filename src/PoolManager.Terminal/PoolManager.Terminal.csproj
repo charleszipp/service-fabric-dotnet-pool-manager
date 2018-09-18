@@ -127,7 +127,7 @@
     <Compile Include="Commands\EnsureAppReady.cs" />
     <Compile Include="Commands\GetInstance.cs" />
     <Compile Include="Commands\RestartApplication.cs" />
-    <Compile Include="Commands\RestartPool.cs" />
+    <Compile Include="Commands\StartPool.cs" />
     <Compile Include="Commands\Swarm.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ITerminal.cs" />

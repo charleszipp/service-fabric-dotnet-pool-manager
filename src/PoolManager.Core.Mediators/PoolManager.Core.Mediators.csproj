@@ -44,17 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Builders\IMediatorBuilder.cs" />
-    <Compile Include="Builders\MediatorBuilder.cs" />
-    <Compile Include="Builders\MediatorQueryDecorator.cs" />
-    <Compile Include="Builders\MediatorCommandDecorator.cs" />
-    <Compile Include="Builders\MediatorDecorator.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\IHandleCommand.cs" />
     <Compile Include="Invokers\QueryInvoker.cs" />
     <Compile Include="Invokers\CommandInvoker.cs" />
     <Compile Include="Mediator.cs" />
     <Compile Include="Invokers\VoidCommandInvoker.cs" />
+    <Compile Include="MediatorModule.cs" />
+    <Compile Include="NinjectKernelExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\IHandleQuery.cs" />
     <Compile Include="Queries\IQuery.cs" />

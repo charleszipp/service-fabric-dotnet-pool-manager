@@ -1,30 +1,32 @@
-﻿using PoolManager.Core.Mediators;
-using PoolManager.Core.Mediators.Builders;
+﻿using Ninject;
+using Ninject.Modules;
+using PoolManager.Core.Mediators;
 
 namespace PoolManager.Domains.Pools
 {
-    public static class PoolsDomainFluentDecorator
+    public static class NinjectKernelExtensions
     {
-        public static IMediatorBuilder WithPools(this IMediatorBuilder builder) =>
-            new PoolsDomainDecorator(builder);
+        public static IKernel WithPools(this IKernel kernel)
+        {
+            kernel.Load(new PoolsModule());
+            return kernel;
+        }
     }
 
-    public class PoolsDomainDecorator : MediatorDecorator
+    public class PoolsModule : NinjectModule
     {
-        public PoolsDomainDecorator(IMediatorBuilder builder)
-            : base(builder)
+        public PoolsModule()
         {
         }
 
-        public override Mediator Build()
+        public override void Load()
         {
-            return _builder
+            Kernel
                 .WithCommandHandler<StartPoolHandler, StartPool>()
                 .WithCommandHandler<EnsurePoolSizeHandler, EnsurePoolSize>()
                 .WithCommandHandler<PopVacantInstanceHandler, PopVacantInstance, PopVacantInstanceResult>()
                 .WithCommandHandler<PushVacantInstanceHandler, PushVacantInstance>()
-                .WithQueryHandler<GetPoolConfigurationHandler, GetPoolConfiguration, GetPoolConfigurationResult>()
-                .Build();
+                .WithQueryHandler<GetPoolConfigurationHandler, GetPoolConfiguration, GetPoolConfigurationResult>();
         }
     }
 }

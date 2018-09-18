@@ -21,6 +21,7 @@ namespace PoolManager.Pools
         public Task<StartInstanceResult> ExecuteAsync(StartInstance command, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
+            //todo: implement start instance from pool actor
             //var config = await repository.GetPoolConfigurationAsync(cancellationToken);
             //var instanceId = await instances.StartAsync(new SDK.Instances.Requests.StartInstanceRequest(
             //    ,

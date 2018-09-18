@@ -256,7 +256,8 @@ testRunner.And("the service pool \"fabric:/PoolManager.Tests/NoOp\" does not exi
 testRunner.When("the \"fabric:/PoolManager.Tests/NoOp\" pool is started with the following configura" +
                     "tion", ((string)(null)), table4, "When ");
 #line 55
-testRunner.And("an instance of \"fabric:/PoolManager.Tests/NoOp\" named \"myNoOpInstance\" is gotten", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("an instance of \"fabric:/PoolManager.Tests/NoOp\" named \"myNoOpInstance\" for partit" +
+                    "ion \"78d4537b-b1b4-417e-8c13-2a7b131051fc\" is gotten", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

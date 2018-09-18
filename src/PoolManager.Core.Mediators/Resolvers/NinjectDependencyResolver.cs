@@ -1,4 +1,5 @@
 ﻿using Ninject;
+using System;
 
 namespace PoolManager.Core.Mediators.Resolvers
 {
@@ -6,14 +7,13 @@ namespace PoolManager.Core.Mediators.Resolvers
     {
         private readonly IKernel _kernel;
 
-        public NinjectDependencyResolver() : this(new StandardKernel()) { }
+        public NinjectDependencyResolver() : this(new StandardKernel())
+        {
+        }
 
         public NinjectDependencyResolver(IKernel kernel) => _kernel = kernel;
 
-        protected override void RegisterTransient<TInterface, TImplementation>() =>
-            _kernel.Bind<TInterface>().To<TImplementation>().InTransientScope();
-
-        protected override T Single<T>() =>
+        internal override T Single<T>() =>
             _kernel.Get<T>();
     }
 }

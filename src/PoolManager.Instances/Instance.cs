@@ -1,8 +1,10 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ServiceFabric.Actors;
-using Microsoft.ServiceFabric.Actors.Client;
 using Microsoft.ServiceFabric.Actors.Runtime;
+using Ninject;
+using PoolManager.Core;
+using PoolManager.Core.Mediators;
 using PoolManager.Domains.Instances;
 using PoolManager.Domains.Instances.States;
 using PoolManager.SDK.Instances;
@@ -20,21 +22,26 @@ namespace PoolManager.Instances
         private readonly IInstanceRepository _repository;
         private readonly TelemetryClient _telemetryClient;
         private readonly CancellationToken _cancellation = default(CancellationToken);
+        private readonly IKernel _kernel;
 
-        public Instance(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, InstanceContext context, IInstanceRepository repository)
+        public Instance(ActorService actorService, ActorId actorId)
             : base(actorService, actorId)
         {
-            _context = context;
-            _repository = repository;
-            _telemetryClient = telemetryClient;
+            _kernel = new StandardKernel(new InstanceActorModule())
+                .WithCore(actorService.Context, StateManager)
+                .WithMediator()
+                .WithInstances();
+            _context = _kernel.Get<InstanceContext>();
+            _repository = _kernel.Get<IInstanceRepository>();
+            _telemetryClient = _kernel.Get<TelemetryClient>();
         }
 
         public Task StartAsync(StartInstanceRequest request) =>
             _context.StartAsync(
                 new StartInstance(
-                    request.PartitionId, request.ServiceTypeUri, request.IsServiceStateful, 
-                    request.HasPersistedState, request.MinReplicas, request.TargetReplicas, 
-                    (PartitionSchemeDescription)Enum.Parse(typeof(PartitionSchemeDescription), request.PartitionScheme.ToString()), 
+                    request.PartitionId, request.ServiceTypeUri, request.IsServiceStateful,
+                    request.HasPersistedState, request.MinReplicas, request.TargetReplicas,
+                    (PartitionSchemeDescription)Enum.Parse(typeof(PartitionSchemeDescription), request.PartitionScheme.ToString()),
                     request.ExpirationQuanta),
                 _cancellation);
 
@@ -73,9 +80,26 @@ namespace PoolManager.Instances
             await _context.VacateAsync(new VacateInstance(), _cancellation);
         }
 
+        public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
+        {
+            using (var request = _telemetryClient.StartOperation<RequestTelemetry>(reminderName))
+            {
+                try
+                {
+                    if (reminderName.Equals("expiration-quanta"))
+                        await _context.CheckForExpirationAsync(new CheckForExpiration(this.GetActorId().GetGuidId()), _cancellation);
+                }
+                catch (Exception ex)
+                {
+                    request.Telemetry.Success = false;
+                    _telemetryClient.TrackException(ex);
+                }
+            }
+        }
+
         protected override Task OnActivateAsync() => _context.ActivateAsync(_cancellation);
 
-        protected override Task OnDeactivateAsync() => _context.DeactivateAsync(_cancellation);        
+        protected override Task OnDeactivateAsync() => _context.DeactivateAsync(_cancellation);
 
         private string GetInstanceId()
         {
@@ -98,23 +122,6 @@ namespace PoolManager.Instances
             }
 
             return rvalue;
-        }
-
-        public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
-        {
-            using (var request = _telemetryClient.StartOperation<RequestTelemetry>(reminderName))
-            {
-                try
-                {
-                    if (reminderName.Equals("expiration-quanta"))
-                        await _context.CheckForExpirationAsync(new CheckForExpiration(this.GetActorId().GetGuidId()), _cancellation);
-                }
-                catch (Exception ex)
-                {
-                    request.Telemetry.Success = false;
-                    _telemetryClient.TrackException(ex);
-                }
-            }
         }
     }
 }

@@ -118,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Instance.cs" />
+    <Compile Include="InstanceActorModule.cs" />
     <Compile Include="InstanceRepository.cs" />
     <Compile Include="PartitionProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

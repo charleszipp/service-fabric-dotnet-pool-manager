@@ -64,20 +64,20 @@ namespace PoolManager.Terminal.Commands
         private readonly ITerminal terminal;
         private readonly IHandleCommand<GetInstance> getInstanceHandler;
         private readonly IHandleCommand<RestartApplication> restartAppHandler;
-        private readonly IHandleCommand<RestartPool> restartPoolHandler;
+        private readonly IHandleCommand<StartPool> startPoolHandler;
         private readonly IHandleCommand<EnsureAppReady> ensureAppReadyHandler;
         private readonly Random random = new Random();
 
         public SwarmHandler(ITerminal terminal, 
             IHandleCommand<GetInstance> getInstanceHandler, 
             IHandleCommand<RestartApplication> restartAppHandler, 
-            IHandleCommand<RestartPool> restartPoolHandler,
+            IHandleCommand<StartPool> startPoolHandler,
             IHandleCommand<EnsureAppReady> ensureAppReadyHandler)
         {
             this.terminal = terminal;
             this.getInstanceHandler = getInstanceHandler;
             this.restartAppHandler = restartAppHandler;
-            this.restartPoolHandler = restartPoolHandler;
+            this.startPoolHandler = startPoolHandler;
             this.ensureAppReadyHandler = ensureAppReadyHandler;
         }
 
@@ -103,13 +103,8 @@ namespace PoolManager.Terminal.Commands
             var tenants = GetTenantIds(command.Tenants);
             var users = GetUsers(command.Users, command.ServiceTypeUri, tenants);
 
-            foreach (var poolId in users.Select(u => u.PoolId).Distinct())
-            {
-                await restartPoolHandler.ExecuteAsync(
-                    new RestartPool(poolId, command.ServiceTypeUri),
-                    cancellationToken
-                );
-            }
+            await startPoolHandler.ExecuteAsync(new StartPool(command.ServiceTypeUri), cancellationToken);
+
             await Task.Delay(15000);
             await ensureAppReadyHandler.ExecuteAsync(new EnsureAppReady(command.ApplicationName), cancellationToken);
 

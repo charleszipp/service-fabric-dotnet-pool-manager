@@ -118,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Pool.cs" />
+    <Compile Include="PoolActorModule.cs" />
     <Compile Include="PoolConfiguration.cs" />
     <Compile Include="PoolInstances.cs" />
     <Compile Include="PoolsRepository.cs" />

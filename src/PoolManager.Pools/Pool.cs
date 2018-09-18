@@ -2,6 +2,8 @@
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
+using Ninject;
+using PoolManager.Core;
 using PoolManager.Core.Mediators;
 using PoolManager.Domains.Pools;
 using PoolManager.SDK.Instances;
@@ -19,13 +21,19 @@ namespace PoolManager.Pools
     {
         private readonly TelemetryClient _telemetryClient;
         private readonly Mediator _mediator;
+        private readonly IKernel _kernel;
         private const string EnsurePoolSizeReminderKey = "ensure-pool-size";
 
-        public Pool(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, Mediator mediator)
+        public Pool(ActorService actorService, ActorId actorId)
             : base(actorService, actorId)
         {
-            _telemetryClient = telemetryClient;
-            _mediator = mediator;
+            _kernel = new StandardKernel(new PoolActorModule())
+                .WithCore(actorService.Context, StateManager)
+                .WithMediator()
+                .WithPools();
+
+            _telemetryClient = _kernel.Get<TelemetryClient>();
+            _mediator = _kernel.Get<Mediator>();
         }
         public async Task StartAsync(StartPoolRequest request)
         {

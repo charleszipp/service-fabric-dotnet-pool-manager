@@ -52,4 +52,4 @@ When the "fabric:/PoolManager.Tests/NoOp" pool is started with the following con
 | IdleServicesPoolSize        | 3         |
 | ServicesAllocationBlockSize | 2         |
 | ExpirationQuanta            | 00:03:00  |
-And an instance of "fabric:/PoolManager.Tests/NoOp" named "myNoOpInstance" is gotten
+And an instance of "fabric:/PoolManager.Tests/NoOp" named "myNoOpInstance" for partition "78d4537b-b1b4-417e-8c13-2a7b131051fc" is gotten
