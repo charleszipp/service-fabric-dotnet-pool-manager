@@ -39,10 +39,12 @@ namespace PoolManager.Domains.Instances.States
             await repository.SetInstanceStateAsync(_currentState.State, cancellationToken);
         }
 
-        public async Task OccupyAsync(OccupyInstance command, CancellationToken cancellationToken)
+        public async Task<OccupyInstanceResult> OccupyAsync(OccupyInstance command, CancellationToken cancellationToken)
         {
             _currentState = await _currentState.OccupyAsync(this, command, cancellationToken);
             await repository.SetInstanceStateAsync(_currentState.State, cancellationToken);
+            var serviceName = await repository.GetServiceUriAsync(cancellationToken);
+            return new OccupyInstanceResult(serviceName);
         }
 
         public async Task VacateAsync(VacateInstance command, CancellationToken cancellationToken)

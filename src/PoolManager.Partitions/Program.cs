@@ -5,6 +5,7 @@ using Microsoft.ServiceFabric.Actors.Runtime;
 using Ninject;
 using PoolManager.Core;
 using PoolManager.SDK.Instances;
+using PoolManager.SDK.Pools;
 using System.Threading;
 
 namespace PoolManager.Partitions
@@ -17,9 +18,22 @@ namespace PoolManager.Partitions
             {
                 var kernel = new StandardKernel();
                 kernel.Bind<TelemetryClient>().ToSelf();
-                kernel.Bind<PoolsActorService>().ToMethod(x => new PoolsActorService(context, actorType, "PoolActorServiceEndpoint",
-                    (svc, id) => new Partition(svc, id, kernel.Get<TelemetryClient>(), new InstanceProxy(new CorrelatingActorProxyFactory(context,
-                            callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient)), new GuidGetter()))));
+                kernel.Bind<PoolsActorService>().ToMethod(x => 
+                    new PoolsActorService(context, actorType, "PoolActorServiceEndpoint",
+                        (svc, id) => new Partition(
+                            svc, 
+                            id, 
+                            kernel.Get<TelemetryClient>(), 
+                            new InstanceProxy(
+                                new CorrelatingActorProxyFactory(context, callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient)), 
+                                new GuidGetter()
+                            ),
+                            new PoolProxy(
+                                new CorrelatingActorProxyFactory(context, callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient))
+                            )
+                        )
+                    )
+                );
                 return kernel.Get<PoolsActorService>();
             }).GetAwaiter().GetResult();
 

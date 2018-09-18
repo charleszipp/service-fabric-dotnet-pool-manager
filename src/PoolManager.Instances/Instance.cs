@@ -9,6 +9,7 @@ using PoolManager.Domains.Instances;
 using PoolManager.Domains.Instances.States;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Instances.Requests;
+using PoolManager.SDK.Instances.Responses;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,9 +56,9 @@ namespace PoolManager.Instances
             await _context.RemoveAsync(new RemoveInstance(), _cancellation);
         }
 
-        public async Task OccupyAsync(OccupyRequest request)
+        public async Task<OccupyResponse> OccupyAsync(OccupyRequest request)
         {
-            await _context.OccupyAsync(new OccupyInstance(this.GetActorId().GetGuidId(), request.PartitionId, request.ServiceInstanceName), _cancellation);
+            var result = await _context.OccupyAsync(new OccupyInstance(this.GetActorId().GetGuidId(), request.PartitionId, request.ServiceInstanceName), _cancellation);
             //calculate a seed value to the nearest 100ms to stagger the due time of the different actors.
             //this prevents from all actors occupied within milliseconds of each other from all vacating at exactly the same time
             //which will cause a deadlock on the pool actor.
@@ -65,6 +66,7 @@ namespace PoolManager.Instances
             var intervalMs = (int)Math.Round(expirationQuanta.TotalMilliseconds / 5);
             var dueMs = ((int)Math.Round((GetInstanceId().GetHashCode() % 1000) / 100.0) * 100) + intervalMs;
             await RegisterReminderAsync("expiration-quanta", null, TimeSpan.FromMilliseconds(dueMs), TimeSpan.FromMilliseconds(intervalMs));
+            return new OccupyResponse(result.ServiceName);
         }
 
         public async Task<TimeSpan> ReportActivityAsync(ReportActivityRequest request) =>
