@@ -41,7 +41,8 @@ namespace PoolManager.UnitTests
                 var actorProxyFactory = new MockActorProxyFactory();
                 var mockServiceProxyFactory = new MockServiceProxyFactory();
                 var actorServiceForActor = MockActorServiceFactory.CreateActorServiceForActor<Instance>();
-                var instance = new Instance(actorServiceForActor, new ActorId(x));
+                var instance = new Instance(actorServiceForActor, new ActorId(x), testContext.ClusterClient.Object, 
+                    testContext.TelemetryClient);
                 return instance;
             }).ToList();
 
@@ -60,7 +61,7 @@ namespace PoolManager.UnitTests
             IGuidGetter guidGetter)
         {
             return MockActorServiceFactory.CreateActorServiceForActor<Pool>((svc, id) =>
-                new Pool(svc, id));
+                new Pool(svc, id, guidGetter, telemetryClient, actorProxyFactory));
         }
     }
     [TestClass]

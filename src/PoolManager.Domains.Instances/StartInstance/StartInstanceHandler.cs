@@ -29,7 +29,6 @@ namespace PoolManager.Domains.Instances
                 cancellationToken);
 
             await Task.WhenAll(
-                repository.SetPartitionIdAsync(command.PartitionId, cancellationToken),
                 repository.SetExprirationQuantaAsync(command.ExpirationQuanta, cancellationToken),
                 repository.SetServiceUriAsync(result.ServiceUri, cancellationToken)
             );

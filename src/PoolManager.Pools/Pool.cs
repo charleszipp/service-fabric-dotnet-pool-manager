@@ -1,7 +1,9 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ServiceFabric.Actors;
+using Microsoft.ServiceFabric.Actors.Client;
 using Microsoft.ServiceFabric.Actors.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Ninject;
 using PoolManager.Core;
 using PoolManager.Core.Mediators;
@@ -24,11 +26,18 @@ namespace PoolManager.Pools
         private readonly IKernel _kernel;
         private const string EnsurePoolSizeReminderKey = "ensure-pool-size";
 
-        public Pool(ActorService actorService, ActorId actorId)
+        public Pool(
+            ActorService actorService, 
+            ActorId actorId, 
+            IGuidGetter guidGetter = null,
+            TelemetryClient telemetry = null,
+            IActorProxyFactory actorProxyFactory = null,
+            IServiceProxyFactory serviceProxyFactory = null)
             : base(actorService, actorId)
         {
-            _kernel = new StandardKernel(new PoolActorModule())
-                .WithCore(actorService.Context, StateManager)
+            _kernel = new StandardKernel(new PoolActorModule(guidGetter))
+                .WithCore(actorService.Context, StateManager, telemetry: telemetry, 
+                    actorProxyFactory: actorProxyFactory, serviceProxyFactory: serviceProxyFactory)
                 .WithMediator()
                 .WithPools();
 

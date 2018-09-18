@@ -24,11 +24,11 @@ namespace PoolManager.Instances
         private readonly CancellationToken _cancellation = default(CancellationToken);
         private readonly IKernel _kernel;
 
-        public Instance(ActorService actorService, ActorId actorId)
+        public Instance(ActorService actorService, ActorId actorId, IClusterClient clusterClient = null, TelemetryClient telemetry = null)
             : base(actorService, actorId)
         {
             _kernel = new StandardKernel(new InstanceActorModule())
-                .WithCore(actorService.Context, StateManager)
+                .WithCore(actorService.Context, StateManager, clusterClient, telemetry)
                 .WithMediator()
                 .WithInstances();
             _context = _kernel.Get<InstanceContext>();
@@ -39,8 +39,7 @@ namespace PoolManager.Instances
         public Task StartAsync(StartInstanceRequest request) =>
             _context.StartAsync(
                 new StartInstance(
-                    this.GetActorId().GetGuidId(),
-                    request.PartitionId, request.ServiceTypeUri, request.IsServiceStateful,
+                    this.GetActorId().GetGuidId(), request.ServiceTypeUri, request.IsServiceStateful,
                     request.HasPersistedState, request.MinReplicas, request.TargetReplicas,
                     (PartitionSchemeDescription)Enum.Parse(typeof(PartitionSchemeDescription), request.PartitionScheme.ToString()),
                     request.ExpirationQuanta),
@@ -58,7 +57,7 @@ namespace PoolManager.Instances
 
         public async Task OccupyAsync(OccupyRequest request)
         {
-            await _context.OccupyAsync(new OccupyInstance(this.GetActorId().GetGuidId(), request.ServiceInstanceName), _cancellation);
+            await _context.OccupyAsync(new OccupyInstance(this.GetActorId().GetGuidId(), request.PartitionId, request.ServiceInstanceName), _cancellation);
             //calculate a seed value to the nearest 100ms to stagger the due time of the different actors.
             //this prevents from all actors occupied within milliseconds of each other from all vacating at exactly the same time
             //which will cause a deadlock on the pool actor.

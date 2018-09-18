@@ -18,22 +18,24 @@ namespace PoolManager.Pools
             this.repository = repository;
         }
 
-        public Task<StartInstanceResult> ExecuteAsync(StartInstance command, CancellationToken cancellationToken)
+        public async Task<StartInstanceResult> ExecuteAsync(StartInstance command, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-            //todo: implement start instance from pool actor
-            //var config = await repository.GetPoolConfigurationAsync(cancellationToken);
-            //var instanceId = await instances.StartAsync(new SDK.Instances.Requests.StartInstanceRequest(
-            //    ,
-            //    config.ServiceTypeUri,
-            //    config.IsServiceStateful,
-            //    config.HasPersistedState,
-            //    config.MinReplicaSetSize,
-            //    config.TargetReplicasetSize,
-            //    (SDK.PartitionSchemeDescription)Enum.Parse(typeof(SDK.PartitionSchemeDescription), config.PartitionScheme.ToString()),
-            //    config.ExpirationQuanta
-            //    ));
-            //return new StartInstanceResult(instanceId);
+            var config = await repository.TryGetPoolConfigurationAsync(cancellationToken);
+            if (config == null)
+                throw new InvalidOperationException("Pool configuration is not set. Unable to start instance");
+            else
+            {
+                var instanceId = await instances.StartAsync(new SDK.Instances.Requests.StartInstanceRequest(
+                    config.ServiceTypeUri,
+                    config.IsServiceStateful,
+                    config.HasPersistedState,
+                    config.MinReplicaSetSize,
+                    config.TargetReplicasetSize,
+                    (SDK.PartitionSchemeDescription)Enum.Parse(typeof(SDK.PartitionSchemeDescription), config.PartitionScheme.ToString()),
+                    config.ExpirationQuanta
+                    ));
+                return new StartInstanceResult(instanceId);
+            }
         }
     }
 }

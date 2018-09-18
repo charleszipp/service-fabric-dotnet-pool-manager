@@ -7,7 +7,6 @@ namespace PoolManager.Domains.Instances
     {
         public StartInstance(
             Guid instanceId,
-            string partitionId,
             string serviceTypeUri,
             bool isServiceStateful,
             bool hasPersistedState,
@@ -18,7 +17,6 @@ namespace PoolManager.Domains.Instances
             )
         {
             InstanceId = instanceId;
-            PartitionId = partitionId;
             ServiceTypeUri = serviceTypeUri;
             IsServiceStateful = isServiceStateful;
             HasPersistedState = hasPersistedState;
@@ -29,8 +27,6 @@ namespace PoolManager.Domains.Instances
         }
 
         public Guid InstanceId { get; }
-
-        public string PartitionId { get; }
 
         public string ServiceTypeUri { get; }
 

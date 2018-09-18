@@ -36,7 +36,10 @@ namespace PoolManager.Core.ApplicationInsights
         {
             var elapsed = _timer.Elapsed;
             _telemetry.TrackTrace(_metricId + ".Completed", new Dictionary<string, string> {{"duration", elapsed.ToString()}});
-            _telemetry.GetMetric(_metricId, _dimension1Name).TrackValue(elapsed.TotalMilliseconds, _dimension1Value);
+            if(string.IsNullOrEmpty(_dimension1Name))
+                _telemetry.GetMetric(_metricId).TrackValue(elapsed.TotalMilliseconds);
+            else
+                _telemetry.GetMetric(_metricId, _dimension1Name).TrackValue(elapsed.TotalMilliseconds, _dimension1Value);
         }
     }
 }

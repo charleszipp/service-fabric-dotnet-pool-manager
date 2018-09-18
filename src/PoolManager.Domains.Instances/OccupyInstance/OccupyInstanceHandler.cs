@@ -20,7 +20,10 @@ namespace PoolManager.Domains.Instances
         {
             Uri serviceUri = await repository.GetServiceUriAsync(cancellationToken);
             await instanceProxy.OccupyAsync(serviceUri, command.InstanceId, command.InstanceName);
-            await repository.SetServiceInstanceName(command.InstanceName, cancellationToken);
+            await Task.WhenAll(
+                repository.SetServiceInstanceName(command.InstanceName, cancellationToken),
+                repository.SetPartitionIdAsync(command.PartitionId, cancellationToken)
+            );
         }
     }
 }

@@ -7,11 +7,14 @@ namespace PoolManager.SDK.Instances.Requests
     [DataContract]
     public class OccupyRequest
     {
-        public OccupyRequest(string serviceInstanceName)
+        public OccupyRequest(string partitionId, string serviceInstanceName)
         {
+            PartitionId = partitionId;
             ServiceInstanceName = serviceInstanceName;
         }
 
+        [DataMember]
+        public string PartitionId { get; private set; }
         [DataMember]
         public string ServiceInstanceName { get; private set; }
     }
