@@ -38,6 +38,8 @@ namespace PoolManager.Core
                     )
                 ).InSingletonScope();
             Bind<IActorStateManager>().ToConstant(stateManager);
+            Bind<FabricClient>().ToSelf().InSingletonScope();
+            Bind<IClusterClient>().To<ClusterClient>();
         }
     }
 }

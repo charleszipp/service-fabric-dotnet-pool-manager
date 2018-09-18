@@ -19,6 +19,7 @@ namespace PoolManager.Domains.Instances
         {
             var result = await createService.ExecuteAsync(
                 new CreateService(
+                    command.InstanceId,
                     command.ServiceTypeUri, 
                     command.IsServiceStateful, 
                     command.HasPersistedState, 

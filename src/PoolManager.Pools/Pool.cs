@@ -39,7 +39,7 @@ namespace PoolManager.Pools
         {
             await _mediator.ExecuteAsync(
                 new StartPool(
-                    request.ServiceTypeUri, 
+                    this.GetActorId().GetStringId(), 
                     request.IsServiceStateful, 
                     request.HasPersistedState, 
                     request.MinReplicas, 

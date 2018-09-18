@@ -6,6 +6,7 @@ namespace PoolManager.Domains.Instances
     public class StartInstance : ICommand
     {
         public StartInstance(
+            Guid instanceId,
             string partitionId,
             string serviceTypeUri,
             bool isServiceStateful,
@@ -16,6 +17,7 @@ namespace PoolManager.Domains.Instances
             TimeSpan expirationQuanta
             )
         {
+            InstanceId = instanceId;
             PartitionId = partitionId;
             ServiceTypeUri = serviceTypeUri;
             IsServiceStateful = isServiceStateful;
@@ -25,6 +27,8 @@ namespace PoolManager.Domains.Instances
             PartitionScheme = partitionScheme;
             ExpirationQuanta = expirationQuanta;
         }
+
+        public Guid InstanceId { get; }
 
         public string PartitionId { get; }
 

@@ -8,7 +8,6 @@ namespace PoolManager.SDK.Pools.Requests
     public class StartPoolRequest
     {
         public StartPoolRequest(
-            string serviceTypeUri,
             bool isServiceStateful = true,
             bool hasPersistedState = true,
             int minReplicas = 1,
@@ -20,7 +19,6 @@ namespace PoolManager.SDK.Pools.Requests
             TimeSpan? expirationQuanta = null
             )
         {
-            ServiceTypeUri = serviceTypeUri;
             IsServiceStateful = isServiceStateful;
             HasPersistedState = hasPersistedState;
             MinReplicas = minReplicas;
@@ -32,8 +30,6 @@ namespace PoolManager.SDK.Pools.Requests
             ExpirationQuanta = expirationQuanta ?? new TimeSpan(24, 0, 0);
         }
 
-        [DataMember]
-        public string ServiceTypeUri { get; private set; }
         [DataMember]
         public bool IsServiceStateful { get; private set; }
         [DataMember]

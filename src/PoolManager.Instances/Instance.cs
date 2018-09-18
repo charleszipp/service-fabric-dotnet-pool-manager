@@ -39,6 +39,7 @@ namespace PoolManager.Instances
         public Task StartAsync(StartInstanceRequest request) =>
             _context.StartAsync(
                 new StartInstance(
+                    this.GetActorId().GetGuidId(),
                     request.PartitionId, request.ServiceTypeUri, request.IsServiceStateful,
                     request.HasPersistedState, request.MinReplicas, request.TargetReplicas,
                     (PartitionSchemeDescription)Enum.Parse(typeof(PartitionSchemeDescription), request.PartitionScheme.ToString()),

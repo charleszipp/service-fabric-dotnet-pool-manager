@@ -60,7 +60,7 @@ namespace PoolManager.UnitTests
             IGuidGetter guidGetter)
         {
             return MockActorServiceFactory.CreateActorServiceForActor<Pool>((svc, id) =>
-                new Pool(svc, id, telemetryClient, new InstanceProxy(actorProxyFactory, guidGetter)));
+                new Pool(svc, id));
         }
     }
     [TestClass]

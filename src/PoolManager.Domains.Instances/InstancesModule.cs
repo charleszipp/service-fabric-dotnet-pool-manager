@@ -18,7 +18,13 @@ namespace PoolManager.Domains.Instances
     {
         public override void Load()
         {
-            Bind<IInstanceStateProvider>().To<InstanceStateProvider>();
+            Bind<IInstanceStateProvider>().ToMethod(ctx => 
+                new InstanceStateProvider(
+                    new InstanceStateIdle(), 
+                    new InstanceStateVacant(), 
+                    new InstanceStateOccupied()                    
+                    )
+                );
             Bind<InstanceContext>().ToSelf();
             Kernel
                 .WithCommandHandler<StartInstanceHandler, StartInstance>()

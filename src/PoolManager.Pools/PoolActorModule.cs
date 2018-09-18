@@ -11,6 +11,7 @@ namespace PoolManager.Pools
         {
             Bind<IGuidGetter>().To<GuidGetter>();
             Bind<IInstanceProxy>().To<InstanceProxy>();
+            Bind<IPoolsRepository>().To<PoolsRepository>();
             Kernel.WithCommandHandler<StartInstanceHandler, StartInstance, StartInstanceResult>();
         }
     }

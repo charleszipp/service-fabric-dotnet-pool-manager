@@ -18,8 +18,9 @@ namespace PoolManager.Domains.Instances.States
         {
             TelemetryClient = telemetryClient;
             Mediator = mediator;
-            this.repository = repository;
             InstanceStates = states;
+            this.repository = repository;
+            _currentState = InstanceStates.Get(Instances.InstanceStates.Idle);
         }
 
         public async Task ActivateAsync(CancellationToken cancellationToken)
