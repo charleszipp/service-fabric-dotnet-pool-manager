@@ -2,6 +2,10 @@
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/PoolManager" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="InstanceActorService_PartitionCount" Value="3" />
+    <Parameter Name="InstanceActorService_TargetReplicaSetSize" Value="3" />
+    <Parameter Name="InstanceActorService_MinReplicaSetSize" Value="3" />
     <Parameter Name="PoolActorService_PartitionCount" Value="3" />
+    <Parameter Name="PoolActorService_TargetReplicaSetSize" Value="3" />
+    <Parameter Name="PoolActorService_MinReplicaSetSize" Value="3" />
   </Parameters>
 </Application>

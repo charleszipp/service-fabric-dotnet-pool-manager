@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Fabric.Description;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
@@ -16,6 +18,7 @@ using PoolManager.SDK.Instances;
 using PoolManager.SDK.Pools.Requests;
 using PoolManager.UnitTests.Mocks;
 using ServiceFabric.Mocks;
+using PartitionSchemeDescription = PoolManager.SDK.PartitionSchemeDescription;
 
 namespace PoolManager.UnitTests
 {
@@ -29,6 +32,38 @@ namespace PoolManager.UnitTests
         public Pool Pool { get; set; }
         public MockActorService<Pool> PoolActorService { get; set; }
         public TelemetryClient TelemetryClient { get; set; }
+        public static TestContext WithHappyPath()
+        {
+            var testContext = new TestContext();
+            testContext.TelemetryClient = new TelemetryClient(new TelemetryConfiguration("", testContext.MockTelemetryChannel));
+            testContext.Actors = Enumerable.Range(0, 10).Select(x => Guid.NewGuid()).Select(x =>
+            {
+                var actorProxyFactory = new MockActorProxyFactory();
+                var mockServiceProxyFactory = new MockServiceProxyFactory();
+                var actorServiceForActor = MockActorServiceFactory.CreateActorServiceForActor<Instance>();
+                var instance = new Instance(actorServiceForActor,
+                    new ActorId(x), testContext.ClusterClient.Object, testContext.TelemetryClient, actorProxyFactory,
+                    mockServiceProxyFactory);
+                return instance;
+            }).ToList();
+
+            var setupSequentialResult = testContext.GuidGetter.SetupSequence(x => x.GetAGuid());
+            foreach (var actor in testContext.Actors)
+            {
+                setupSequentialResult.Returns(actor.Id.GetGuidId());
+                testContext.MockActorProxyFactory.RegisterActor(actor);
+            }
+            testContext.PoolActorService = CreatePoolActorService(testContext.TelemetryClient, testContext.MockActorProxyFactory,
+                testContext.GuidGetter.Object);
+            testContext.Pool = testContext.PoolActorService.Activate(new ActorId("fabric:/myapplicationname/myservicetypename"));
+            return testContext;
+        }
+        private static MockActorService<Pool> CreatePoolActorService(TelemetryClient telemetryClient, IActorProxyFactory actorProxyFactory,
+            IGuidGetter guidGetter)
+        {
+            return MockActorServiceFactory.CreateActorServiceForActor<Pool>((svc, id) =>
+                new Pool(svc, id, telemetryClient, new InstanceProxy(actorProxyFactory, guidGetter)));
+        }
     }
     [TestClass]
     public class StartingAPool
@@ -37,31 +72,22 @@ namespace PoolManager.UnitTests
         [TestInitialize]
         public async Task Setup()
         {
-            _testContext = new TestContext();
-            _testContext.TelemetryClient = new TelemetryClient(new TelemetryConfiguration("", _testContext.MockTelemetryChannel));
-            _testContext.Actors = Enumerable.Range(0, 10).Select(x => Guid.NewGuid()).Select(x =>
-            {
-                var actorProxyFactory = new MockActorProxyFactory();
-                var mockServiceProxyFactory = new MockServiceProxyFactory();
-                var actorServiceForActor = MockActorServiceFactory.CreateActorServiceForActor<Instance>();
-                var instance = new Instance(actorServiceForActor,
-                    new ActorId(x), _testContext.ClusterClient.Object, _testContext.TelemetryClient, actorProxyFactory,
-                    mockServiceProxyFactory);
-                return instance;
-            }).ToList();
-
-            var setupSequentialResult = _testContext.GuidGetter.SetupSequence(x => x.GetAGuid());
-            foreach (var actor in _testContext.Actors)
-            {
-                setupSequentialResult.Returns(actor.Id.GetGuidId());
-                _testContext.MockActorProxyFactory.RegisterActor(actor);
-            }
-            _testContext.PoolActorService = CreatePoolActorService(_testContext.TelemetryClient, _testContext.MockActorProxyFactory,
-                _testContext.GuidGetter.Object);
-            _testContext.Pool = _testContext.PoolActorService.Activate(new ActorId("fabric:/myapplicationname/myservicetypename"));
+            _testContext = TestContext.WithHappyPath();
 
             // Act
             await _testContext.Pool.StartAsync(new StartPoolRequest());
+        }
+        [TestMethod]
+        public void TracksBeginning()
+        {
+            _testContext.MockTelemetryChannel.SentTelemetry.Should().Contain(x =>
+                x is TraceTelemetry && ((TraceTelemetry)x).Message == "pools.vacant.grow.block.time.Began");
+        }
+        [TestMethod]
+        public void TracksCompletionWithDuration()
+        {
+            _testContext.MockTelemetryChannel.SentTelemetry.Should().Contain(x =>
+                x is TraceTelemetry && ((TraceTelemetry)x).Message == "pools.vacant.grow.block.time.Completed" && ((TraceTelemetry)x).Properties.ContainsKey("duration"));
         }
         [TestMethod]
         public void CreatesTenStatefulServicesWithMinReplicasOfOne()
@@ -111,11 +137,145 @@ namespace PoolManager.UnitTests
                         y.ServiceName.AbsoluteUri == "fabric:/myapplicationname/myservicetypename/" + actor.Id.GetGuidId()),
                     It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()), Times.Exactly(1));
         }
-        private static MockActorService<Pool> CreatePoolActorService(TelemetryClient telemetryClient, IActorProxyFactory actorProxyFactory,
-            IGuidGetter guidGetter)
+    }
+    [TestClass]
+    public class StartingAPoolWithIdlePoolSizeOfThree
+    {
+        private TestContext _testContext;
+        [TestInitialize]
+        public async Task Setup()
         {
-            return MockActorServiceFactory.CreateActorServiceForActor<Pool>((svc, id) =>
-                new Pool(svc, id, telemetryClient, new InstanceProxy(actorProxyFactory, guidGetter)));
+            _testContext = TestContext.WithHappyPath();
+
+            // Act
+            await _testContext.Pool.StartAsync(new StartPoolRequest(idleServicesPoolSize:3));
+        }
+        [TestMethod]
+        public void CreatesThreeStatefulServices()
+        {
+            _testContext.ClusterClient.Verify(x => x.CreateStatefulServiceAsync(
+                It.IsAny<ServiceDescriptionFactory>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()), Times.Exactly(3));
+        }
+    }
+    [TestClass]
+    public class StartingAPoolWithHasPersistedStateOfFalse
+    {
+        private TestContext _testContext;
+        [TestInitialize]
+        public async Task Setup()
+        {
+            _testContext = TestContext.WithHappyPath();
+
+            // Act
+            await _testContext.Pool.StartAsync(new StartPoolRequest(hasPersistedState:false));
+        }
+        [TestMethod]
+        public void CreatesTenStatefulServicesWithHasPersistedStateOfTrue()
+        {
+            _testContext.ClusterClient.Verify(x => x.CreateStatefulServiceAsync(
+                It.IsAny<ServiceDescriptionFactory>(), It.IsAny<int>(), It.IsAny<int>(), false), Times.Exactly(10));
+        }
+    }
+    [TestClass]
+    public class StartingAPoolWithMinReplicasOfSix
+    {
+        private TestContext _testContext;
+        [TestInitialize]
+        public async Task Setup()
+        {
+            _testContext = TestContext.WithHappyPath();
+
+            // Act
+            await _testContext.Pool.StartAsync(new StartPoolRequest(minReplicas:6));
+        }
+        [TestMethod]
+        public void CreatesTenStatefulServicesWithMinReplicasOfSix()
+        {
+            _testContext.ClusterClient.Verify(x => x.CreateStatefulServiceAsync(
+                It.IsAny<ServiceDescriptionFactory>(), 6, It.IsAny<int>(), It.IsAny<bool>()), Times.Exactly(10));
+        }
+    }
+    [TestClass]
+    public class StartingAPoolWithTargetReplicasOfTwo
+    {
+        private TestContext _testContext;
+        [TestInitialize]
+        public async Task Setup()
+        {
+            _testContext = TestContext.WithHappyPath();
+
+            // Act
+            await _testContext.Pool.StartAsync(new StartPoolRequest(targetReplicas:2));
+        }
+        [TestMethod]
+        public void CreatesTenStatefulServicesWithTargetReplicasOfTwo()
+        {
+            _testContext.ClusterClient.Verify(x => x.CreateStatefulServiceAsync(
+                It.IsAny<ServiceDescriptionFactory>(), It.IsAny<int>(), 2, It.IsAny<bool>()), Times.Exactly(10));
+        }
+    }
+    [TestClass]
+    public class StartingAPoolWithPartitionSchemeDescriptionOfNamed
+    {
+        private TestContext _testContext;
+        [TestInitialize]
+        public async Task Setup()
+        {
+            _testContext = TestContext.WithHappyPath();
+
+            // Act
+            await _testContext.Pool.StartAsync(new StartPoolRequest(partitionScheme:PartitionSchemeDescription.Named));
+        }
+        [TestMethod]
+        public void CreatesTenStatefulServicesWithPartitionSchemeDescriptionOfNamed()
+        {
+            _testContext.ClusterClient.Verify(x => x.CreateStatefulServiceAsync(
+                It.Is<ServiceDescriptionFactory>(y=>y.PartitionSchemeDescription is NamedPartitionSchemeDescription), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()), Times.Exactly(10));
+        }
+    }
+    [TestClass]
+    public class StartingAPoolWithMaxPoolSizeOfTwo
+    {
+        private TestContext _testContext;
+        [TestInitialize]
+        public async Task Setup()
+        {
+            _testContext = TestContext.WithHappyPath();
+
+            // Act
+            await _testContext.Pool.StartAsync(new StartPoolRequest(maxPoolSize:2));
+        }
+        [TestMethod]
+        public void CreatesTwoStatefulServices()
+        {
+            _testContext.ClusterClient.Verify(x => x.CreateStatefulServiceAsync(
+                It.IsAny<ServiceDescriptionFactory>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()), Times.Exactly(2));
+        }
+    }
+    [TestClass]
+    public class StartingAPoolWithServicesAllocationBlockSizeOfTwo
+    {
+        private TestContext _testContext;
+        [TestInitialize]
+        public async Task Setup()
+        {
+            _testContext = TestContext.WithHappyPath();
+
+            // Act
+            await _testContext.Pool.StartAsync(new StartPoolRequest(servicesAllocationBlockSize:2));
+        }
+        [TestMethod]
+        public void CreatesTenStatefulServices()
+        {
+            _testContext.ClusterClient.Verify(x => x.CreateStatefulServiceAsync(
+                It.IsAny<ServiceDescriptionFactory>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()), Times.Exactly(10));
+        }
+        [TestMethod]
+        public void LogsEachAllocationBlockIndividually()
+        {
+            _testContext.MockTelemetryChannel.SentTelemetry.Count(x =>
+                x is TraceTelemetry t && t.Message == "pools.vacant.grow.block.time.Completed" && t.Properties.ContainsKey("duration"))
+                .Should().Be(5);
         }
     }
 }
