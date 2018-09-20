@@ -116,25 +116,27 @@
     <Compile Include="Instances\IInstance.cs" />
     <Compile Include="Instances\IInstanceProxy.cs" />
     <Compile Include="Instances\InstanceProxy.cs" />
-    <Compile Include="Instances\InstanceStates.cs" />
-    <Compile Include="Instances\Requests\StartInstanceAsRequest.cs" />
+    <Compile Include="Instances\Requests\OccupyRequest.cs" />
     <Compile Include="Instances\Requests\StartInstanceRequest.cs" />
+    <Compile Include="Instances\Responses\OccupyResponse.cs" />
     <Compile Include="PartitionSchemeDescription.cs" />
+    <Compile Include="Partitions\IPartition.cs" />
+    <Compile Include="Partitions\IPartitionProxy.cs" />
+    <Compile Include="Partitions\PartitionProxy.cs" />
     <Compile Include="PooledServiceProxy.cs" />
+    <Compile Include="Pools\Requests\PopVacantInstanceRequest.cs" />
     <Compile Include="Pools\Responses\ConfigurationResponse.cs" />
     <Compile Include="Pools\IPoolProxy.cs" />
     <Compile Include="Pools\PoolProxy.cs" />
-    <Compile Include="Pools\Requests\GetInstanceRequest.cs" />
+    <Compile Include="Partitions\Requests\GetInstanceRequest.cs" />
     <Compile Include="Pools\IPool.cs" />
     <Compile Include="IServiceInstance.cs" />
-    <Compile Include="Instances\Requests\OccupyInstanceRequest.cs" />
-    <Compile Include="Pools\PoolStates.cs" />
     <Compile Include="Pools\Requests\StartPoolRequest.cs" />
-    <Compile Include="Pools\Requests\VacateInstanceRequest.cs" />
-    <Compile Include="Pools\Responses\GetInstanceResponse.cs" />
+    <Compile Include="Partitions\Requests\VacateInstanceRequest.cs" />
+    <Compile Include="Partitions\Responses\GetInstanceResponse.cs" />
+    <Compile Include="Pools\Responses\PopVacantInstanceResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Instances\Requests\ReportActivityRequest.cs" />
-    <Compile Include="Instances\ServiceStates.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

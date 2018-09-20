@@ -8,7 +8,6 @@ namespace PoolManager.SDK.Instances.Requests
     public class StartInstanceRequest
     {
         public StartInstanceRequest(
-            string poolId,
             string serviceTypeUri,
             bool isServiceStateful = true,
             bool hasPersistedState = true,
@@ -18,7 +17,6 @@ namespace PoolManager.SDK.Instances.Requests
             TimeSpan? expirationQuanta = null
             )
         {
-            PoolId = poolId;
             ServiceTypeUri = serviceTypeUri;
             IsServiceStateful = isServiceStateful;
             HasPersistedState = hasPersistedState;
@@ -27,8 +25,6 @@ namespace PoolManager.SDK.Instances.Requests
             PartitionScheme = partitionScheme;
             ExpirationQuanta = expirationQuanta ?? new TimeSpan(24, 0, 0);
         }
-        [DataMember]
-        public string PoolId { get; private set; }
         [DataMember]
         public string ServiceTypeUri { get; private set; }
         [DataMember]
