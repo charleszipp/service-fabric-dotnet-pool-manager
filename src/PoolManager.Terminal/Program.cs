@@ -161,7 +161,7 @@ namespace PoolManager.Terminal
             timer.Start();
             try
             {
-                var serviceInstance = await PooledServiceProxy<IServiceInstance>.Create(pools, serviceProxyFactory, serviceTypeName, serviceInstanceName);
+                var response = await pools.GetInstanceAsync(serviceTypeName, new GetInstanceRequest(serviceInstanceName));
                 //verify the service instance uri returned exists
                 //await serviceInstance.PingAsync();
             }
