@@ -25,7 +25,7 @@ namespace PoolManager.Core.Mediators
 
         public Task<TResult> ExecuteAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken)
         {
-            var invoker = (CommandInvoker<TResult>)Activator.CreateInstance(typeof(CommandInvoker<>).MakeGenericType(command.GetType(), typeof(TResult)));
+            var invoker = (CommandInvoker<TResult>)Activator.CreateInstance(typeof(CommandInvoker<,>).MakeGenericType(command.GetType(), typeof(TResult)));
             return invoker.InvokeAsync(command, DependencyResolver, cancellationToken);
         }
 
