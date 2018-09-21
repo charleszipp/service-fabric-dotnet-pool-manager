@@ -13,6 +13,6 @@ namespace PoolManager.SDK.Instances.Responses
         }
 
         [DataMember]
-        public Uri ServiceName { get; }
+        public Uri ServiceName { get; private set; }
     }
 }
