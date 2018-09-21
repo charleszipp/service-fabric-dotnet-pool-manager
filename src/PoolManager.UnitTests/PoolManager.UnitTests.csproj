@@ -136,14 +136,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContainerSetupBindings.cs" />
     <Compile Include="Mocks\MockTelemetryChannel.cs" />
-    <Compile Include="PoolsBindings.cs" />
-    <Compile Include="PoolsFeature.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PoolsFeature.feature</DependentUpon>
-    </Compile>
     <Compile Include="PoolTests.cs" />
     <Compile Include="InstanceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -151,10 +144,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="PoolsFeature.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>PoolsFeature.feature.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PoolManager.Core.Tests\PoolManager.Core.Tests.csproj">
@@ -178,9 +167,7 @@
       <Name>PoolManager.SDK</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Instances\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
