@@ -149,7 +149,7 @@
       <Name>PoolManager.Domains.Instances</Name>
     </ProjectReference>
     <ProjectReference Include="..\PoolManager.SDK\PoolManager.SDK.csproj">
-      <Project>{D7435252-F5FD-4200-A483-9D69A7F2ED85}</Project>
+      <Project>{d7435252-f5fd-4200-a483-9d69a7f2ed85}</Project>
       <Name>PoolManager.SDK</Name>
     </ProjectReference>
   </ItemGroup>

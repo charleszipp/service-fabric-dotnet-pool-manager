@@ -22,7 +22,8 @@ namespace PoolManager.Domains.Instances
             await instanceProxy.OccupyAsync(serviceUri, command.InstanceId, command.InstanceName);
             await Task.WhenAll(
                 repository.SetServiceInstanceName(command.InstanceName, cancellationToken),
-                repository.SetPartitionIdAsync(command.PartitionId, cancellationToken)
+                repository.SetPartitionIdAsync(command.PartitionId, cancellationToken),
+                repository.SetServiceLastActiveAsync(DateTime.UtcNow, cancellationToken)
             );
 
             return new OccupyInstanceResult(serviceUri);

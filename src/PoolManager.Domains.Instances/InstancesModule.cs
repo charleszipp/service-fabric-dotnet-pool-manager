@@ -31,7 +31,8 @@ namespace PoolManager.Domains.Instances
                 .WithCommandHandler<OccupyInstanceHandler, OccupyInstance, OccupyInstanceResult>()
                 .WithCommandHandler<ReportActivityHandler, ReportActivity, ReportActivityResult>()
                 .WithCommandHandler<VacateInstanceHandler, VacateInstance>()
-                .WithCommandHandler<RemoveInstanceHandler, RemoveInstance>();
+                .WithCommandHandler<RemoveInstanceHandler, RemoveInstance>()
+                .WithCommandHandler<CheckForExpirationHandler, CheckForExpiration>();
         }
     }
 }

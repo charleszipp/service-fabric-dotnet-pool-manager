@@ -49,14 +49,8 @@ namespace PoolManager.Instances
                 return null;
         }
 
-        public async Task<DateTime?> TryGetServiceLastActiveAsync(CancellationToken cancellationToken)
-        {
-            var lastActive = await stateManager.TryGetStateAsync<DateTime?>(StateNames.ServiceLastActive, cancellationToken);
-            if (lastActive.HasValue)
-                return lastActive.Value;
-            else
-                return null;
-        }
+        public Task<DateTime> GetServiceLastActiveAsync(CancellationToken cancellationToken) => 
+            stateManager.GetStateAsync<DateTime>(StateNames.ServiceLastActive, cancellationToken);
 
         public Task<Uri> GetServiceUriAsync(CancellationToken cancellationToken) =>
             stateManager.GetStateAsync<Uri>(StateNames.ServiceUri, cancellationToken);

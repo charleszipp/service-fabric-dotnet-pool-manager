@@ -22,7 +22,7 @@ namespace PoolManager.Domains.Instances
 
         Task SetInstanceStateAsync(InstanceStates state, CancellationToken cancellation);
 
-        Task<DateTime?> TryGetServiceLastActiveAsync(CancellationToken cancellationToken);
+        Task<DateTime> GetServiceLastActiveAsync(CancellationToken cancellationToken);
 
         Task<InstanceStates?> TryGetInstanceStateAsync(CancellationToken cancellationToken);
 
