@@ -2,6 +2,7 @@
 using Microsoft.ServiceFabric.Actors.Client;
 using Ninject;
 using PoolManager.Core.Mediators;
+using PoolManager.SDK.Partitions;
 using PoolManager.SDK.Pools;
 using PoolManager.Terminal.Commands;
 using System.Fabric;
@@ -33,6 +34,7 @@ namespace PoolManager.Terminal
             kernel.Bind<ITerminal>().To<Terminal>();
             kernel.Bind<IActorProxyFactory>().ToMethod(ctx => new ActorProxyFactory()).InSingletonScope();
             kernel.Bind<IPoolProxy>().To<PoolProxy>();
+            kernel.Bind<IPartitionProxy>().To<PartitionProxy>();
 
             var mediator = kernel.Get<Mediator>();
 
