@@ -1,11 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using CommandLine;
+using PoolManager.Core.Mediators.Commands;
+using PoolManager.SDK.Partitions;
+using PoolManager.SDK.Partitions.Requests;
 using System.Threading;
 using System.Threading.Tasks;
-using CommandLine;
-using Microsoft.ServiceFabric.Services.Remoting.Client;
-using PoolManager.SDK;
-using PoolManager.SDK.Pools;
 
 namespace PoolManager.Terminal.Commands
 {
@@ -13,35 +11,30 @@ namespace PoolManager.Terminal.Commands
     public class GetInstance : ICommand
     {
         public GetInstance(
-            string poolId,
-            string name)
+            string partitionId,
+            string name,
+            string serviceTypeUri = Constants.NoOpServiceTypeUri
+            )
         {
-            PoolId = poolId;
+            PartitionId = partitionId;
+            ServiceTypeUri = serviceTypeUri;
             Name = name;
         }
 
-        [Option('p', "pool", Default = Constants.NoOpServiceTypeUri)]
-        public string PoolId { get; }
+        [Option('p', "partition")]
+        public string PartitionId { get; }
         [Option('n', "name")]
         public string Name { get; }
+        [Option('u', "uri", Default = Constants.NoOpServiceTypeUri)]
+        public string ServiceTypeUri { get; }
     }
 
     public class GetInstanceHandler : IHandleCommand<GetInstance>
     {
-        private readonly IPoolProxy _pools;
-        private readonly ITerminal _terminal;
-
-        public GetInstanceHandler(IPoolProxy pools, ITerminal terminal)
-        {
-            _pools = pools;
-            _terminal = terminal;
-        }
-
-        public async Task ExecuteAsync(GetInstance command, CancellationToken cancellationToken)
-        {
-            var response = await _pools.GetInstanceAsync(command.PoolId, new SDK.Pools.Requests.GetInstanceRequest(command.Name));
-            var proxy = ServiceProxy.Create<IServiceInstance>(response.ServiceInstanceUri);
-            await proxy.PingAsync();
-        }
+        private readonly IPartitionProxy _partitions;
+        public GetInstanceHandler(IPartitionProxy partitions) => 
+            _partitions = partitions;
+        public Task ExecuteAsync(GetInstance command, CancellationToken cancellationToken) => 
+            _partitions.GetInstanceAsync(command.PartitionId, new GetInstanceRequest(command.ServiceTypeUri, command.Name));
     }
 }

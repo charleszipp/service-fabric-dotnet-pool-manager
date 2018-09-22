@@ -1,6 +1,7 @@
 ﻿using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Client;
 using PoolManager.SDK.Instances.Requests;
+using PoolManager.SDK.Instances.Responses;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace PoolManager.SDK.Instances
     {
         private readonly IActorProxyFactory _actorProxyFactory;
         private readonly IGuidGetter _guidGetter;
+
         public InstanceProxy(IActorProxyFactory actorProxyFactory, IGuidGetter guidGetter)
         {
             _actorProxyFactory = actorProxyFactory;
@@ -23,14 +25,8 @@ namespace PoolManager.SDK.Instances
             await GetProxy(rvalue).StartAsync(request);
             return rvalue;
         }
-        public async Task<Guid> StartAsAsync(StartInstanceAsRequest request)
-        {
-            var rvalue = Guid.NewGuid();
-            await GetProxy(rvalue).StartAsAsync(request);
-            return rvalue;
-        }
 
-        public Task OccupyAsync(Guid instanceId, OccupyRequest request) => 
+        public Task<OccupyResponse> OccupyAsync(Guid instanceId, OccupyRequest request) => 
             GetProxy(instanceId).OccupyAsync(request);
 
         public Task<TimeSpan> ReportActivityAsync(Guid instanceId, ReportActivityRequest request) =>

@@ -1,4 +1,4 @@
-﻿using PoolManager.SDK;
+﻿using PoolManager.Domains.Pools;
 using System;
 using System.Collections.Generic;
 using System.Linq;

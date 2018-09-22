@@ -13,6 +13,8 @@ using PoolManager.SDK.Pools.Responses;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 using Service = System.Fabric.Query.Service;
+using PoolManager.SDK.Partitions;
+using PoolManager.SDK.Partitions.Requests;
 
 namespace PoolManager.IntegrationTests
 {
@@ -21,13 +23,15 @@ namespace PoolManager.IntegrationTests
     {
         private readonly FabricClient _fabricClient;
         private readonly IPoolProxy _pools;
+        private readonly IPartitionProxy _partitions;
         private const string _applicationTypeVersion = "1.0.0";
         private const string _serviceTypeVersion = "1.0.0";
 
-        public PoolManagerBindings(FabricClient fabricClient, IPoolProxy pools)
+        public PoolManagerBindings(FabricClient fabricClient, IPoolProxy pools, IPartitionProxy partitions)
         {
             _fabricClient = fabricClient;
             _pools = pools;
+            _partitions = partitions;
         }        
 
         [Given(@"the service fabric application name ""(.*)"" for type ""(.*)"" exists with no services")]
@@ -75,10 +79,12 @@ namespace PoolManager.IntegrationTests
         }
 
         [Given(@"the service pool ""(.*)"" does not exist")]
-        public async Task GivenTheServicePoolDoesNotExist(string serviceTypeUri)
+        public Task GivenTheServicePoolDoesNotExist(string serviceTypeUri)
         {
-            await _pools.StopPoolAsync(serviceTypeUri);
-            await _pools.DeletePoolAsync(serviceTypeUri);
+            //todo: figure out how to restart the pool here...
+            //await _pools.StopPoolAsync(serviceTypeUri);
+            //await _pools.DeletePoolAsync(serviceTypeUri);
+            return Task.CompletedTask;
         }
         [When(@"the ""(.*)"" pool is started with the following configuration")]
         public async Task WhenThePoolIsStartedWithTheFollowingConfiguration(string serviceTypeUri, Table table)
@@ -135,10 +141,10 @@ namespace PoolManager.IntegrationTests
                 .First(x => x.ServiceTypeName == serviceTypeName);
             await _fabricClient.FaultManager.MovePrimaryAsync(PartitionSelector.SingletonOf(service.ServiceName));
         }
-        [When(@"an instance of ""(.*)"" named ""(.*)"" is gotten")]
-        public async Task WhenAnInstanceOfNamedIsGotten(string fullyQualifiedServiceTypeName, string instanceName)
+        [When(@"an instance of ""(.*)"" named ""(.*)"" for partition ""(.*)"" is gotten")]
+        public async Task WhenAnInstanceOfNamedIsGotten(string fullyQualifiedServiceTypeName, string instanceName, string partitionId)
         {
-            var response = await _pools.GetInstanceAsync(fullyQualifiedServiceTypeName, new GetInstanceRequest(instanceName));
+            var response = await _partitions.GetInstanceAsync(partitionId, new GetInstanceRequest(fullyQualifiedServiceTypeName, instanceName));
             var serviceInstanceUri = response.ServiceInstanceUri;
         }
         [Then(@"each service fabric application ""(.*)"" and service type ""(.*)"" instance should have the following configuration")]

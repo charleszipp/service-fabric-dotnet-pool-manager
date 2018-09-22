@@ -18,7 +18,7 @@ namespace PoolManager.Core
             _telemetryClient = telemetryClient;
         }
 
-        public Task CreateStatelessServiceAsync(string instanceId, string serviceTypeUri, PartitionSchemeDescription partitionSchemeDescription, int instanceCount = 1, byte[] initializationData = null)
+        public Task CreateStatelessServiceAsync(Guid instanceId, string serviceTypeUri, PartitionSchemeDescription partitionSchemeDescription, int instanceCount = 1, byte[] initializationData = null)
         {
             var serviceDescriptionFactory = new ServiceDescriptionFactory(serviceTypeUri, instanceId, partitionSchemeDescription);
             return CreateStatelessServiceAsync(serviceDescriptionFactory, instanceCount, initializationData);            
@@ -30,7 +30,7 @@ namespace PoolManager.Core
             return _fabricClient.ServiceManager.CreateServiceAsync(serviceDescription);
         }
 
-        public Task CreateStatefulServiceAsync(string instanceId, string serviceTypeUri, PartitionSchemeDescription partitionSchemeDescription, int minReplicas = 1, int targetReplicas = 3, bool hasPersistedState = true)
+        public Task CreateStatefulServiceAsync(Guid instanceId, string serviceTypeUri, PartitionSchemeDescription partitionSchemeDescription, int minReplicas = 1, int targetReplicas = 3, bool hasPersistedState = true)
         {
             var serviceDescriptionFactory = new ServiceDescriptionFactory(serviceTypeUri, instanceId, partitionSchemeDescription);
             return CreateStatefulServiceAsync(serviceDescriptionFactory, minReplicas, targetReplicas, hasPersistedState);

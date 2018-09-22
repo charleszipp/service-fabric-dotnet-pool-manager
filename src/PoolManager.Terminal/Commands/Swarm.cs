@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using MongoDB.Bson;
+using PoolManager.Core.Mediators.Commands;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -63,20 +64,20 @@ namespace PoolManager.Terminal.Commands
         private readonly ITerminal terminal;
         private readonly IHandleCommand<GetInstance> getInstanceHandler;
         private readonly IHandleCommand<RestartApplication> restartAppHandler;
-        private readonly IHandleCommand<RestartPool> restartPoolHandler;
+        private readonly IHandleCommand<StartPool> startPoolHandler;
         private readonly IHandleCommand<EnsureAppReady> ensureAppReadyHandler;
         private readonly Random random = new Random();
 
         public SwarmHandler(ITerminal terminal, 
             IHandleCommand<GetInstance> getInstanceHandler, 
             IHandleCommand<RestartApplication> restartAppHandler, 
-            IHandleCommand<RestartPool> restartPoolHandler,
+            IHandleCommand<StartPool> startPoolHandler,
             IHandleCommand<EnsureAppReady> ensureAppReadyHandler)
         {
             this.terminal = terminal;
             this.getInstanceHandler = getInstanceHandler;
             this.restartAppHandler = restartAppHandler;
-            this.restartPoolHandler = restartPoolHandler;
+            this.startPoolHandler = startPoolHandler;
             this.ensureAppReadyHandler = ensureAppReadyHandler;
         }
 
@@ -90,27 +91,20 @@ namespace PoolManager.Terminal.Commands
             terminal.Write($"SWARM RAMP UP INTERVALS: {command.RampUpIntervals}");
             terminal.Write($"SWARM RAMP UP USERS: {command.RampUpUsers}");
 
-            await Task.WhenAll(
-                restartAppHandler.ExecuteAsync(new RestartApplication("PoolManager", "fabric:/PoolManager", command.ApplicationVersion), cancellationToken),
-                restartAppHandler.ExecuteAsync(new RestartApplication(command.ApplicationType, command.ApplicationName, command.ApplicationVersion), cancellationToken)
-            );
-            await Task.Delay(15000);
-            await ensureAppReadyHandler.ExecuteAsync(new EnsureAppReady("fabric:/PoolManager"), cancellationToken);
+            //await Task.WhenAll(
+            //    restartAppHandler.ExecuteAsync(new RestartApplication("PoolManager", "fabric:/PoolManager", command.ApplicationVersion), cancellationToken),
+            //    restartAppHandler.ExecuteAsync(new RestartApplication(command.ApplicationType, command.ApplicationName, command.ApplicationVersion), cancellationToken)
+            //);
+            //await Task.Delay(15000);
+            //await ensureAppReadyHandler.ExecuteAsync(new EnsureAppReady("fabric:/PoolManager"), cancellationToken);
 
             var intervals = GetIntervals(command.RampUpIntervals, command.RampUpInterval, command.RampUpUsers);
-            var instanceNames = GetInstanceNames(command.Instances);
-            var tenants = GetTenantIds(command.Tenants);
-            var users = GetUsers(command.Users, command.ServiceTypeUri, tenants);
+            var instances = GetInstances(command.Tenants, command.Instances, command.ServiceTypeUri);
 
-            foreach (var poolId in users.Select(u => u.PoolId).Distinct())
-            {
-                await restartPoolHandler.ExecuteAsync(
-                    new RestartPool(poolId, command.ServiceTypeUri),
-                    cancellationToken
-                );
-            }
-            await Task.Delay(15000);
-            await ensureAppReadyHandler.ExecuteAsync(new EnsureAppReady(command.ApplicationName), cancellationToken);
+            //await startPoolHandler.ExecuteAsync(new StartPool(command.ServiceTypeUri), cancellationToken);
+
+            //await Task.Delay(15000);
+            //await ensureAppReadyHandler.ExecuteAsync(new EnsureAppReady(command.ApplicationName), cancellationToken);
 
             intervals.MoveNext();
             ConcurrentDictionary<ObjectId, Task<SwarmExecution>> executionTasks = new ConcurrentDictionary<ObjectId, Task<SwarmExecution>>();
@@ -124,7 +118,7 @@ namespace PoolManager.Terminal.Commands
                 if (timer.Elapsed > intervals.Current.Interval && !eof)
                 {
                     eof = !intervals.MoveNext();
-                    nextInstanceCap = Math.Min(intervals.Current.Users, instanceNames.Length);
+                    nextInstanceCap = Math.Min(intervals.Current.Users, command.Instances);
                 }
 
                 //this governs the degree of parallelism. can comment this out to make all run in parallel 
@@ -134,28 +128,27 @@ namespace PoolManager.Terminal.Commands
 
                 var executionTask = GetInstanceAsync(
                     intervals.Current.Users,
-                    users[random.Next(intervals.Current.Users)].PoolId, 
-                    instanceNames[random.Next(nextInstanceCap)],
+                    instances[random.Next(nextInstanceCap)],
                     cancellationToken);
                 executionTasks.TryAdd(executionTask.Key, executionTask.Value);
             }
 
             await Task.WhenAll(executionTasks.Select(t => t.Value));
         }
-        private KeyValuePair<ObjectId, Task<SwarmExecution>> GetInstanceAsync(int users, string poolId, string instanceName, CancellationToken cancellationToken)
+        private KeyValuePair<ObjectId, Task<SwarmExecution>> GetInstanceAsync(int users, SwarmInstance instance, CancellationToken cancellationToken)
         {
             var executionId = ObjectId.GenerateNewId();
-            var executionTask = GetInstanceAsync(users, executionId, poolId, instanceName, cancellationToken);
+            var executionTask = GetInstanceAsync(users, executionId, instance, cancellationToken);
             return new KeyValuePair<ObjectId, Task<SwarmExecution>>(executionId, executionTask);
         }
-        private async Task<SwarmExecution> GetInstanceAsync(int users, ObjectId executionId, string poolId, string instanceName, CancellationToken cancellationToken)
+        private async Task<SwarmExecution> GetInstanceAsync(int users, ObjectId executionId, SwarmInstance instance, CancellationToken cancellationToken)
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
             Exception exception = null;
             try
             {
-                await getInstanceHandler.ExecuteAsync(new GetInstance(poolId, instanceName), cancellationToken);
+                await getInstanceHandler.ExecuteAsync(new GetInstance(instance.PartitionId, instance.InstanceName), cancellationToken);
             }
             catch(Exception ex)
             {
@@ -166,7 +159,6 @@ namespace PoolManager.Terminal.Commands
                 timer.Stop();
             }
             terminal.Write($"{users}, {executionId}, {timer.Elapsed}, {exception?.Message ?? "success"}");
-            await Task.Delay(3000);
             return new SwarmExecution(timer.Elapsed, exception);
         }
         private LinkedList<SwarmInterval>.Enumerator GetIntervals(int rampUpIntervals, TimeSpan rampUpInterval, int rampUpUsers)
@@ -180,23 +172,17 @@ namespace PoolManager.Terminal.Commands
             }
             return usersByInterval.GetEnumerator();
         }
-        private string[] GetInstanceNames(int numberOfInstances)
+        private SwarmInstance[] GetInstances(int numberOfPartitions, int numberOfInstances, string serviceTypeUri)
         {
-            string[] instanceNames = new string[numberOfInstances];
-            for (int i = 0; i < numberOfInstances; i++) instanceNames[i] = Guid.NewGuid().ToString();
-            return instanceNames;
-        }
-        private string[] GetTenantIds(int numberOfTenants)
-        {
-            string[] tenantIds = new string[numberOfTenants];
-            for (int i = 0; i < numberOfTenants; i++) tenantIds[i] = Guid.NewGuid().ToString();
-            return tenantIds;
-        }
-        private SwarmUser[] GetUsers(int numberOfUsers, string serviceTypeUri, string[] tenants)
-        {
-            SwarmUser[] users = new SwarmUser[numberOfUsers];
-            for (int i = 0; i < numberOfUsers; i++) users[i] = new SwarmUser(Guid.NewGuid().ToString(), serviceTypeUri, tenants[i % tenants.Length]);
-            return users;
+            string[] partitions = new string[numberOfPartitions];
+            for (int i = 0; i < numberOfPartitions; i++) partitions[i] = Guid.NewGuid().ToString();
+
+            SwarmInstance[] instances = new SwarmInstance[numberOfInstances];
+            for (int i = 0; i < numberOfPartitions; i++)
+            {
+                instances[i] = new SwarmInstance(serviceTypeUri, partitions[i % numberOfPartitions], Guid.NewGuid().ToString());
+            }
+            return instances;
         }
     }
 
@@ -225,15 +211,17 @@ namespace PoolManager.Terminal.Commands
         public int Users { get; }
     }
 
-    public class SwarmUser
+    public class SwarmInstance
     {
-        public SwarmUser(string userId, string serviceTypeUri, string tenantId)
+        public SwarmInstance(string serviceTypeUri, string partitionId, string instanceName)
         {
-            UserId = userId;
-            PoolId = $"{serviceTypeUri}?{tenantId}";
+            PartitionId = partitionId;
+            ServiceTypeUri = serviceTypeUri;
+            InstanceName = instanceName;
         }
 
-        public string UserId { get; }
-        public string PoolId { get; }
+        public string PartitionId { get; }
+        public string ServiceTypeUri { get; }
+        public string InstanceName { get; }
     }
 }

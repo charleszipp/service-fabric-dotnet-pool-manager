@@ -5,7 +5,7 @@ namespace PoolManager.Core
 {
     public class ServiceDescriptionFactory
     {
-        public ServiceDescriptionFactory(string serviceTypeUri, string instanceId, PartitionSchemeDescription partitionSchemeDescription)
+        public ServiceDescriptionFactory(string serviceTypeUri, Guid instanceId, PartitionSchemeDescription partitionSchemeDescription)
         {
             ParseServiceTypeUri(serviceTypeUri, out var applicationName, out var serviceTypeName);
             ApplicationName = new Uri(applicationName, UriKind.RelativeOrAbsolute);
@@ -37,7 +37,7 @@ namespace PoolManager.Core
             }
         }
 
-        public static Uri CreateServiceName(string serviceTypeUri, string instanceId)
+        public static Uri CreateServiceName(string serviceTypeUri, Guid instanceId)
         {
             return new Uri($"{serviceTypeUri}/{instanceId}", UriKind.RelativeOrAbsolute);
         }

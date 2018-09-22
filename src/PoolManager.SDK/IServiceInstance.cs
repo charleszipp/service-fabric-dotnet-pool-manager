@@ -24,7 +24,5 @@ namespace PoolManager.SDK
         /// </summary>
         /// <returns></returns>
         Task VacateAsync();
-
-        Task<InstanceStates> PingAsync();
     }
 }
