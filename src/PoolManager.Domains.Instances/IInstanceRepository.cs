@@ -31,5 +31,9 @@ namespace PoolManager.Domains.Instances
         Task<string> GetPartitionIdAsync(CancellationToken cancellationToken);
 
         Task SetPartitionIdAsync(string partitionId, CancellationToken cancellationToken);
+
+        Task SetServiceTypeUriAsync(string serviceTypeUri, CancellationToken cancellationToken);
+
+        Task<string> GetServiceTypeUriAsync(CancellationToken cancellationToken);
     }
 }

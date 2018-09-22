@@ -8,11 +8,13 @@ namespace PoolManager.Domains.Instances
     {
         private readonly IInstanceRepository repository;
         private readonly IServiceInstanceProxy serviceInstance;
+        private readonly IHandleCommand<DeleteService> deleteService;
 
-        public VacateInstanceHandler(IInstanceRepository repository, IServiceInstanceProxy serviceInstance)
+        public VacateInstanceHandler(IInstanceRepository repository, IServiceInstanceProxy serviceInstance, IHandleCommand<DeleteService> deleteService)
         {
             this.repository = repository;
             this.serviceInstance = serviceInstance;
+            this.deleteService = deleteService;
         }
 
         public async Task ExecuteAsync(VacateInstance command, CancellationToken cancellationToken)
@@ -20,6 +22,7 @@ namespace PoolManager.Domains.Instances
             var serviceUri = await repository.GetServiceUriAsync(cancellationToken);
             await serviceInstance.VacateAsync(serviceUri);
             await repository.UnsetServiceInstanceName(cancellationToken);
+            await deleteService.ExecuteAsync(new DeleteService(serviceUri), cancellationToken);
         }
     }
 }

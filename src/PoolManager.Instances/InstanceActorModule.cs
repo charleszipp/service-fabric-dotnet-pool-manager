@@ -1,10 +1,6 @@
 ﻿using Ninject.Modules;
 using PoolManager.Core.Mediators;
 using PoolManager.Domains.Instances;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PoolManager.Instances
 {
@@ -14,9 +10,11 @@ namespace PoolManager.Instances
         {
             Bind<IInstanceRepository>().To<InstanceRepository>();
             Bind<IServiceInstanceProxy>().To<ServiceInstanceProxy>();
+            Bind<SDK.Partitions.IPartitionProxy>().To<SDK.Partitions.PartitionProxy>();
             Bind<IPartitionProxy>().To<PartitionProxy>();
             Kernel
-                .WithCommandHandler<CreateServiceHandler, CreateService, CreateServiceResult>();
+                .WithCommandHandler<CreateServiceHandler, CreateService, CreateServiceResult>()
+                .WithCommandHandler<DeleteServiceHandler, DeleteService>();
         }
     }
 }

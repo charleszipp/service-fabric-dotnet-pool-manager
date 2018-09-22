@@ -16,6 +16,9 @@ namespace PoolManager.SDK.Partitions
         public Task<GetInstanceResponse> GetInstanceAsync(string partitionId, GetInstanceRequest request) =>
             GetProxy(partitionId).GetInstanceAsync(request);
 
+        public Task VacateInstanceAsync(string partitionId, VacateInstanceRequest request) =>
+            GetProxy(partitionId).VacateInstanceAsync(request);
+
         private IPartition GetProxy(string partitionId) =>
             _actorProxyFactory.CreateActorProxy<IPartition>(new ActorId(partitionId), "PoolManager", "PartitionActorService");
     }

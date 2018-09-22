@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="PoolManager" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
-    <Parameter Name="InstanceActorService_PartitionCount" DefaultValue="3" />
-    <Parameter Name="InstanceActorService_MinReplicaSetSize" DefaultValue="3" />
-    <Parameter Name="InstanceActorService_TargetReplicaSetSize" DefaultValue="3" />
-    <Parameter Name="PoolActorService_PartitionCount" DefaultValue="3" />
-    <Parameter Name="PoolActorService_MinReplicaSetSize" DefaultValue="3" />
-    <Parameter Name="PoolActorService_TargetReplicaSetSize" DefaultValue="3" />
-    <Parameter Name="PartitionActorService_PartitionCount" DefaultValue="3" />
-    <Parameter Name="PartitionActorService_MinReplicaSetSize" DefaultValue="3" />
-    <Parameter Name="PartitionActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="InstanceActorService_PartitionCount" DefaultValue="1" />
+    <Parameter Name="InstanceActorService_MinReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="InstanceActorService_TargetReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="PoolActorService_PartitionCount" DefaultValue="1" />
+    <Parameter Name="PoolActorService_MinReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="PoolActorService_TargetReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="PartitionActorService_PartitionCount" DefaultValue="1" />
+    <Parameter Name="PartitionActorService_MinReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="PartitionActorService_TargetReplicaSetSize" DefaultValue="1" />
   </Parameters>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="PoolManager.PartitionsPkg" ServiceManifestVersion="1.0.0" />

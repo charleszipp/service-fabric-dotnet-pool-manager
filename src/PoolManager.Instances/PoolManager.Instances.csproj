@@ -118,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreateServiceHandler.cs" />
+    <Compile Include="DeleteServiceHandler.cs" />
     <Compile Include="Instance.cs" />
     <Compile Include="InstanceActorModule.cs" />
     <Compile Include="InstanceRepository.cs" />

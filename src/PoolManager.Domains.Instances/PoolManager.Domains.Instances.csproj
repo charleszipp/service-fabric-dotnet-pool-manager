@@ -76,6 +76,7 @@
     <Compile Include="States\InstanceStateOccupied.cs" />
     <Compile Include="States\InstanceStateProvider.cs" />
     <Compile Include="States\InstanceStateVacant.cs" />
+    <Compile Include="VacateInstance\DeleteService.cs" />
     <Compile Include="VacateInstance\VacateInstance.cs" />
     <Compile Include="VacateInstance\VacateInstanceHandler.cs" />
   </ItemGroup>

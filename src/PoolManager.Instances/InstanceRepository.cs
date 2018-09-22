@@ -18,6 +18,7 @@ namespace PoolManager.Instances
             public const string ServiceInstanceName = "instance-name";
             public const string ServiceLastActive = "last-active";
             public const string ServiceUri = "service-uri";
+            public const string ServiceTypeUri = "service-type-uri";
         }
 
         public InstanceRepository(IActorStateManager stateManager)
@@ -75,5 +76,11 @@ namespace PoolManager.Instances
 
         public Task SetPartitionIdAsync(string partitionId, CancellationToken cancellationToken) =>
             stateManager.SetStateAsync(StateNames.PartitionId, partitionId, cancellationToken);
+
+        public Task SetServiceTypeUriAsync(string serviceTypeUri, CancellationToken cancellationToken) =>
+            stateManager.SetStateAsync(StateNames.ServiceTypeUri, serviceTypeUri, cancellationToken);
+
+        public Task<string> GetServiceTypeUriAsync(CancellationToken cancellationToken) =>
+            stateManager.GetStateAsync<string>(StateNames.ServiceTypeUri, cancellationToken);
     }
 }

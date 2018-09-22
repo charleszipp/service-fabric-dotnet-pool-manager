@@ -57,11 +57,11 @@ namespace PoolManager.Partitions
 
         public async Task VacateInstanceAsync(VacateInstanceRequest request)
         {
-            var instance = await TryGetAsync(request.ServiceTypeUri, request.InstanceName);
-            if (instance.HasValue)
+            var exists = await TryRemoveAsync(request.ServiceTypeUri, request.InstanceName);
+            if (exists)
             {
-                await instances.VacateAsync(instance.Value.Id);
-                await EnqueueForDeleteAsync(instance.Value.Id);
+                await instances.VacateAsync(request.InstanceId);
+                await EnqueueForDeleteAsync(request.InstanceId);
             }
             else
                 throw new ArgumentException($"Unable to vacate. No mapped instance found for provided {nameof(request.ServiceTypeUri)} and {nameof(request.InstanceName)}.");
@@ -97,7 +97,7 @@ namespace PoolManager.Partitions
             }
             catch(ReminderNotFoundException)
             {
-                await RegisterReminderAsync(CleanupRemovedInstancesReminderKey, null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
+                await RegisterReminderAsync(CleanupRemovedInstancesReminderKey, null, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
             }
         }
 
@@ -112,6 +112,9 @@ namespace PoolManager.Partitions
 
         private Task SetMappedInstanceAsync(string serviceTypeUri, string instanceName, Guid instanceId, Uri serviceName) =>
             StateManager.SetStateAsync(GetStateName(serviceTypeUri, instanceName), new MappedInstance(instanceId, serviceName));
+
+        private Task<bool> TryRemoveAsync(string serviceTypeUri, string instanceName) =>
+            StateManager.TryRemoveStateAsync(GetStateName(serviceTypeUri, instanceName));
 
         private string GetStateName(string serviceTypeUri, string serviceInstanceName) => 
             $"{serviceTypeUri.TrimEnd('/')}/{serviceInstanceName}";

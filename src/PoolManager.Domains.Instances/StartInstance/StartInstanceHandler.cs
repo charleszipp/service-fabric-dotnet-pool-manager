@@ -30,7 +30,8 @@ namespace PoolManager.Domains.Instances
 
             await Task.WhenAll(
                 repository.SetExprirationQuantaAsync(command.ExpirationQuanta, cancellationToken),
-                repository.SetServiceUriAsync(result.ServiceUri, cancellationToken)
+                repository.SetServiceUriAsync(result.ServiceUri, cancellationToken),
+                repository.SetServiceTypeUriAsync(command.ServiceTypeUri, cancellationToken)
             );
         }
     }
