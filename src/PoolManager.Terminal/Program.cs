@@ -1,14 +1,11 @@
 ﻿using CommandLine;
 using Microsoft.ServiceFabric.Actors.Client;
-using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Ninject;
+using PoolManager.Core.Mediators;
+using PoolManager.SDK.Partitions;
 using PoolManager.SDK.Pools;
-using PoolManager.Terminal.Builders;
 using PoolManager.Terminal.Commands;
-using PoolManager.Terminal.Resolvers;
-using System;
 using System.Fabric;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,28 +22,29 @@ namespace PoolManager.Terminal
         {
             var cancellation = new CancellationTokenSource();
 
-            var kernel = new StandardKernel();
+            var kernel = new StandardKernel()
+                .WithMediator()
+                .WithCommandHandler<RestartApplicationHandler, RestartApplication>()
+                .WithCommandHandler<StartPoolHandler, StartPool>()
+                .WithCommandHandler<GetInstanceHandler, GetInstance>()
+                .WithCommandHandler<SwarmHandler, Swarm>()
+                .WithCommandHandler<EnsureAppReadyHandler, EnsureAppReady>();
+
             kernel.Bind<FabricClient>().ToSelf().InSingletonScope();
             kernel.Bind<ITerminal>().To<Terminal>();
             kernel.Bind<IActorProxyFactory>().ToMethod(ctx => new ActorProxyFactory()).InSingletonScope();
             kernel.Bind<IPoolProxy>().To<PoolProxy>();
-            var resolver = new NinjectDependencyResolver(kernel);
-            
-            var pools = new PoolsBuilder(resolver)
-                .WithCommandHandler<RestartApplicationHandler, RestartApplication>()
-                .WithCommandHandler<RestartPoolHandler, RestartPool>()
-                .WithCommandHandler<GetInstanceHandler, GetInstance>()
-                .WithCommandHandler<SwarmHandler, Swarm>()
-                .WithCommandHandler<EnsureAppReadyHandler, EnsureAppReady>()
-                .Build();
+            kernel.Bind<IPartitionProxy>().To<PartitionProxy>();
 
-            var parsed = Parser.Default.ParseArguments<RestartApplication, RestartPool, GetInstance, Swarm, EnsureAppReady>(args);
+            var mediator = kernel.Get<Mediator>();
+
+            var parsed = Parser.Default.ParseArguments<RestartApplication, StartPool, GetInstance, Swarm, EnsureAppReady>(args);
             await parsed.MapResult(
-                async (RestartApplication opts) => await pools.ExecuteAsync(opts, cancellation.Token),
-                async (RestartPool opts) => await pools.ExecuteAsync(opts, cancellation.Token),
-                async (GetInstance opts) => await pools.ExecuteAsync(opts, cancellation.Token),
-                async (Swarm opts) => await pools.ExecuteAsync(opts, cancellation.Token),
-                async (EnsureAppReady opts) => await pools.ExecuteAsync(opts, cancellation.Token),
+                async (RestartApplication opts) => await mediator.ExecuteAsync(opts, cancellation.Token),
+                async (StartPool opts) => await mediator.ExecuteAsync(opts, cancellation.Token),
+                async (GetInstance opts) => await mediator.ExecuteAsync(opts, cancellation.Token),
+                async (Swarm opts) => await mediator.ExecuteAsync(opts, cancellation.Token),
+                async (EnsureAppReady opts) => await mediator.ExecuteAsync(opts, cancellation.Token),
                 err => Task.FromResult(-1));
         }
     }

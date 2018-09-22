@@ -29,9 +29,6 @@ namespace PoolManager.Tests.NoOp
         private readonly TelemetryClient _telemetryClient = new TelemetryClient();
         private DateTime? _nextReportDateUtc = null;
 
-        private InstanceStates _currentState =>
-            _instanceId.HasValue && _instanceId.Value != default(Guid) && !string.IsNullOrEmpty(_serviceInstanceName) ? 
-                InstanceStates.Occupied : InstanceStates.Vacant;
         public NoOp(StatefulServiceContext context) : base(context)
         {
             _instanceProxy =
@@ -49,9 +46,6 @@ namespace PoolManager.Tests.NoOp
             _serviceInstanceName = serviceInstanceName;
             _nextReportDateUtc = DateTime.UtcNow;
             await Task.Delay(500);
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            ReportActivityAsync();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
         protected override Task RunAsync(CancellationToken cancellationToken)
         {
@@ -73,13 +67,6 @@ namespace PoolManager.Tests.NoOp
             _instanceId = null;
             _serviceInstanceName = null;
             return Task.Delay(250);
-        }
-        public Task<InstanceStates> PingAsync()
-        {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            ReportActivityAsync();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            return Task.FromResult(_currentState);
         }
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
         {
