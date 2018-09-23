@@ -13,6 +13,6 @@ namespace PoolManager.SDK.Pools.Responses
         }
 
         [DataMember]
-        public IEnumerable<Guid> VacantInstances { get; }
+        public IEnumerable<Guid> VacantInstances { get; private set; }
     }
 }

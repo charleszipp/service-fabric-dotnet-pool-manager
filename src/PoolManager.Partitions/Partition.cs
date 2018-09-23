@@ -141,5 +141,18 @@ namespace PoolManager.Partitions
                 }
             }
         }
+
+        public async Task<GetOccupiedInstancesResponse> GetOccupiedInstancesAsync(GetOccupiedInstancesRequest request)
+        {
+            var stateNames = (await StateManager.GetStateNamesAsync())
+                .Where(name => name.StartsWith(request.ServiceTypeUri))
+                .ToList();
+
+            var occupiedInstances = (await Task.WhenAll(stateNames.Select(name => StateManager.GetStateAsync<MappedInstance>(name))))
+                .Select(mappedInstance => mappedInstance.Id)
+                .ToList();
+
+            return new GetOccupiedInstancesResponse(occupiedInstances);
+        }
     }
 }
