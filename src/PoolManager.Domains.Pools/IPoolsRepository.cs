@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,5 +14,6 @@ namespace PoolManager.Domains.Pools
         Task<int> GetAllocationBlockSizeAsync(CancellationToken cancellationToken);
         Task PushVacantInstanceAsync(Guid instanceId, CancellationToken cancellationToken);
         Task<GetPoolConfigurationResult> TryGetPoolConfigurationAsync(CancellationToken cancellation);
+        Task<IEnumerable<Guid>> GetVacantInstances(CancellationToken cancellationToken);
     }
 }

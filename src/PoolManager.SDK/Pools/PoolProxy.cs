@@ -13,6 +13,8 @@ namespace PoolManager.SDK.Pools
             _actorProxyFactory = actorProxyFactory;
         public Task<ConfigurationResponse> GetConfigurationAsync(string serviceTypeUri) =>
             GetProxy(serviceTypeUri).GetConfigurationAsync();
+        public Task<GetVacantInstancesResponse> GetVacantInstancesAsync(string serviceTypeUri) => 
+            GetProxy(serviceTypeUri).GetVacantInstancesAsync();
         public Task<PopVacantInstanceResponse> PopVacantInstanceAsync(string serviceTypeUri, PopVacantInstanceRequest request) =>
             GetProxy(serviceTypeUri).PopVacantInstanceAsync(request);
         public async Task StartPoolAsync(string serviceTypeUri, StartPoolRequest request) =>
