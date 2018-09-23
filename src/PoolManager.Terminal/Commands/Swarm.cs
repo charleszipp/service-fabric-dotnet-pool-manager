@@ -56,7 +56,7 @@ namespace PoolManager.Terminal.Commands
         public TimeSpan RampUpTime => TimeSpan.FromMilliseconds(Duration.TotalMilliseconds * .65);
         public TimeSpan RampUpInterval => TimeSpan.FromMilliseconds(Math.Min(Math.Max((RampUpTime.TotalMilliseconds * .05), 5000), 20000));
         public int RampUpIntervals => (int)Math.Ceiling(RampUpTime.TotalMilliseconds / RampUpInterval.TotalMilliseconds);
-        public int RampUpUsers => Users / RampUpIntervals;
+        public double RampUpUsers => Users / (double)RampUpIntervals;
     }
 
     public class SwarmHandler : IHandleCommand<Swarm>
@@ -158,16 +158,16 @@ namespace PoolManager.Terminal.Commands
             {
                 timer.Stop();
             }
-            terminal.Write($"{users}, {executionId}, {timer.Elapsed}, {exception?.Message ?? "success"}");
+            terminal.Write($"{users}, {executionId}, {timer.Elapsed}, {exception?.Message ?? "success"}");            
             return new SwarmExecution(timer.Elapsed, exception);
         }
-        private LinkedList<SwarmInterval>.Enumerator GetIntervals(int rampUpIntervals, TimeSpan rampUpInterval, int rampUpUsers)
+        private LinkedList<SwarmInterval>.Enumerator GetIntervals(int rampUpIntervals, TimeSpan rampUpInterval, double rampUpUsers)
         {
             LinkedList<SwarmInterval> usersByInterval = new LinkedList<SwarmInterval>();
             for (int i = 0; i < rampUpIntervals; i++)
             {
                 var interval = TimeSpan.FromMilliseconds(i * rampUpInterval.TotalMilliseconds);
-                var intervalUsers = (i + 1) * rampUpUsers;
+                var intervalUsers = (int)Math.Round((i + 1) * rampUpUsers, 0);
                 usersByInterval.AddLast(new SwarmInterval(interval, intervalUsers));
             }
             return usersByInterval.GetEnumerator();
@@ -178,7 +178,7 @@ namespace PoolManager.Terminal.Commands
             for (int i = 0; i < numberOfPartitions; i++) partitions[i] = Guid.NewGuid().ToString();
 
             SwarmInstance[] instances = new SwarmInstance[numberOfInstances];
-            for (int i = 0; i < numberOfPartitions; i++)
+            for (int i = 0; i < numberOfInstances; i++)
             {
                 instances[i] = new SwarmInstance(serviceTypeUri, partitions[i % numberOfPartitions], Guid.NewGuid().ToString());
             }
