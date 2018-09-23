@@ -41,7 +41,7 @@ namespace PoolManager.Monitor.Orphans
         {
             var commands = new List<ICommand>();
 
-            var usages = (await _poolProxy.GetUsagesAsync()).ToList();
+            var usages = (await _poolProxy.GetInstancesAsync(cancellationToken)).ToList();
 
             if (cancellationToken.IsCancellationRequested || !usages.Any()) return commands;
 
@@ -76,7 +76,7 @@ namespace PoolManager.Monitor.Orphans
 
         public async Task<IDictionary<string, IEnumerable<OrphanInfo>>> GetAllOrphansAsync(CancellationToken cancellationToken)
         {
-            var usages = (await _poolProxy.GetUsagesAsync()).ToList();
+            var usages = (await _poolProxy.GetInstancesAsync(cancellationToken)).ToList();
 
             if (cancellationToken.IsCancellationRequested || !usages.Any()) return new Dictionary<string, IEnumerable<OrphanInfo>>();
 
@@ -84,7 +84,7 @@ namespace PoolManager.Monitor.Orphans
             return await GetOrphansForManagedTypesAsync(usages, false, 1);
         }
 
-        private async Task<IDictionary<string, IEnumerable<OrphanInfo>>> GetOrphansForManagedTypesAsync(IEnumerable<GetPoolUsageResponse> usages, bool incrementCount, int timesSeenBeforeOrphaned)
+        private async Task<IDictionary<string, IEnumerable<OrphanInfo>>> GetOrphansForManagedTypesAsync(IEnumerable<GetInstancesResponse> usages, bool incrementCount, int timesSeenBeforeOrphaned)
         {
             var applicationList = await _fabricClient.QueryManager.GetApplicationListAsync();
 
@@ -92,11 +92,11 @@ namespace PoolManager.Monitor.Orphans
                 .SelectMany(d => d).ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
-        private async Task<IDictionary<string, IEnumerable<OrphanInfo>>> DetectDetachedServices(ApplicationList applicationList, GetPoolUsageResponse usage, bool incrementCount, int timesSeenBeforeOrphaned)
+        private async Task<IDictionary<string, IEnumerable<OrphanInfo>>> DetectDetachedServices(ApplicationList applicationList, GetInstancesResponse usage, bool incrementCount, int timesSeenBeforeOrphaned)
         {
             var detachedServices = (await GetServicesAsync(applicationList, usage))
-                .Where(s => usage.IdleInstances.All(i => s.ServiceName.AbsoluteUri.EndsWith(i.ToString()) == false))
-                .Where(s => usage.ActiveInstances.All(a => a.ServiceTypeUri != s.ServiceName.AbsoluteUri))
+                .Where(s => usage.VacantInstances.All(i => s.ServiceName.AbsoluteUri.EndsWith(i.ToString()) == false))
+                .Where(s => usage.OccupiedInstances.All(i => s.ServiceName.AbsoluteUri.EndsWith(i.ToString()) == false))
                 .ToList();
 
             var possibleOrphans = _detachedServices.ContainsKey(usage.ServiceTypeUri) ? _detachedServices[usage.ServiceTypeUri] : new Dictionary<Uri, int>();
@@ -121,7 +121,7 @@ namespace PoolManager.Monitor.Orphans
             };
         }
 
-        private async Task<IEnumerable<Service>> GetServicesAsync(ApplicationList applicationList, GetPoolUsageResponse usage)
+        private async Task<IEnumerable<Service>> GetServicesAsync(ApplicationList applicationList, GetInstancesResponse usage)
         {
             var app = applicationList.SingleOrDefault(a =>
             {
