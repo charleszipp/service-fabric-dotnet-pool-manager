@@ -1,6 +1,7 @@
 ﻿using Microsoft.ServiceFabric.Actors;
 using PoolManager.SDK.Partitions.Requests;
 using PoolManager.SDK.Partitions.Responses;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace PoolManager.SDK.Partitions
@@ -12,5 +13,7 @@ namespace PoolManager.SDK.Partitions
         Task<GetInstanceResponse> GetInstanceAsync(GetInstanceRequest request);
 
         Task VacateInstanceAsync(VacateInstanceRequest request);
+
+        Task<GetOccupiedInstancesResponse> GetOccupiedInstancesAsync(GetOccupiedInstancesRequest request);
     }
 }
