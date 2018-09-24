@@ -2,6 +2,7 @@
 using Microsoft.ServiceFabric.Data;
 using PoolManager.Domains.Pools;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -120,6 +121,12 @@ namespace PoolManager.Pools
                     );
             else
                 return null;
+        }
+
+        public async Task<IEnumerable<Guid>> GetVacantInstances(CancellationToken cancellationToken)
+        {
+            var poolInstances = await GetPoolInstancesStateAsync(cancellationToken);
+            return poolInstances.VacantInstances.ToList();
         }
     }
 }

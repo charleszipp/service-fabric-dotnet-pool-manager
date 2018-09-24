@@ -53,7 +53,10 @@
     <Compile Include="GetPoolConfiguration\GetPoolConfiguration.cs" />
     <Compile Include="GetPoolConfiguration\GetPoolConfigurationHandler.cs" />
     <Compile Include="GetPoolConfiguration\GetPoolConfigurationResult.cs" />
-    <Compile Include="PoolsDomainDecorator.cs" />
+    <Compile Include="GetVacantInstances\GetVacantInstances.cs" />
+    <Compile Include="GetVacantInstances\GetVacantInstancesHandler.cs" />
+    <Compile Include="GetVacantInstances\GetVacantInstancesResult.cs" />
+    <Compile Include="PoolsModule.cs" />
     <Compile Include="PushVacantInstance\PushVacantInstance.cs" />
     <Compile Include="PushVacantInstance\PushVacantInstanceHandler.cs" />
     <Compile Include="EnsurePoolSize\EnsurePoolSize.cs" />

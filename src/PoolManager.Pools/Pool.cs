@@ -83,6 +83,12 @@ namespace PoolManager.Pools
             var result = await _mediator.ExecuteAsync(new PopVacantInstance(), default(CancellationToken));
             return new PopVacantInstanceResponse(result.InstanceId);
         }
+               
+        public async Task<GetVacantInstancesResponse> GetVacantInstancesAsync()
+        {
+            var result = await _mediator.ExecuteAsync(new GetVacantInstances(), default(CancellationToken));
+            return new GetVacantInstancesResponse(result.VacantInstances);
+        }
 
         public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
         {

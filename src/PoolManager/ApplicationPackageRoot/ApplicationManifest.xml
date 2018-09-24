@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="PoolManager" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
+    <Parameter Name="PoolManager.Monitor_InstanceCount" DefaultValue="1" />
     <Parameter Name="InstanceActorService_PartitionCount" DefaultValue="1" />
     <Parameter Name="InstanceActorService_MinReplicaSetSize" DefaultValue="1" />
     <Parameter Name="InstanceActorService_TargetReplicaSetSize" DefaultValue="1" />
@@ -12,6 +13,10 @@
     <Parameter Name="PartitionActorService_TargetReplicaSetSize" DefaultValue="1" />
   </Parameters>
   <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="PoolManager.MonitorPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+  <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="PoolManager.PartitionsPkg" ServiceManifestVersion="1.0.0" />
   </ServiceManifestImport>
   <ServiceManifestImport>
@@ -21,6 +26,11 @@
     <ServiceManifestRef ServiceManifestName="PoolManager.PoolsPkg" ServiceManifestVersion="1.0.0" />
   </ServiceManifestImport>
   <DefaultServices>
+    <Service Name="Monitor" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="MonitorType" InstanceCount="[PoolManager.Monitor_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
     <Service Name="InstanceActorService" GeneratedIdRef="edb1f692-a66a-480e-b176-3c5366911098|Persisted">
       <StatefulService ServiceTypeName="InstanceActorServiceType" TargetReplicaSetSize="[InstanceActorService_TargetReplicaSetSize]" MinReplicaSetSize="[InstanceActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[InstanceActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />

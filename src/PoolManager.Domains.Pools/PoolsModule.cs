@@ -26,7 +26,8 @@ namespace PoolManager.Domains.Pools
                 .WithCommandHandler<EnsurePoolSizeHandler, EnsurePoolSize>()
                 .WithCommandHandler<PopVacantInstanceHandler, PopVacantInstance, PopVacantInstanceResult>()
                 .WithCommandHandler<PushVacantInstanceHandler, PushVacantInstance>()
-                .WithQueryHandler<GetPoolConfigurationHandler, GetPoolConfiguration, GetPoolConfigurationResult>();
+                .WithQueryHandler<GetPoolConfigurationHandler, GetPoolConfiguration, GetPoolConfigurationResult>()
+                .WithQueryHandler<GetVacantInstancesHandler, GetVacantInstances, GetVacantInstancesResult>();
         }
     }
 }

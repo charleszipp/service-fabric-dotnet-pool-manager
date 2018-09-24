@@ -5,7 +5,9 @@ using Microsoft.ServiceFabric.Actors.Runtime;
 using Ninject;
 using PoolManager.Core;
 using PoolManager.SDK.Instances;
+using PoolManager.SDK.Partitions;
 using PoolManager.SDK.Pools;
+using System.Fabric;
 using System.Threading;
 
 namespace PoolManager.Partitions
@@ -20,18 +22,25 @@ namespace PoolManager.Partitions
                 kernel.Bind<TelemetryClient>().ToSelf();
                 kernel.Bind<PoolsActorService>().ToMethod(x => 
                     new PoolsActorService(context, actorType, "PoolActorServiceEndpoint",
-                        (svc, id) => new Partition(
-                            svc, 
-                            id, 
-                            kernel.Get<TelemetryClient>(), 
-                            new InstanceProxy(
-                                new CorrelatingActorProxyFactory(context, callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient)), 
-                                new GuidGetter()
-                            ),
-                            new PoolProxy(
-                                new CorrelatingActorProxyFactory(context, callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient))
-                            )
-                        )
+                        (svc, id) => 
+                        {
+                            var actorProxyFactory = new CorrelatingActorProxyFactory(context, callbackClient => new FabricTransportActorRemotingClientFactory(callbackClient));
+                            var fabricClient = new FabricClient();
+                            return new Partition(
+                                svc,
+                                id,
+                                kernel.Get<TelemetryClient>(),
+                                new InstanceProxy(
+                                    actorProxyFactory,
+                                    new GuidGetter()
+                                ),
+                                new PoolProxy(
+                                    actorProxyFactory,
+                                    new PartitionProxy(actorProxyFactory, fabricClient),
+                                    fabricClient
+                                )
+                            );
+                        }
                     )
                 );
                 return kernel.Get<PoolsActorService>();
