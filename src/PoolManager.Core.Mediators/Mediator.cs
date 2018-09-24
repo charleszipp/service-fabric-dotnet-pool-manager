@@ -31,7 +31,7 @@ namespace PoolManager.Core.Mediators
 
         public Task<TResult> ExecuteAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken)
         {
-            var invoker = (QueryInvoker<TResult>)Activator.CreateInstance(typeof(QueryInvoker<>).MakeGenericType(query.GetType(), typeof(TResult)));
+            var invoker = (QueryInvoker<TResult>)Activator.CreateInstance(typeof(QueryInvoker<,>).MakeGenericType(query.GetType(), typeof(TResult)));
             return invoker.InvokeAsync(query, DependencyResolver, cancellationToken);
         }
     }

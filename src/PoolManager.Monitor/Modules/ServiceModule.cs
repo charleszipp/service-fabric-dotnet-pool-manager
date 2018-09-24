@@ -8,6 +8,7 @@ using Ninject.Extensions.Factory;
 using Ninject.Modules;
 using PoolManager.Monitor.Interfaces;
 using PoolManager.Monitor.Orphans;
+using PoolManager.SDK.Partitions;
 using PoolManager.SDK.Pools;
 
 namespace PoolManager.Monitor.Modules
@@ -27,6 +28,7 @@ namespace PoolManager.Monitor.Modules
             Bind<IRemoveOrphanCommandFactory>().ToFactory();
             Bind<PoolManagerMonitor>().ToSelf().InSingletonScope();
             Bind<IPoolProxy>().To<PoolProxy>().InSingletonScope();
+            Bind<IPartitionProxy>().To<PartitionProxy>().InSingletonScope();
 
             Bind<StatelessServiceContext>().ToConstant(_context).InSingletonScope();
             Bind<PoolManagerMonitorService>().ToSelf();
