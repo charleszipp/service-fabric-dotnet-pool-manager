@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ApplicationPackageRoot\ApplicationManifest.xml" />
-    <None Include="ApplicationParameters\Cloud.xml" />
     <None Include="ApplicationParameters\Local.1Node.xml" />
     <None Include="ApplicationParameters\Local.5Node.xml" />
     <None Include="PublishProfiles\Cloud.xml" />
@@ -36,6 +35,7 @@
     <ProjectReference Include="..\PoolManager.Monitor\PoolManager.Monitor.csproj" />
     <ProjectReference Include="..\PoolManager.Partitions\PoolManager.Partitions.csproj" />
     <ProjectReference Include="..\PoolManager.Pools\PoolManager.Pools.csproj" />
+    <ProjectReference Include="..\PoolManager.Web\PoolManager.Web.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <PropertyGroup>
