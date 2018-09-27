@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -32,8 +33,9 @@ namespace PoolManager.Web.Api.Pools
                     configuration.IsServiceStateful, configuration.MaxPoolSize, configuration.MinReplicaSetSize,
                     (PartitionSchemeDescription)Enum.Parse(typeof(PartitionSchemeDescription), configuration.PartitionScheme.ToString()),
                     configuration.ServicesAllocationBlockSize, configuration.TargetReplicasetSize),
+                getInstancesResponse.OccupiedInstances?.Select(i => i.PartitionId).Distinct(),
                 getInstancesResponse.VacantInstances,
-                getInstancesResponse.OccupiedInstances
+                getInstancesResponse.OccupiedInstances?.Select(i => new OccupiedInstance(i.Id, i.ServiceName, i.InstanceName, i.PartitionId))
             );
 
             return Ok(response);

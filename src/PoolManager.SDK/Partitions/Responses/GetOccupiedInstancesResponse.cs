@@ -7,12 +7,12 @@ namespace PoolManager.SDK.Partitions.Responses
     [DataContract]
     public class GetOccupiedInstancesResponse
     {
-        public GetOccupiedInstancesResponse(IEnumerable<Guid> occupiedInstances)
+        public GetOccupiedInstancesResponse(IEnumerable<OccupiedInstance> occupiedInstances)
         {
             OccupiedInstances = occupiedInstances;
         }
 
         [DataMember]
-        public IEnumerable<Guid> OccupiedInstances { get; private set; }
+        public IEnumerable<OccupiedInstance> OccupiedInstances { get; private set; }
     }
 }

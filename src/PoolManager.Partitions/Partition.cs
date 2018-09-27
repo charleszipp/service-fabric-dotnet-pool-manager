@@ -111,13 +111,13 @@ namespace PoolManager.Partitions
             StateManager.TryGetStateAsync<MappedInstance>(GetStateName(serviceTypeUri, instanceName));
 
         private Task SetMappedInstanceAsync(string serviceTypeUri, string instanceName, Guid instanceId, Uri serviceName) =>
-            StateManager.SetStateAsync(GetStateName(serviceTypeUri, instanceName), new MappedInstance(instanceId, serviceName));
+            StateManager.SetStateAsync(GetStateName(serviceTypeUri, instanceName), new MappedInstance(instanceId, serviceName, instanceName));
 
         private Task<bool> TryRemoveAsync(string serviceTypeUri, string instanceName) =>
             StateManager.TryRemoveStateAsync(GetStateName(serviceTypeUri, instanceName));
 
         private string GetStateName(string serviceTypeUri, string serviceInstanceName) => 
-            $"{serviceTypeUri.TrimEnd('/')}/{serviceInstanceName}";
+            $"{serviceTypeUri}?{serviceInstanceName}";
 
         public async Task ReceiveReminderAsync(string reminderName, byte[] state, TimeSpan dueTime, TimeSpan period)
         {
@@ -147,9 +147,9 @@ namespace PoolManager.Partitions
             var stateNames = (await StateManager.GetStateNamesAsync())
                 .Where(name => name.StartsWith(request.ServiceTypeUri))
                 .ToList();
-
+            var partitionId = this.GetActorId().GetStringId();
             var occupiedInstances = (await Task.WhenAll(stateNames.Select(name => StateManager.GetStateAsync<MappedInstance>(name))))
-                .Select(mappedInstance => mappedInstance.Id)
+                .Select(i => new OccupiedInstance(i.Id, i.ServiceName, i.InstanceName, partitionId))
                 .ToList();
 
             return new GetOccupiedInstancesResponse(occupiedInstances);

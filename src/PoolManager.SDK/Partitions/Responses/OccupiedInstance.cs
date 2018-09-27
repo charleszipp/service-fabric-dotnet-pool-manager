@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace PoolManager.Partitions.Models
+namespace PoolManager.SDK.Partitions.Responses
 {
     [DataContract]
-    public class MappedInstance
+    public class OccupiedInstance
     {
-        public MappedInstance(Guid id, Uri serviceName, string instanceName)
+        public OccupiedInstance(Guid id, Uri serviceName, string instanceName, string partitionId)
         {
             Id = id;
             ServiceName = serviceName;
             InstanceName = instanceName;
+            PartitionId = partitionId;
         }
 
         [DataMember]
@@ -19,5 +20,7 @@ namespace PoolManager.Partitions.Models
         public Uri ServiceName { get; private set; }
         [DataMember]
         public string InstanceName { get; private set; }
+        [DataMember]
+        public string PartitionId { get; private set; }
     }
 }
