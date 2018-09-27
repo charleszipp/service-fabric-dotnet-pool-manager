@@ -1,8 +1,9 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PoolManager.SDK.Pools;
-using PoolManager.SDK.Pools.Responses;
 
 namespace PoolManager.Web.Api.Pools
 {
@@ -17,27 +18,22 @@ namespace PoolManager.Web.Api.Pools
             this.pools = pools;
         }
 
-        [HttpGet("{serviceTypeUri}", Name = "GetPool")]
-        public async Task<ActionResult<Pool>> Get(string serviceTypeUri)
+        [HttpGet]
+        public async Task<ActionResult<Pool>> Get([Required]string serviceTypeUri)
         {
-            ConfigurationResponse cfg = null;
-            try
-            {
-                cfg = await pools.GetConfigurationAsync(serviceTypeUri);
-            }
-            catch(InvalidOperationException ex) when (ex.Message.ToLower().Contains("no configuration"))
-            {
+            var configuration = await pools.GetConfigurationAsync(serviceTypeUri);
+            if(configuration == null)
                 return NotFound($"Pool {serviceTypeUri} does not exist or has not yet been started.");
-            }
-            
-            var getVacantInstancesResult = await pools.GetVacantInstancesAsync(serviceTypeUri);
+
+            var getInstancesResponse = await pools.GetInstancesAsync(serviceTypeUri, CancellationToken.None);
             
             var response = new Pool(
-                new PoolConfiguration(cfg.ExpirationQuanta, cfg.HasPersistedState, cfg.IdleServicesPoolSize,
-                    cfg.IsServiceStateful, cfg.MaxPoolSize, cfg.MinReplicaSetSize,
-                    (PartitionSchemeDescription)Enum.Parse(typeof(PartitionSchemeDescription), cfg.PartitionScheme.ToString()),
-                    cfg.ServicesAllocationBlockSize, cfg.TargetReplicasetSize),
-                getVacantInstancesResult.VacantInstances
+                new PoolConfiguration(configuration.ExpirationQuanta, configuration.HasPersistedState, configuration.IdleServicesPoolSize,
+                    configuration.IsServiceStateful, configuration.MaxPoolSize, configuration.MinReplicaSetSize,
+                    (PartitionSchemeDescription)Enum.Parse(typeof(PartitionSchemeDescription), configuration.PartitionScheme.ToString()),
+                    configuration.ServicesAllocationBlockSize, configuration.TargetReplicasetSize),
+                getInstancesResponse.VacantInstances,
+                getInstancesResponse.OccupiedInstances
             );
 
             return Ok(response);

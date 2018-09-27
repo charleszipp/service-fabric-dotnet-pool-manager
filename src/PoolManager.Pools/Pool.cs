@@ -65,17 +65,20 @@ namespace PoolManager.Pools
         public async Task<ConfigurationResponse> GetConfigurationAsync()
         {
             var config = await _mediator.ExecuteAsync(new GetPoolConfiguration(), default(CancellationToken));
-            return new ConfigurationResponse(
-                config.ExpirationQuanta, 
-                config.HasPersistedState,
-                config.IdleServicesPoolSize, 
-                config.IsServiceStateful, 
-                config.MaxPoolSize,
-                config.MinReplicaSetSize, 
-                (SDK.PartitionSchemeDescription)Enum.Parse(typeof(SDK.PartitionSchemeDescription), config.PartitionScheme.ToString()), 
-                config.ServicesAllocationBlockSize,
-                config.ServiceTypeUri, 
-                config.TargetReplicasetSize);
+            if (config == null)
+                return null;
+            else
+                return new ConfigurationResponse(
+                    config.ExpirationQuanta, 
+                    config.HasPersistedState,
+                    config.IdleServicesPoolSize, 
+                    config.IsServiceStateful, 
+                    config.MaxPoolSize,
+                    config.MinReplicaSetSize, 
+                    (SDK.PartitionSchemeDescription)Enum.Parse(typeof(SDK.PartitionSchemeDescription), config.PartitionScheme.ToString()), 
+                    config.ServicesAllocationBlockSize,
+                    config.ServiceTypeUri, 
+                    config.TargetReplicasetSize);
         }
 
         public async Task<PopVacantInstanceResponse> PopVacantInstanceAsync(PopVacantInstanceRequest request)
