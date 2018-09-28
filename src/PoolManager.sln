@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolManager.Domains.Instanc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoolManager.Monitor", "PoolManager.Monitor\PoolManager.Monitor.csproj", "{9C39A492-395E-4042-9B16-57DC2CB43F70}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoolManager.Web", "PoolManager.Web\PoolManager.Web.csproj", "{278C3D95-B213-498F-BFD1-4C2CECC767DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -119,6 +121,10 @@ Global
 		{9C39A492-395E-4042-9B16-57DC2CB43F70}.Debug|x64.Build.0 = Debug|x64
 		{9C39A492-395E-4042-9B16-57DC2CB43F70}.Release|x64.ActiveCfg = Release|x64
 		{9C39A492-395E-4042-9B16-57DC2CB43F70}.Release|x64.Build.0 = Release|x64
+		{278C3D95-B213-498F-BFD1-4C2CECC767DF}.Debug|x64.ActiveCfg = Debug|x64
+		{278C3D95-B213-498F-BFD1-4C2CECC767DF}.Debug|x64.Build.0 = Debug|x64
+		{278C3D95-B213-498F-BFD1-4C2CECC767DF}.Release|x64.ActiveCfg = Release|x64
+		{278C3D95-B213-498F-BFD1-4C2CECC767DF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
