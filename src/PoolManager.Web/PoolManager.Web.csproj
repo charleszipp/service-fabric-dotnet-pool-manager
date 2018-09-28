@@ -4,6 +4,7 @@
     <TargetFramework>net461</TargetFramework>
     <IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
