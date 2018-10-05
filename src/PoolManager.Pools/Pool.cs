@@ -83,7 +83,7 @@ namespace PoolManager.Pools
 
         public async Task<PopVacantInstanceResponse> PopVacantInstanceAsync(PopVacantInstanceRequest request)
         {
-            var result = await _mediator.ExecuteAsync(new PopVacantInstance(), default(CancellationToken));
+            var result = await _mediator.ExecuteAsync(new PopVacantInstance(this.GetActorId().GetStringId()), default(CancellationToken));
             return new PopVacantInstanceResponse(result.InstanceId);
         }
                

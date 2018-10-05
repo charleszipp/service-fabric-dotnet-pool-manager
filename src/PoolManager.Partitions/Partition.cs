@@ -14,6 +14,13 @@ using System.Threading.Tasks;
 using PoolManager.Partitions.Models;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Instances.Requests;
+using Ninject;
+using PoolManager.Domains.Partitions;
+using PoolManager.Core;
+using Microsoft.ServiceFabric.Actors.Client;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using PoolManager.Core.Mediators;
+using System.Threading;
 
 namespace PoolManager.Partitions
 {
@@ -23,36 +30,36 @@ namespace PoolManager.Partitions
         private readonly TelemetryClient telemetryClient;
         private readonly IInstanceProxy instances;
         private readonly IPoolProxy pools;
+        private readonly Mediator mediator;
+        private readonly IKernel _kernel;
         private const string CleanupRemovedInstancesReminderKey = "cleanup-removed-instances";
 
-        public Partition(ActorService actorService, ActorId actorId, TelemetryClient telemetryClient, IInstanceProxy instances, IPoolProxy pools)
+        public Partition(ActorService actorService, ActorId actorId, 
+            TelemetryClient telemetryClient, 
+            IInstanceProxy instances, 
+            IPoolProxy pools,
+            IActorProxyFactory actorProxyFactory = null,
+            IServiceProxyFactory serviceProxyFactory = null)
             : base(actorService, actorId)
         {
             this.telemetryClient = telemetryClient;
             this.instances = instances;
             this.pools = pools;
+            _kernel = new StandardKernel()
+                .WithCore(actorService.Context, StateManager,
+                    telemetry: telemetryClient,
+                    actorProxyFactory: actorProxyFactory,
+                    serviceProxyFactory: serviceProxyFactory
+                    )
+                .WithMediator()
+                .WithPartitions<PartitionRepository, PopVacantInstanceProxy, OccupyInstanceProxy>();
+            this.mediator = _kernel.Get<Mediator>();
         }
 
         public async Task<GetInstanceResponse> GetInstanceAsync(GetInstanceRequest request)
         {
-            var instance = await TryGetAsync(request.ServiceTypeUri, request.InstanceName);
-            if (instance.HasValue)
-                return new GetInstanceResponse(instance.Value.ServiceName);
-            else
-            {
-                var popVacantInstanceResponse = await pools.PopVacantInstanceAsync(request.ServiceTypeUri, new SDK.Pools.Requests.PopVacantInstanceRequest());
-                if(popVacantInstanceResponse.InstanceId.HasValue)
-                {
-                    var occupyResponse = await instances.OccupyAsync(popVacantInstanceResponse.InstanceId.Value, new OccupyRequest(this.GetActorId().GetStringId(), request.InstanceName));
-                    await SetMappedInstanceAsync(request.ServiceTypeUri, request.InstanceName, popVacantInstanceResponse.InstanceId.Value, occupyResponse.ServiceName);
-                    return new GetInstanceResponse(occupyResponse.ServiceName);
-                    //todo: if occupy fails or takes over a certain time, mark the instance for deletion and retry
-
-                    throw new Exception("Pool was unable to provide a vacant instance to occupy.");
-                }
-
-                throw new ArgumentException("Unable to find a mapped instance for given pool and name");
-            }
+            var result = await mediator.ExecuteAsync(new GetInstance(request.ServiceTypeUri, request.InstanceName, this.GetActorId().GetStringId()), default(CancellationToken));
+            return new GetInstanceResponse(result.ServiceName);
         }
 
         public async Task VacateInstanceAsync(VacateInstanceRequest request)
