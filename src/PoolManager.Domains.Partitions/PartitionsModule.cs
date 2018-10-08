@@ -3,6 +3,7 @@ using Ninject.Modules;
 using PoolManager.Core.Mediators;
 using PoolManager.Core.Mediators.Commands;
 using PoolManager.Domains.Instances.Interfaces;
+using PoolManager.Domains.Partitions.Interfaces;
 
 namespace PoolManager.Domains.Partitions
 {

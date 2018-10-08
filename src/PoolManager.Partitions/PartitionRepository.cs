@@ -1,10 +1,7 @@
 ﻿using Microsoft.ServiceFabric.Actors.Runtime;
-using PoolManager.Domains.Partitions;
+using PoolManager.Domains.Partitions.Interfaces;
 using PoolManager.Partitions.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +16,7 @@ namespace PoolManager.Partitions
             this.stateManager = stateManager;
         }
 
-        public Task SetOccupiedInstanceAsync(string serviceTypeUri, string instanceName, Guid instanceId, Uri serviceName) => 
+        public Task SetOccupiedInstanceAsync(string serviceTypeUri, string instanceName, Guid instanceId, Uri serviceName) =>
             stateManager.SetStateAsync(GetStateName(serviceTypeUri, instanceName), new MappedInstance(instanceId, serviceName, instanceName));
 
         public async Task<Uri> TryGetOccupiedInstanceUriAsync(string serviceTypeUri, string instanceName, CancellationToken cancellationToken)

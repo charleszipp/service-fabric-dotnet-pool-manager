@@ -1,6 +1,6 @@
 ﻿using PoolManager.Core.Mediators.Commands;
 
-namespace PoolManager.Domains.Partitions
+namespace PoolManager.Domains.Partitions.Interfaces
 {
     public class GetInstance : ICommand<GetInstanceResult>
     {

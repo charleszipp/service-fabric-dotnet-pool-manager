@@ -143,6 +143,10 @@
       <Project>{1346701A-9414-4005-9F87-61367469E658}</Project>
       <Name>PoolManager.Domains.Instances.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PoolManager.Domains.Partitions.Interfaces\PoolManager.Domains.Partitions.Interfaces.csproj">
+      <Project>{DC02E45D-4578-4E05-822E-8A9E48BDE2DF}</Project>
+      <Name>PoolManager.Domains.Partitions.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoolManager.Domains.Partitions\PoolManager.Domains.Partitions.csproj">
       <Project>{876C15FC-7585-42F7-95AA-317D338CD806}</Project>
       <Name>PoolManager.Domains.Partitions</Name>

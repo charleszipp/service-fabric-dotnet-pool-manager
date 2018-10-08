@@ -21,6 +21,7 @@ using Microsoft.ServiceFabric.Actors.Client;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 using PoolManager.Core.Mediators;
 using System.Threading;
+using PoolManager.Domains.Partitions.Interfaces;
 
 namespace PoolManager.Partitions
 {

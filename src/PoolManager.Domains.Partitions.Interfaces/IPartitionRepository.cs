@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PoolManager.Domains.Partitions
+namespace PoolManager.Domains.Partitions.Interfaces
 {
     public interface IPartitionRepository
     {
