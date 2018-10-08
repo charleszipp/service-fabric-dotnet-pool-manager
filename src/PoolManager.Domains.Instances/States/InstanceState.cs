@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using PoolManager.Domains.Instances.Interfaces;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PoolManager.Domains.Instances.States

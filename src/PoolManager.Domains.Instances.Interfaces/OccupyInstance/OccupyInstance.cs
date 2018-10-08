@@ -1,7 +1,7 @@
 ﻿using PoolManager.Core.Mediators.Commands;
 using System;
 
-namespace PoolManager.Domains.Instances
+namespace PoolManager.Domains.Instances.Interfaces
 {
     public class OccupyInstance : ICommand<OccupyInstanceResult>
     {

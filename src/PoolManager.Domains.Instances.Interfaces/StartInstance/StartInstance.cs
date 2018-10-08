@@ -1,18 +1,19 @@
 ﻿using PoolManager.Core.Mediators.Commands;
 using System;
 
-namespace PoolManager.Domains.Instances
+namespace PoolManager.Domains.Instances.Interfaces
 {
-    public class CreateService : ICommand<CreateServiceResult>
+    public class StartInstance : ICommand
     {
-        public CreateService(
+        public StartInstance(
             Guid instanceId,
             string serviceTypeUri,
             bool isServiceStateful,
             bool hasPersistedState,
             int minReplicas,
             int targetReplicas,
-            PartitionSchemeDescription partitionScheme
+            PartitionSchemeDescription partitionScheme,
+            TimeSpan expirationQuanta
             )
         {
             InstanceId = instanceId;
@@ -22,9 +23,11 @@ namespace PoolManager.Domains.Instances
             MinReplicas = minReplicas;
             TargetReplicas = targetReplicas;
             PartitionScheme = partitionScheme;
+            ExpirationQuanta = expirationQuanta;
         }
 
         public Guid InstanceId { get; }
+
         public string ServiceTypeUri { get; }
 
         public bool IsServiceStateful { get; }
@@ -36,5 +39,7 @@ namespace PoolManager.Domains.Instances
         public int TargetReplicas { get; }
 
         public PartitionSchemeDescription PartitionScheme { get; }
+
+        public TimeSpan ExpirationQuanta { get; }
     }
 }

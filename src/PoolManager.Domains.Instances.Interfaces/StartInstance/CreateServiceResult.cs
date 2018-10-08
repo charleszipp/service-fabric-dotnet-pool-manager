@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PoolManager.Domains.Instances
+namespace PoolManager.Domains.Instances.Interfaces
 {
     public class CreateServiceResult
     {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.ServiceFabric.Services.Remoting.Client;
 using PoolManager.Core;
 using PoolManager.Domains.Instances;
+using PoolManager.Domains.Instances.Interfaces;
 using PoolManager.SDK;
 using System;
 using System.Threading;

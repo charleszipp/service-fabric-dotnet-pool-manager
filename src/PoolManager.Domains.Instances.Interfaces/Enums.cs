@@ -1,4 +1,4 @@
-﻿namespace PoolManager.Domains.Instances
+﻿namespace PoolManager.Domains.Instances.Interfaces
 {
     public enum PartitionSchemeDescription
     {

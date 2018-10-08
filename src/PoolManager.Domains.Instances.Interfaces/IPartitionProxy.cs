@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace PoolManager.Domains.Instances
+namespace PoolManager.Domains.Instances.Interfaces
 {
     public interface IPartitionProxy
     {

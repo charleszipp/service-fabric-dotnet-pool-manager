@@ -1,6 +1,7 @@
 ﻿using PoolManager.Core;
 using PoolManager.Core.Mediators.Commands;
 using PoolManager.Domains.Instances;
+using PoolManager.Domains.Instances.Interfaces;
 using System.Fabric.Description;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,14 +30,14 @@ namespace PoolManager.Instances
             return new CreateServiceResult(serviceDescriptionFactory.ServiceName);
         }
 
-        private static System.Fabric.Description.PartitionSchemeDescription ToServiceFabricDescription(Domains.Instances.PartitionSchemeDescription desc)
+        private static System.Fabric.Description.PartitionSchemeDescription ToServiceFabricDescription(Domains.Instances.Interfaces.PartitionSchemeDescription desc)
         {
             switch (desc)
             {
-                case Domains.Instances.PartitionSchemeDescription.UniformInt64Name:
+                case Domains.Instances.Interfaces.PartitionSchemeDescription.UniformInt64Name:
                     return new UniformInt64RangePartitionSchemeDescription();
 
-                case Domains.Instances.PartitionSchemeDescription.Named:
+                case Domains.Instances.Interfaces.PartitionSchemeDescription.Named:
                     return new NamedPartitionSchemeDescription();
 
                 default:

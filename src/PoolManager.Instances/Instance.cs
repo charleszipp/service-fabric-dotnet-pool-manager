@@ -6,6 +6,7 @@ using Ninject;
 using PoolManager.Core;
 using PoolManager.Core.Mediators;
 using PoolManager.Domains.Instances;
+using PoolManager.Domains.Instances.Interfaces;
 using PoolManager.Domains.Instances.States;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Instances.Requests;
