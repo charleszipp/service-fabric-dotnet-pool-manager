@@ -116,6 +116,7 @@
     <Compile Include="Models\MappedInstance.cs" />
     <Compile Include="OccupyInstanceProxy.cs" />
     <Compile Include="Partition.cs" />
+    <Compile Include="PartitionActorModule.cs" />
     <Compile Include="PartitionRepository.cs" />
     <Compile Include="PopVacantInstanceProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

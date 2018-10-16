@@ -13,12 +13,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using PoolManager.Partitions.Models;
 using PoolManager.SDK.Pools;
-using PoolManager.SDK.Instances.Requests;
 using Ninject;
 using PoolManager.Domains.Partitions;
 using PoolManager.Core;
-using Microsoft.ServiceFabric.Actors.Client;
-using Microsoft.ServiceFabric.Services.Remoting.Client;
 using PoolManager.Core.Mediators;
 using System.Threading;
 using PoolManager.Domains.Partitions.Interfaces;
@@ -35,26 +32,18 @@ namespace PoolManager.Partitions
         private readonly IKernel _kernel;
         private const string CleanupRemovedInstancesReminderKey = "cleanup-removed-instances";
 
-        public Partition(ActorService actorService, ActorId actorId, 
-            TelemetryClient telemetryClient, 
-            IInstanceProxy instances, 
-            IPoolProxy pools,
-            IActorProxyFactory actorProxyFactory = null,
-            IServiceProxyFactory serviceProxyFactory = null)
+        public Partition(ActorService actorService, ActorId actorId)
             : base(actorService, actorId)
-        {
-            this.telemetryClient = telemetryClient;
-            this.instances = instances;
-            this.pools = pools;
-            _kernel = new StandardKernel()
-                .WithCore(actorService.Context, StateManager,
-                    telemetry: telemetryClient,
-                    actorProxyFactory: actorProxyFactory,
-                    serviceProxyFactory: serviceProxyFactory
-                    )
+        {            
+            _kernel = new StandardKernel(new PartitionActorModule())
+                .WithCore(actorService.Context, StateManager)
                 .WithMediator()
                 .WithPartitions<PartitionRepository, PopVacantInstanceProxy, OccupyInstanceProxy>();
-            this.mediator = _kernel.Get<Mediator>();
+
+            mediator = _kernel.Get<Mediator>();
+            telemetryClient = _kernel.Get<TelemetryClient>();
+            instances = _kernel.Get<IInstanceProxy>();
+            pools = _kernel.Get<IPoolProxy>();
         }
 
         public async Task<GetInstanceResponse> GetInstanceAsync(GetInstanceRequest request)

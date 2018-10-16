@@ -37,6 +37,7 @@ namespace PoolManager.Core
         public override void Load()
         {
             Bind<ServiceContext>().ToConstant(serviceContext);
+            Bind<IActorStateManager>().ToConstant(stateManager);
 
             if (telemetry == null)
                 Bind<TelemetryClient>().ToSelf();
@@ -61,9 +62,7 @@ namespace PoolManager.Core
                         )
                     ).InSingletonScope();
             else
-                Bind<IServiceProxyFactory>().ToConstant(serviceProxyFactory);
-
-            Bind<IActorStateManager>().ToConstant(stateManager);
+                Bind<IServiceProxyFactory>().ToConstant(serviceProxyFactory);            
 
             if (clusterClient == null)
             {

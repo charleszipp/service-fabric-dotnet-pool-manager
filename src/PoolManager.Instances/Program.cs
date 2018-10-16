@@ -8,7 +8,6 @@ namespace PoolManager.Instances
     {
         private static void Main()
         {
-            var telemetryClient = new Microsoft.ApplicationInsights.TelemetryClient();
             ActorRuntime.RegisterActorAsync<Instance>(
                 (context, actorType) =>
                     new PoolsActorService(
