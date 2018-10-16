@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationInsights;
 using PoolManager.Core.Mediators;
+using PoolManager.Domains.Instances.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace PoolManager.Domains.Instances.States
             Mediator = mediator;
             InstanceStates = states;
             this.repository = repository;
-            _currentState = InstanceStates.Get(Instances.InstanceStates.Idle);
+            _currentState = InstanceStates.Get(Interfaces.InstanceStates.Idle);
         }
 
         public async Task ActivateAsync(CancellationToken cancellationToken)

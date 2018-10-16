@@ -1,4 +1,4 @@
-﻿using PoolManager.Domains.Instances;
+﻿using PoolManager.Domains.Instances.Interfaces;
 using System;
 using System.Threading.Tasks;
 

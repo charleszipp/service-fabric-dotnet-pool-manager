@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PoolManager.Domains.Instances.Interfaces;
+using System.Collections.Generic;
 
 namespace PoolManager.Domains.Instances.States
 {

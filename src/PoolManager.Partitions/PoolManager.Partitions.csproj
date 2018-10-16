@@ -114,7 +114,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\MappedInstance.cs" />
+    <Compile Include="OccupyInstanceProxy.cs" />
     <Compile Include="Partition.cs" />
+    <Compile Include="PartitionActorModule.cs" />
+    <Compile Include="PartitionRepository.cs" />
+    <Compile Include="PopVacantInstanceProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
@@ -128,9 +132,29 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoolManager.Core.Mediators\PoolManager.Core.Mediators.csproj">
+      <Project>{6654A45A-A0AA-4EBC-9C42-6C143DE56A3D}</Project>
+      <Name>PoolManager.Core.Mediators</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoolManager.Core\PoolManager.Core.csproj">
       <Project>{82ACED8A-4579-49C9-9E64-D7E380AD18F4}</Project>
       <Name>PoolManager.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoolManager.Domains.Instances.Interfaces\PoolManager.Domains.Instances.Interfaces.csproj">
+      <Project>{1346701A-9414-4005-9F87-61367469E658}</Project>
+      <Name>PoolManager.Domains.Instances.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoolManager.Domains.Partitions.Interfaces\PoolManager.Domains.Partitions.Interfaces.csproj">
+      <Project>{DC02E45D-4578-4E05-822E-8A9E48BDE2DF}</Project>
+      <Name>PoolManager.Domains.Partitions.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoolManager.Domains.Partitions\PoolManager.Domains.Partitions.csproj">
+      <Project>{876C15FC-7585-42F7-95AA-317D338CD806}</Project>
+      <Name>PoolManager.Domains.Partitions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoolManager.Domains.Pools.Interfaces\PoolManager.Domains.Pools.Interfaces.csproj">
+      <Project>{C69073D1-BA6B-4858-AB9E-677F7136EF01}</Project>
+      <Name>PoolManager.Domains.Pools.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\PoolManager.SDK\PoolManager.SDK.csproj">
       <Project>{d7435252-f5fd-4200-a483-9d69a7f2ed85}</Project>

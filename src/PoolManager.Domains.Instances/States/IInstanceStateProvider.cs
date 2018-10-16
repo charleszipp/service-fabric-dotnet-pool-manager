@@ -1,4 +1,6 @@
-﻿namespace PoolManager.Domains.Instances.States
+﻿using PoolManager.Domains.Instances.Interfaces;
+
+namespace PoolManager.Domains.Instances.States
 {
     public interface IInstanceStateProvider
     {

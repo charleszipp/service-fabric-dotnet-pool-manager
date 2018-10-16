@@ -144,6 +144,14 @@
       <Project>{82ACED8A-4579-49C9-9E64-D7E380AD18F4}</Project>
       <Name>PoolManager.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PoolManager.Domains.Instances.Interfaces\PoolManager.Domains.Instances.Interfaces.csproj">
+      <Project>{1346701A-9414-4005-9F87-61367469E658}</Project>
+      <Name>PoolManager.Domains.Instances.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoolManager.Domains.Pools.Interfaces\PoolManager.Domains.Pools.Interfaces.csproj">
+      <Project>{C69073D1-BA6B-4858-AB9E-677F7136EF01}</Project>
+      <Name>PoolManager.Domains.Pools.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoolManager.Domains.Pools\PoolManager.Domains.Pools.csproj">
       <Project>{8E213191-2923-4652-A393-DD20D2D4759B}</Project>
       <Name>PoolManager.Domains.Pools</Name>

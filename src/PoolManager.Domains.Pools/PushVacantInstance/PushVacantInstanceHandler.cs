@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using PoolManager.Core.Mediators.Commands;
+using PoolManager.Domains.Pools.Interfaces;
 
 namespace PoolManager.Domains.Pools
 {
