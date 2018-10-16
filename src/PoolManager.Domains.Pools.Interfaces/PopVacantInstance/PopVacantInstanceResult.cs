@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PoolManager.Domains.Pools
+namespace PoolManager.Domains.Pools.Interfaces
 {
     public class PopVacantInstanceResult
     {

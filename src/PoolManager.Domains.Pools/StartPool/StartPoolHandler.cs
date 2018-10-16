@@ -1,4 +1,5 @@
 ﻿using PoolManager.Core.Mediators.Commands;
+using PoolManager.Domains.Pools.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 

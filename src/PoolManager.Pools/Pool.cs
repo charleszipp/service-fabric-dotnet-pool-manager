@@ -8,6 +8,7 @@ using Ninject;
 using PoolManager.Core;
 using PoolManager.Core.Mediators;
 using PoolManager.Domains.Pools;
+using PoolManager.Domains.Pools.Interfaces;
 using PoolManager.SDK.Instances;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;

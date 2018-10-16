@@ -3,6 +3,7 @@ using PoolManager.Domains.Instances;
 using PoolManager.Domains.Instances.Interfaces;
 using PoolManager.Domains.Partitions.Interfaces;
 using PoolManager.Domains.Pools;
+using PoolManager.Domains.Pools.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

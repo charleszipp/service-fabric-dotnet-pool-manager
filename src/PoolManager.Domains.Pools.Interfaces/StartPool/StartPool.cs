@@ -1,7 +1,7 @@
 ﻿using PoolManager.Core.Mediators.Commands;
 using System;
 
-namespace PoolManager.Domains.Pools
+namespace PoolManager.Domains.Pools.Interfaces
 {
     public class StartPool : ICommand
     {

@@ -1,6 +1,7 @@
 ﻿using Ninject;
 using Ninject.Modules;
 using PoolManager.Core.Mediators;
+using PoolManager.Domains.Pools.Interfaces;
 
 namespace PoolManager.Domains.Pools
 {

@@ -51,26 +51,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GetPoolConfiguration\GetPoolConfiguration.cs" />
     <Compile Include="GetPoolConfiguration\GetPoolConfigurationHandler.cs" />
-    <Compile Include="GetPoolConfiguration\GetPoolConfigurationResult.cs" />
-    <Compile Include="GetVacantInstances\GetVacantInstances.cs" />
     <Compile Include="GetVacantInstances\GetVacantInstancesHandler.cs" />
-    <Compile Include="GetVacantInstances\GetVacantInstancesResult.cs" />
     <Compile Include="PoolsModule.cs" />
-    <Compile Include="PushVacantInstance\PushVacantInstance.cs" />
     <Compile Include="PushVacantInstance\PushVacantInstanceHandler.cs" />
-    <Compile Include="EnsurePoolSize\EnsurePoolSize.cs" />
     <Compile Include="EnsurePoolSize\EnsurePoolSizeHandler.cs" />
-    <Compile Include="IPoolsRepository.cs" />
-    <Compile Include="Enums.cs" />
-    <Compile Include="PopVacantInstance\PopVacantInstance.cs" />
     <Compile Include="PopVacantInstance\PopVacantInstanceHandler.cs" />
-    <Compile Include="PopVacantInstance\PopVacantInstanceResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PushVacantInstance\StartInstance.cs" />
-    <Compile Include="PushVacantInstance\StartInstanceResult.cs" />
-    <Compile Include="StartPool\StartPool.cs" />
     <Compile Include="StartPool\StartPoolHandler.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +68,10 @@
     <ProjectReference Include="..\PoolManager.Core.Mediators\PoolManager.Core.Mediators.csproj">
       <Project>{6654a45a-a0aa-4ebc-9c42-6c143de56a3d}</Project>
       <Name>PoolManager.Core.Mediators</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoolManager.Domains.Pools.Interfaces\PoolManager.Domains.Pools.Interfaces.csproj">
+      <Project>{C69073D1-BA6B-4858-AB9E-677F7136EF01}</Project>
+      <Name>PoolManager.Domains.Pools.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

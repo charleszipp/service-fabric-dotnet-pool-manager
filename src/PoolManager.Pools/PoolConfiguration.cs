@@ -1,10 +1,7 @@
-﻿using PoolManager.Domains.Pools;
+﻿using PoolManager.Domains.Pools.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PoolManager.Pools
 {

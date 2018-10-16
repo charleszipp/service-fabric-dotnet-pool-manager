@@ -1,6 +1,7 @@
 ﻿using Microsoft.ApplicationInsights;
 using PoolManager.Core.ApplicationInsights;
 using PoolManager.Core.Mediators.Commands;
+using PoolManager.Domains.Pools.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

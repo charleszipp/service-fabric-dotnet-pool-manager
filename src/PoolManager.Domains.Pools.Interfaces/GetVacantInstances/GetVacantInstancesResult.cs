@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PoolManager.Domains.Pools
+namespace PoolManager.Domains.Pools.Interfaces
 {
     public class GetVacantInstancesResult
     {

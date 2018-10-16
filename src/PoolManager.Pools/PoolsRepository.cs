@@ -1,6 +1,6 @@
 ﻿using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Data;
-using PoolManager.Domains.Pools;
+using PoolManager.Domains.Pools.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

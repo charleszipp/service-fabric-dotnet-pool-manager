@@ -1,6 +1,6 @@
 ﻿using Ninject.Modules;
 using PoolManager.Core.Mediators;
-using PoolManager.Domains.Pools;
+using PoolManager.Domains.Pools.Interfaces;
 using PoolManager.SDK.Instances;
 
 namespace PoolManager.Pools

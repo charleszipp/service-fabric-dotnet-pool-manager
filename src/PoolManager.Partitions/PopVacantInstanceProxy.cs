@@ -1,5 +1,6 @@
 ﻿using PoolManager.Core.Mediators.Commands;
 using PoolManager.Domains.Pools;
+using PoolManager.Domains.Pools.Interfaces;
 using PoolManager.SDK.Pools;
 using PoolManager.SDK.Pools.Requests;
 using System;

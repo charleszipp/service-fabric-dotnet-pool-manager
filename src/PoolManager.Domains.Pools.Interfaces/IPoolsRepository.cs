@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PoolManager.Domains.Pools
+namespace PoolManager.Domains.Pools.Interfaces
 {
     public interface IPoolsRepository
     {
