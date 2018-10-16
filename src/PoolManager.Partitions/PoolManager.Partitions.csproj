@@ -156,10 +156,6 @@
       <Project>{C69073D1-BA6B-4858-AB9E-677F7136EF01}</Project>
       <Name>PoolManager.Domains.Pools.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PoolManager.Domains.Pools\PoolManager.Domains.Pools.csproj">
-      <Project>{8E213191-2923-4652-A393-DD20D2D4759B}</Project>
-      <Name>PoolManager.Domains.Pools</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PoolManager.SDK\PoolManager.SDK.csproj">
       <Project>{d7435252-f5fd-4200-a483-9d69a7f2ed85}</Project>
       <Name>PoolManager.SDK</Name>
